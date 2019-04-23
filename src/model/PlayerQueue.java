@@ -73,6 +73,15 @@ public class PlayerQueue implements Iterable<Player>
 		}
 	}
 	
+	public Player dequeue(Player person) {
+		// TODO
+		return getPlayer();
+	}
+	
+	private void dequeue(Node n) {
+		// TODO
+	}
+	
 	/**
 	 * Returns the model.Player at the head of the queue
 	 * @author Chris
@@ -124,7 +133,7 @@ public class PlayerQueue implements Iterable<Player>
 	 * A node to hold a model.Player and is able to look backwards and forwards
 	 * @author Chris
 	 */
-	private class Node
+	class Node
 	{
 		Player data;
 		Node next;

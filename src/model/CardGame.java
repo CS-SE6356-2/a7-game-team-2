@@ -11,19 +11,15 @@ public class CardGame
 	////Member Variables////
 	Player[] players;			//Holds the data for each player
 	Deck cardDeck;				//Holds the information for each card
-	Cardpile[] piles;			
+	DrawPile pile;	
 	
 	////Constructor////
 	public CardGame(int numOfPlayers, ArrayList<String> playerNames, ArrayList<Socket> clientSocks,
 		File cardList)
 	{
 		players = new Player[numOfPlayers];		//Create a list of Players
-		cardDeck = new Deck(cardList);			//Create the deck of cards. The model.Card Game class thus has a reference to all cards
-		piles = new Cardpile[2];				//Create the list of piles, will give amount that fits a specific card game
-		
-		//Create model.Card Piles
-		piles[0] = new Cardpile("Draw");
-		piles[1] = new Cardpile("Used");
+		cardDeck = new Deck(cardList);			//Create the deck of cards
+		pile = new DrawPile();					//Create the pile of cards to draw
 		
 		//Create Players
 		createPlayers(playerNames, clientSocks);
@@ -48,11 +44,8 @@ public class CardGame
 		//Give rest of cards to draw pile
 		for(;currentCard < cardDeck.numOfCards; currentCard++)
 			temp.add(cardDeck.cards.get(currentCard));
-		piles[0].addCardsOnTop(temp);
+		pile.addCardsOnTop(temp);
 		temp.clear();
-		
-		//Put the first card on top of the draw deck on to the used pile
-		piles[1].addCardsOnTop(piles[0].takeCards(1));
 	}
 	public void shuffleCards() {cardDeck.shuffle();}
 	private void createPlayers(ArrayList<String> playerNames, ArrayList<Socket> clientSocks)
@@ -77,7 +70,7 @@ public class CardGame
 		for(dealerNum = 0;dealerNum < players.length && !players[dealerNum].getRole().equals("Dealer"); dealerNum++);
 		
 		//Move number to next in list as dealer doesn't usually go first
-		dealerNum = (dealerNum+1)%players.length;
+		dealerNum = (dealerNum)%players.length;
 		//Create the playerQueue
 		PlayerQueue playOrder = new PlayerQueue();
 		
@@ -103,11 +96,6 @@ public class CardGame
 		return false;
 	}
 	
-	private String checkForTrick(List<Card> trick)
-	{
-		//TODO
-		return "Royal Flush!";
-	}
 	private int getMatchValue(List<Card> match)
 	{
 		//TODO
@@ -115,8 +103,9 @@ public class CardGame
 	}
 
 	public boolean isLegalMove(Player focusPlayer, String move) {
-		//Depends on game type
-		// TODO Extend Game Logic here, what kind of card or action did they make
+		// TODO Extend Game Logic here,
+		//      i.e. what kind of card
+		//      or action did they make
 		return true;
 	}
 	

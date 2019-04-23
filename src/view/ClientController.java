@@ -19,9 +19,14 @@ import java.util.LinkedList;
 
 import javafx.application.Platform;
 import model.Card;
+<<<<<<< HEAD
+=======
 import model.CardGame;
+import model.GoFishGame;
+>>>>>>> b338316e051308a1f5449cabd644a139b7e5f390
 import model.Player;
-import model.PlayerQueue;
+import model.GoFishGame;
+import model.GoFishQueue;
 
 public class ClientController {
 	
@@ -222,22 +227,21 @@ class ClientThread extends Thread{
 							   else {
 								   game.gui.turnLabel.setText("It's " + mess[2] + "'s turn");
 							   }
-						   }
-						   //Update each Client GUI's list of cards
-						   else if(mess[0].equals("cards"))
-						   {
-							   if(!mess[1].equals(" "))
+							   
+							   
+							   //Giving players their cards
+							   if(!mess[3].equals(" "))
 							   {
-								   for(String card: mess[1].split(","))
+								   for(String card: mess[3].split(","))
 									   tempList.add(new Card(card));
 								   game.gui.yourCards.setActiveCards(tempList);
 								   tempList.clear();
 							   }
-							   
-							   if(!mess[2].equals(" "))
+							   //inactive cards
+							   else if(!mess[4].equals(" "))
 							   {
-								   for(String card: mess[2].split(","))
-									   tempList.add(new Card(card));
+								   for(String card: mess[4].split(","))
+								   		tempList.add(new Card(card));
 								   game.gui.yourCards.setInactiveCards(tempList);
 								   tempList.clear();
 							   }
@@ -245,6 +249,7 @@ class ClientThread extends Thread{
 							   //Test if client got the message
 							   game.gui.testLabel.setText(mes);
 						   }
+						   //Update each Client GUI's list of cards
 					   }
 					});
 				}
@@ -347,10 +352,18 @@ class ServerThread extends Thread{
 		String move = "Game started!";
 		
 		//CREATE CARD GAME OBJECT
-		CardGame cardGame = new CardGame(game.clientLabels.size(), game.clientLabels, game.clientSocks, new File("cardlist.txt"));
+<<<<<<< HEAD
+		GoFishGame cardGame = new GoFishGame(game.clientLabels.size(), game.clientLabels, game.clientSocks, new File("../res/cardlist.txt"));
+=======
+		GoFishGame cardGame = new GoFishGame(game.clientLabels.size(), game.clientLabels, game.clientSocks, new File("cardlist.txt"));
+>>>>>>> b338316e051308a1f5449cabd644a139b7e5f390
 		cardGame.assignDealear(game.clientLabels.get(0));
-		PlayerQueue playerList = cardGame.sortPlayersInPlayOrder();
+		GoFishQueue playerList = (GoFishQueue)cardGame.sortPlayersInPlayOrder();
 		Player focusPlayer;
+		boolean win = false;
+		boolean doesGoAgain = false;
+		String winner = "";
+		
 		//4th Stage@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 		
 		//Shuffle Cards
@@ -361,37 +374,24 @@ class ServerThread extends Thread{
 		//TENTATIVELY
 		//HAVE THE SERVER SEND LIST OF STRINGS TO PLAYERS FOR THEIR HAND OF CARDS
 		
-		while(game.gui.state.equals("game")) {
+		while(game.gui.state.equals("game") && !win) {
 			//Get the player that goes next
 			focusPlayer = playerList.nextPlayer();
 			
-			//Group 1@@@@@Send model.Card information to each player what cards they currently have@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+			
+			//Group 1@@@@@Message of what was the last move made and who goes next@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 			for(Player p: playerList) {
 				try {
 					DataOutputStream out = new DataOutputStream(p.getSock().getOutputStream());
-					//The players card list uses 3 delimiters
-					//The ';' delimits the active list form the inactive list. ActiveCards|InactiveCards
-					//The ',' delimits the cards in a list from each other. Card1;Card2;Card3
-					//The ' ' delimits the specifics of a card. CardValue CardCategory
-					
-					//Adding in an extra first group to notify what kind of message is sent
-					//Add word "cards" to denote we are updating cards
-					out.writeUTF("cards;"+p.getCardListForUTF());
-				}
-				catch (IOException e) {}
-			}
-			
-			//Group 2@@@@@Message of what was the last move made and who goes next@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-			for(int i = 0; i < game.clientSocks.size(); i++) {
-				try {
-					DataOutputStream out = new DataOutputStream(game.clientSocks.get(i).getOutputStream());
 					//Adding in an extra first group to notify what kind of message is sent
 					//Add word "turn" to denote we are updating labels about the move made/who goes next
-					out.writeUTF("turn;"+move+";"+focusPlayer.getTeamName());
+					out.writeUTF(move+";"+focusPlayer.getTeamName()+";"+p.getCardListForUTF()+";"+cardGame.getAmtCardInDrawPile()+";"+cardGame.getAmtCardsPerAHand()+";"+cardGame.getPairsPerHand());
 				}
 				catch (IOException e) {}
 			}
-			//Group 3@@@@@Receive the player's move@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+					
+			
+			//Group 2@@@@@Receive the player's move@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 			try {
 				DataInputStream in = new DataInputStream(focusPlayer.getSock().getInputStream());
 				move = focusPlayer.getTeamName() + " played " + in.readUTF();
@@ -399,34 +399,35 @@ class ServerThread extends Thread{
 			catch (IOException e) {
 				move = focusPlayer.getTeamName() + " was skipped by server";
 			}
-			//???A good place to put model.Card game logic????
-			//CHECK MOVE
-			boolean legal = cardGame.isLegalMove(focusPlayer, move);
-			if(!legal) {
-				//TODO extend to deal with illegal moves
-			}
 			
-			//Group 4@@@@@Tells Everyone what move was made@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-			for(int i = 0; i < game.clientSocks.size(); i++) {
+			//Group 3@@@@@Game Logic@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+			boolean does = true;
+			while(does) {
 				try {
-					DataOutputStream out = new DataOutputStream(game.clientSocks.get(i).getOutputStream());
-					//Adding in an extra first group to notify what kind of message is sent
-					//Add word "turn" to denote we are updating labels about the move made/who goes next
-					out.writeUTF("turn;"+move);
+					DataInputStream in = new DataInputStream(focusPlayer.getSock().getInputStream());
+					move = focusPlayer.getTeamName() + " played " + in.readUTF();
 				}
-				catch (IOException e) {}
+				catch (IOException e) {
+					move = focusPlayer.getTeamName() + " was skipped by server";
+					does = doesGoAgain = false;
+				}
+			
+				//CHECK MOVE
+				boolean legal = cardGame.isLegalMove(focusPlayer, move);
+				if(legal) {
+					//LinkedList<Card> cards = focusPlayer.getActiveCards();
+					Card card = new Card("21", ""); //TODO search cards for request
+					Player source = focusPlayer; //TODO search playerList for requested
+					doesGoAgain = cardGame.queryPlayer(card, source, focusPlayer);
+					does = false;
+				}
 			}
 			
 			//CHECK FOR WIN CONDITION
-
-			boolean win = cardGame.checkWinCondition(focusPlayer, move);
-			if(win) {
-				//TODO extend to some final state where focusPlayer won
-				System.out.println("A winner is "+focusPlayer.getTeamName());
-			}
-			
+			win = (winner = cardGame.determineWinner(playerList)) != null;
 		}
 		
+		System.out.println("A winner is "+winner);
 		
 	}
 }//end ServerListener
