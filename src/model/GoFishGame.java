@@ -2,7 +2,9 @@ package model;
 
 import java.io.File;
 import java.net.Socket;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class GoFishGame extends CardGame
 {
@@ -51,10 +53,23 @@ public class GoFishGame extends CardGame
 		return "";
 	}
 	
-	public GoFishQueue sortPlayersInPlayOrder() {
-		GoFishQueue playerList = (GoFishQueue) super.sortPlayersInPlayOrder();
+	public GoFishQueue sortPlayersInPlayOrder()
+	{
+		//CLIENTSOCKS AND CLIENTLABELS are automatically sorted within the playerQueue as they are part of the model.Player object
 		
-		return playerList;
+		int dealerNum;	//Track the index of the dealer
+		 //Index through array until dealer is found, if not then stop at end of list
+		for(dealerNum = 0;dealerNum < players.length && !players[dealerNum].getRole().equals("Dealer"); dealerNum++);
+		
+		//Move number to next in list as dealer doesn't usually go first
+		dealerNum = (dealerNum)%players.length;
+		//Create the playerQueue
+		GoFishQueue playOrder = new GoFishQueue();
+		
+		for(int i = 0; i < players.length; i++)							//For each player
+			playOrder.enqueue(players[(dealerNum+i)%players.length]);	//Starting at the dealer, add them to the queue
+		
+		return playOrder;	//Return  the queue
 	}
 
 	public String getAmtCardsPerAHand() {
