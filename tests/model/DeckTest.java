@@ -126,7 +126,7 @@ public class DeckTest {
 	static void checkDeck(Deck d, int numCards) {
 		for(int i = 0; i < numCards; i ++)
 		{
-			d.getCardAt(i).printCard();
+			d.getCardAt(i).toString();
 		}
 	}
 	//Helper method to test the deck. Checks the cards, shuffles, checks again,

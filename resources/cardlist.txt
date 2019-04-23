@@ -1,32 +1,52 @@
-1 A
-2 A
-3 A
-4 A
-5 A
-6 A
-7 A
-8 A
-1 B
-2 B
-3 B
-4 B
-5 B
-6 B
-7 B
-8 B
-1 C
-2 C
-3 C
-4 C
-5 C
-6 C
-7 C
-8 C
-1 D
-2 D
-3 D
-4 D
-5 D
-6 D
-7 D
-8 D
+SA
+S2
+S3
+S4
+S5
+S6
+S7
+S8
+S9
+S1
+SJ
+SQ
+SK
+DA
+D2
+D3
+D4
+D5
+D6
+D7
+D8
+D9
+D1
+DJ
+DQ
+DK
+CA
+C2
+C3
+C4
+C5
+C6
+C7
+C8
+C9
+C1
+CJ
+CQ
+CK
+HA
+H2
+H3
+H4
+H5
+H6
+H7
+H8
+H9
+H1
+HJ
+HQ
+HK

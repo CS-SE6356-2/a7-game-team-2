@@ -2,7 +2,10 @@ package model;
 
 import java.io.File;
 import java.net.Socket;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 
 public class GoFishGame extends CardGame
 {

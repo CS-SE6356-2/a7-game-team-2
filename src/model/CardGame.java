@@ -3,7 +3,6 @@ package model;
 import java.io.File;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public class CardGame
