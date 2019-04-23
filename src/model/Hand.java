@@ -1,4 +1,5 @@
-package model;/* @author Jacob  */
+package model;
+/* @author Jacob  */
 
 import java.util.LinkedList;
 import java.util.List;
@@ -45,6 +46,10 @@ public class Hand
 		}
 		return matchingCards;
 	}
+
+	void addCard(Card card){
+	    activeCards.add(card);
+    }
 
 	/* Adds all the cards in the list to the active cards */
     void addCards(List<Card> cards)

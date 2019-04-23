@@ -1,12 +1,10 @@
 package model;
-/*
-	Programmer: Antonio Mendiola
-	Date: 4/22/2019
-	Description:
-	The model.Card class is meant only to hold the value and suit of a Card.
-	It contains that data, ways to access it, and a method to print its data
-*/
 
+/**
+ * @author Antonio Mendiola
+ * The model.Card class is meant only to hold the value and suit of a Card.
+ * It contains that data, ways to access it, and a method to print its data
+ */
 public class Card{
 	//DATA FIELDS
     private Suit suit;

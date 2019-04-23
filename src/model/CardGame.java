@@ -11,16 +11,23 @@ public class CardGame
 	////Member Variables////
 	Player[] players;			//Holds the data for each player
 	Deck cardDeck;				//Holds the information for each card
-	DrawPile pile;	
 	
 	////Constructor////
+	public CardGame(int numOfPlayers, List<String> playerNames, List<Socket> clientSocks)
+	{
+		players = new Player[numOfPlayers];		//Create a list of Players
+		cardDeck = new Deck();			//Create the deck of cards
+		
+		//Create Players
+		createPlayers(playerNames, clientSocks);
+	}
+
 	public CardGame(int numOfPlayers, ArrayList<String> playerNames, ArrayList<Socket> clientSocks,
-		File cardList)
+					File cardList)
 	{
 		players = new Player[numOfPlayers];		//Create a list of Players
 		cardDeck = new Deck(cardList);			//Create the deck of cards
-		pile = new DrawPile();					//Create the pile of cards to draw
-		
+
 		//Create Players
 		createPlayers(playerNames, clientSocks);
 	}
@@ -30,25 +37,21 @@ public class CardGame
 	 */
 	public void dealCards()
 	{
-		int currentCard = 0;
-		LinkedList<Card> temp = new LinkedList<Card>();
-		for(Player player: players)
-		{
-			for(;temp.size() < 7; currentCard++)			//Get a list of cards that will be of even size to a player. UNO starts off with players having 7 cards
-				temp.add(cardDeck.cards.get(currentCard));		//add card reference to list
-				//Give players their cards
-			player.addCards(temp);
-			temp.clear();									//Clear the list so we can give the next player their cards
+		for(int i = 0; i < getStartingHandSize(); i++){
+			for(int p = 0; p < players.length; p++){
+				players[p].addCard(cardDeck.takeCard());
+			}
 		}
-		
-		//Give rest of cards to draw pile
-		for(;currentCard < cardDeck.numOfCards; currentCard++)
-			temp.add(cardDeck.cards.get(currentCard));
-		pile.addCardsOnTop(temp);
-		temp.clear();
 	}
-	public void shuffleCards() {cardDeck.shuffle();}
-	private void createPlayers(ArrayList<String> playerNames, ArrayList<Socket> clientSocks)
+
+	private int getStartingHandSize() {
+		if(players.length < 4) return 7;
+		else return 5;
+	}
+	public void shuffleCards(){
+		cardDeck.shuffle();
+	}
+	private void createPlayers(List<String> playerNames, List<Socket> clientSocks)
 	{
 		for(int i = 0; i < players.length; i++)
 		{

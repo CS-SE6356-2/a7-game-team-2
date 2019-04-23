@@ -22,8 +22,7 @@ public class GoFishGameTest {
 		testGame.shuffleCards();
 		testGame.dealCards();
 		
-		System.out.println(testGame.cardDeck.numOfCards);
-		System.out.println(testGame.pile.numOfCards);
+		System.out.println(testGame.cardDeck.getNumOfCards());
 		System.out.println(testGame.players[0].getCardListForUTF());
 		System.out.println(testGame.players[1].getCardListForUTF());
 		
@@ -32,7 +31,7 @@ public class GoFishGameTest {
 		for(int i = 0; i < 20; i++) {
 			System.out.println("\n\nTurn " + i + ":");
 			int randomCard = new Random().nextInt(testGame.players[playerTurn].getNumOfCards());
-			String randomValue = testGame.players[playerTurn].getActiveCards().get(randomCard).getVal();
+			Card.Value randomValue = testGame.players[playerTurn].getActiveCards().get(randomCard).getVal();
 					
 			boolean contains = testGame.queryPlayer(randomValue, testGame.players[playerTurn], testGame.players[1 - playerTurn]);
 			System.out.println("player " + ((1 - playerTurn) + 1) + " contains " + randomValue + ": " + contains);
