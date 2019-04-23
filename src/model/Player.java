@@ -1,4 +1,4 @@
-/* @author Jacob */
+package model;/* @author Jacob */
 
 import java.util.LinkedList;
 import java.net.Socket;

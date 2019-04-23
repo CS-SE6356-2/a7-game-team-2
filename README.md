@@ -11,25 +11,25 @@ Enther this line in command line set path=%path%;C:\Program Files\Java\jdk-9.0.1
 Change Directory to the location of this project, into the src folder
 
 To compile and run the project: 
-javac ClientLauncher.java ClientController.java ClientGUI.java Card.java CardGame.java Cardpile.java Deck.java Hand.java Player.java PlayerQueue.java
-java ClientLauncher
+javac view.ClientLauncher.java view.ClientController.java view.ClientGUI.java model.Card.java model.CardGame.java model.Cardpile.java model.Deck.java model.Hand.java model.Player.java model.PlayerQueue.java
+java view.ClientLauncher
  
-To compile and run CardpileTest 
-javac CardpileTest.java Cardpile.java Card.java 
-java CardpileTest
+To compile and run model.CardpileTest
+javac model.CardpileTest.java model.Cardpile.java model.Card.java
+java model.CardpileTest
  
-To compile and run DeckTest 
-javac DeckTest.java Deck.java Card.java 
-java DeckTest
+To compile and run model.DeckTest
+javac model.DeckTest.java model.Deck.java model.Card.java
+java model.DeckTest
  
-To compile and run PlayerQueueTest
-Javac PlayerQueueTest.java Player.java Hand.java Card.java
-Java PlayerQueueTest
+To compile and run model.PlayerQueueTest
+Javac model.PlayerQueueTest.java model.Player.java model.Hand.java model.Card.java
+Java model.PlayerQueueTest
  
-To compile and run CardGameTest
-Javac CardGameTest.java CardGame.java Deck.java Cardpile.java PlayerQueue.java Player.java Hand.java Card.java
-Java CardGameTest
+To compile and run model.CardGameTest
+Javac model.CardGameTest.java model.CardGame.java model.Deck.java model.Cardpile.java model.PlayerQueue.java model.Player.java model.Hand.java model.Card.java
+Java model.CardGameTest
  
-To compile and run PlayerHandTest
-Javac PlayerHandTest.java Player.java Hand.java Card.java Deck.java
-Java PlayerQueueTest
+To compile and run model.PlayerHandTest
+Javac model.PlayerHandTest.java model.Player.java model.Hand.java model.Card.java model.Deck.java
+Java model.PlayerQueueTest

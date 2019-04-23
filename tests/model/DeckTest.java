@@ -1,24 +1,27 @@
+package model;
 /*
 	Programmer: Tyler Heald
 	Date: 3/31/2019
 	Description:
-	This is a test unit for the Deck class. It can use a prewritten cardList
+	This is a test unit for the model.Deck class. It can use a prewritten cardList
 	file, or it can generate one by reading in from System.in.
-	Once a cardList has been made, it creates a Deck object, and lists all the
-	cards in the Deck. It then shuffles the deck, checks the cards again, twice.
-	Also serves to test the Card class, as Deck is a composition of Cards, and this
-	utilizes methods from Card.
+	Once a cardList has been made, it creates a model.Deck object, and lists all the
+	cards in the model.Deck. It then shuffles the deck, checks the cards again, twice.
+	Also serves to test the model.Card class, as model.Deck is a composition of Cards, and this
+	utilizes methods from model.Card.
 	
 	METHODS:
-	testDeck(Deck d)
+	testDeck(model.Deck d)
 		Checks the cards in a deck, and then shuffles and checks the cards again
 		twice
-	checkDeck(Deck d, int size)
+	checkDeck(model.Deck d, int size)
 		Checks the cards in the deck
 		
 	TODO:
 		
 */
+
+import model.Deck;
 
 import java.util.*;
 import java.io.*;
@@ -32,7 +35,7 @@ public class DeckTest {
 		Menu:
 		while(true) {
 			//Printing a header and test options menu
-			System.out.println("Testing Deck class. Choose an option:\n" +
+			System.out.println("Testing model.Deck class. Choose an option:\n" +
 			"1. Premade cardList\n" +
 			"2. Make a cardList\n" +
 			"3. Quit");

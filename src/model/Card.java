@@ -1,8 +1,9 @@
+package model;
 /*
 	Programmer: Tyler Heald
 	Date: 3/30/2019
 	Description:
-	The Card class is meant only to hold the value and category of a Card(number and suite).
+	The model.Card class is meant only to hold the value and category of a model.Card(number and suite).
 	It contains that data, ways to access it, and a method to print its data
 	
 	METHODS:

@@ -1,10 +1,10 @@
-/* @author Jacob  */
+package model;/* @author Jacob  */
 
 import java.util.LinkedList;
 import java.util.List;
 
 
-/* Represents the cards in a specific Player's possession. */
+/* Represents the cards in a specific model.Player's possession. */
 public class Hand
 {
 /* Data */
@@ -136,7 +136,7 @@ public class Hand
 		return this.inactiveCards;
 	}
 	
-	//These both are used for the hand used in the ClientGUI
+	//These both are used for the hand used in the view.ClientGUI
 	//Both make shallow copies of the lists
 	public void setActiveCards(List<Card> activeCards)
 	{

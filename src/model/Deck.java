@@ -1,9 +1,9 @@
-/*
+package model;/*
 	Programmer: Tyler Heald
 	Date: 3/30/2019
 	Description:
-	The Deck class contains the cards needed for playing a game.
-	When the Deck object is initialized with certain parameters from an external
+	The model.Deck class contains the cards needed for playing a game.
+	When the model.Deck object is initialized with certain parameters from an external
 	file, it creates cards with the proper values. The only thing the deck can do
 	is return cards, remove cards, and shuffle itself.
 	
