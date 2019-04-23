@@ -37,8 +37,7 @@ public class GoFishGame extends CardGame
 	}
 	
 	/**
-	 *  precondition: source has cards
-	 *  Move all cards of type category from source to target
+	 *  Move all cards with value 'value' from source to target
 	 *  @param value - String with suit of card target is testing source with
 	 *  @param target - Player querying source
 	 *  @param source - Player being query'd by target

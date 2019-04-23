@@ -44,8 +44,10 @@ public class Player
 		return this.hand.removeCards(cards);
 	}
 	
-	/*
-	 * Check for all cards with the same category as 'card' and removes/returns all of them.
+	/**
+	 * Removes all cards with same value as 'value' and return a list with them
+	 * @param value - value of card to shed
+	 * @return list of cards with same value from hand
 	 */
 	public List<Card> shedCards(String value) {
 		
