@@ -27,7 +27,7 @@ public class Card{
 	{
 		int delimiter = card.indexOf(" ");
 		value = card.substring(0, delimiter);
-		category = card.substring(delimiter, card.length());
+		category = card.substring(delimiter+1, card.length());
 	}
 
 	/****	FUNCTIONS	****/
