@@ -61,7 +61,13 @@ public class Card{
 		
 		if(card.getClass() != Card.class) return false;
 		
-		return ((Card) card).getVal() == this.getVal()
-				&& ((Card) card).getCategory() == this.getCategory();
+		return ((Card) card).getVal().equals(value)
+				&& ((Card) card).getCategory().equals(category);
+	}
+	
+	// Override .toString for easier printing
+	@Override
+	public String toString() {
+		return value + " " + category;
 	}
 }
