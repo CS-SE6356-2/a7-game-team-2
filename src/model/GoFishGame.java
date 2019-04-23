@@ -66,6 +66,7 @@ public class GoFishGame extends CardGame
 		//Create the playerQueue
 		GoFishQueue playOrder = new GoFishQueue();
 		
+		
 		for(int i = 0; i < players.length; i++)							//For each player
 			playOrder.enqueue(players[(dealerNum+i)%players.length]);	//Starting at the dealer, add them to the queue
 		
@@ -85,5 +86,9 @@ public class GoFishGame extends CardGame
 	public int getAmtCardInDrawPile() {
 		// TODO Auto-generated method stub
 		return 52;
+	}
+	
+	public Player[] getPlayers() {
+		return players;
 	}
 }
