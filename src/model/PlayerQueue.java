@@ -132,7 +132,7 @@ public class PlayerQueue implements Iterable<Player>
 	 * A node to hold a model.Player and is able to look backwards and forwards
 	 * @author Chris
 	 */
-	private class Node
+	class Node
 	{
 		Player data;
 		Node next;
