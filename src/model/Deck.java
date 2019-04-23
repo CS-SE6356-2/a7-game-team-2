@@ -28,7 +28,10 @@ package model;/*
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Scanner;
 
 public class Deck {
 	//DATA FIELDS
@@ -59,7 +62,7 @@ public class Deck {
 		//Read in all the cards for deckSize
 		while(input.hasNextLine())
 		{
-			String card = input.next();
+			String card = input.nextLine();
 			cards.add(new Card(card));
 		}
 	}

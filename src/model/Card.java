@@ -45,7 +45,7 @@ public class Card{
 	}
 	
 	public Card(String card) throws IllegalArgumentException {
-	    char s = card.charAt(0);
+	    char s = card.charAt(1);
 	    switch (s){
             case 'S':
                 suit = Suit.SPADES;
@@ -60,9 +60,10 @@ public class Card{
                 suit = Suit.DIAMONDS;
                 break;
             default:
+            	System.out.println(s + " is not valid!");
                 throw new IllegalArgumentException();
         }
-		char val = card.charAt(1);
+		char val = card.charAt(0);
 		switch(val){
             case 'A':
                 value = Value.ACE;

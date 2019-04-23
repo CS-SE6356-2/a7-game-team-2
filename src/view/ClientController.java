@@ -20,8 +20,8 @@ import java.util.LinkedList;
 import javafx.application.Platform;
 import model.Card;
 import model.GoFishGame;
-import model.Player;
 import model.GoFishQueue;
+import model.Player;
 
 public class ClientController {
 	
@@ -347,7 +347,7 @@ class ServerThread extends Thread{
 		String move = "Game started!";
 		
 		//CREATE CARD GAME OBJECT
-		GoFishGame cardGame = new GoFishGame(game.clientLabels.size(), game.clientLabels, game.clientSocks, new File("cardlist.txt"));
+		GoFishGame cardGame = new GoFishGame(game.clientLabels.size(), game.clientLabels, game.clientSocks, new File("resources\\cardlist.txt"));
 		cardGame.assignDealear(game.clientLabels.get(0));
 		GoFishQueue playerList = (GoFishQueue)cardGame.sortPlayersInPlayOrder();
 		Player focusPlayer;
