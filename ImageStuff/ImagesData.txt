@@ -1,4 +1,0 @@
-Blue Blue.png
-Green Green.png
-Red Red.png
-Yellow Yellow.png
