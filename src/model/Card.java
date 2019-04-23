@@ -53,4 +53,15 @@ public class Card{
 	{
 		return category;
 	}
+	
+	// Override .equals for easier comparison
+	@Override
+	public boolean equals(Object card) {
+		if(card == this) return true;
+		
+		if(card.getClass() != Card.class) return false;
+		
+		return ((Card) card).getVal() == this.getVal()
+				&& ((Card) card).getCategory() == this.getCategory();
+	}
 }

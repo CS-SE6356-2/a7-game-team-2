@@ -1,7 +1,7 @@
 package model;/* @author Jacob */
 
-import java.util.LinkedList;
 import java.net.Socket;
+import java.util.LinkedList;
 
 /* Represents one of the people playing the game */
 public class Player
@@ -60,6 +60,18 @@ public class Player
 	public String getRole() {return role;}
 	public String getTeamName() {return teamName;}
 	public Socket getSock() {return playerSock;}
+	
+	/**
+	 * @author Matthew
+	 * @param Card - card to check for
+	 * @return Boolean - true if player hand contains card, false if not
+	 */
+	public boolean hasCard(Card card) {
+		if(hand.getActiveCards().contains(card))
+			return true;
+		else
+			return false;
+	}
 
 	/* Transfers all the cards in the list from the player's active cards
 	 * to their inactive cards and returns a list of all cards successfully

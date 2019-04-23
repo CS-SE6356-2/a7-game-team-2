@@ -1,10 +1,10 @@
 package model;
 
 import java.io.File;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.net.Socket;
 
 public class CardGame
 {
@@ -130,6 +130,15 @@ public class CardGame
 		//TODO extend into a specific game type (set of rules)
 		if(focusPlayer.getNumOfCards() == 0)
 			return true;
+		return false;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean queryPlayer(String sourceName, String cardValue, String targetName) {
+		
+		
 		return false;
 	}
 
