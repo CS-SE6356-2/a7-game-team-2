@@ -418,7 +418,7 @@ class ServerThread extends Thread{
 					//LinkedList<Card> cards = focusPlayer.getActiveCards();
 					Card card = new Card("21", ""); //TODO search cards for request
 					Player source = focusPlayer; //TODO search playerList for requested
-					doesGoAgain = cardGame.queryPlayer(card, source, focusPlayer);
+					doesGoAgain = cardGame.queryPlayer(card.getVal(), focusPlayer, source);
 					does = false;
 				}
 			}

@@ -2,6 +2,7 @@ package model;/* @author Jacob */
 
 import java.net.Socket;
 import java.util.LinkedList;
+import java.util.List;
 
 /* Represents one of the people playing the game */
 public class Player
@@ -43,6 +44,21 @@ public class Player
 		return this.hand.removeCards(cards);
 	}
 	
+	/*
+	 * Check for all cards with the same category as 'card' and removes/returns all of them.
+	 */
+	public List<Card> shedCards(String value) {
+		
+		LinkedList<Card> matches = new LinkedList<>();
+		
+		for(int i = 0; i < this.hand.getActiveCards().size(); i++) {
+			if(this.hand.getActiveCards().get(i).getVal().equals(value))
+				matches.add(this.hand.getActiveCards().get(i));
+		}
+		
+		return this.hand.removeCards(matches);
+	}
+	
 	/**
 	 * Returns the number of cards this player has
 	 * @author Chris
@@ -62,15 +78,18 @@ public class Player
 	public Socket getSock() {return playerSock;}
 	
 	/**
-	 * @author Matthew
-	 * @param Card - card to check for
-	 * @return Boolean - true if player hand contains card, false if not
+	 * Checks to see if player has any cards of type category
+	 * @param category - suit of card to check for
+	 * @return true if player hand contains card with same category, false if not
 	 */
-	public boolean hasCard(Card card) {
-		if(hand.getActiveCards().contains(card))
-			return true;
-		else
-			return false;
+	public boolean hasCardType(String value) {
+		LinkedList<Card> cards = hand.getActiveCards();
+		for(Card c : cards) {
+			if(c.getVal().equals(value))
+				return true;
+		}
+		
+		return false;
 	}
 
 	/* Transfers all the cards in the list from the player's active cards

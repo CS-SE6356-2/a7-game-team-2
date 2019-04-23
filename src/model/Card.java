@@ -41,15 +41,18 @@ public class Card{
 	{
 		value = v;
 	}
-	String getVal()
+	
+	public String getVal()
 	{
 		return value;
 	}
+	
 	void setCategory(String c)
 	{
 		category = c;
 	}
-	String getCategory()
+	
+	public String getCategory()
 	{
 		return category;
 	}

@@ -1,9 +1,5 @@
 package model;
 
-import model.Card;
-import model.Deck;
-import model.Player;
-
 import java.io.File;
 import java.util.LinkedList;
 
@@ -18,7 +14,7 @@ public class PlayerHandTest {
 			System.out.println("Added "+players[i].getTeamName());
 		}
 		
-		Deck deck = new Deck(new File("cardlist.txt"));
+		Deck deck = new Deck(new File("res\\cardlist.txt"));
 		
 		LinkedList<Card> temp = new LinkedList<Card>();
 		
@@ -40,7 +36,6 @@ public class PlayerHandTest {
 			
 			System.out.println(players[i].getTeamName()+"'s cards are: "+players[i].getCardListForUTF());
 		}
-		
 	}
 
 }
