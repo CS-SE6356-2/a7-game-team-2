@@ -352,6 +352,10 @@ class ServerThread extends Thread{
 		cardGame.assignDealear(game.clientLabels.get(0));
 		PlayerQueue playerList = cardGame.sortPlayersInPlayOrder();
 		Player focusPlayer;
+		boolean win = false;
+		boolean doesGoAgain = false;
+		String winner = "";
+		
 		//4th Stage@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 		
 		//Shuffle Cards
@@ -362,7 +366,7 @@ class ServerThread extends Thread{
 		//TENTATIVELY
 		//HAVE THE SERVER SEND LIST OF STRINGS TO PLAYERS FOR THEIR HAND OF CARDS
 		
-		while(game.gui.state.equals("game")) {
+		while(game.gui.state.equals("game") && !win) {
 			//Get the player that goes next
 			focusPlayer = playerList.nextPlayer();
 			
@@ -389,24 +393,33 @@ class ServerThread extends Thread{
 			}
 			
 			//Group 3@@@@@Game Logic@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+			boolean does = true;
+			while(does) {
+				try {
+					DataInputStream in = new DataInputStream(focusPlayer.getSock().getInputStream());
+					move = focusPlayer.getTeamName() + " played " + in.readUTF();
+				}
+				catch (IOException e) {
+					move = focusPlayer.getTeamName() + " was skipped by server";
+					does = doesGoAgain = false;
+				}
 			
-			//???A good place to put model.Card game logic????
-			//CHECK MOVE
-			boolean legal = cardGame.isLegalMove(focusPlayer, move);
-			if(!legal) {
-				//TODO extend to deal with illegal moves
+				//CHECK MOVE
+				boolean legal = cardGame.isLegalMove(focusPlayer, move);
+				if(legal) {
+					//LinkedList<Card> cards = focusPlayer.getActiveCards();
+					Card card = new Card(21, ""); //TODO search cards for request
+					Player source = focusPlayer; //TODO search playerList for requested
+					doesGoAgain = cardGame.queryPlayer(card, source, focusPlayer);
+					does = false;
+				}
 			}
 			
 			//CHECK FOR WIN CONDITION
-
-			boolean win = cardGame.checkWinCondition(focusPlayer, move);
-			if(win) {
-				//TODO extend to some final state where focusPlayer won
-				System.out.println("A winner is "+focusPlayer.getTeamName());
-			}
-			
+			win = (winner = cardGame.determineWinner(playerList)) != null;
 		}
 		
+		System.out.println("A winner is "+winner);
 		
 	}
 }//end ServerListener

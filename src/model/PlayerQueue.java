@@ -73,6 +73,14 @@ public class PlayerQueue implements Iterable<Player>
 		}
 	}
 	
+	public Player dequeue(Player person) {
+		
+	}
+	
+	private void dequeue(Node n) {
+		
+	}
+	
 	/**
 	 * Returns the model.Player at the head of the queue
 	 * @author Chris
