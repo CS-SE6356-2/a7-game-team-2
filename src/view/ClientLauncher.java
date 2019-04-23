@@ -1,6 +1,6 @@
 package view;
 
-public class ClientLauncher {
+public class ClientLauncher {	
 
 	static ClientController game;
 	static ClientGUI gui;

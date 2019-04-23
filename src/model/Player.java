@@ -53,7 +53,8 @@ public class Player
 	
 	/**
 	 * Removes all cards with same value as 'value' and return a list with them
-	 * @return list of pairs from hand
+	 * @param value - value of card to shed
+	 * @return List<Card> - list of cards with same value from hand
 	 */
 	public List<Card> shedPairs() {
 		List<Card> ret = hand.checkMatches();
