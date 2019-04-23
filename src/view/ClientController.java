@@ -19,13 +19,8 @@ import java.util.LinkedList;
 
 import javafx.application.Platform;
 import model.Card;
-<<<<<<< HEAD
-=======
-import model.CardGame;
 import model.GoFishGame;
->>>>>>> b338316e051308a1f5449cabd644a139b7e5f390
 import model.Player;
-import model.GoFishGame;
 import model.GoFishQueue;
 
 public class ClientController {
@@ -242,7 +237,7 @@ class ClientThread extends Thread{
 							   {
 								   for(String card: mess[4].split(","))
 								   		tempList.add(new Card(card));
-								   game.gui.yourCards.setInactiveCards(tempList);
+								   //game.gui.yourCards.setInactiveCards(tempList);
 								   tempList.clear();
 							   }
 							   
@@ -352,11 +347,7 @@ class ServerThread extends Thread{
 		String move = "Game started!";
 		
 		//CREATE CARD GAME OBJECT
-<<<<<<< HEAD
-		GoFishGame cardGame = new GoFishGame(game.clientLabels.size(), game.clientLabels, game.clientSocks, new File("../res/cardlist.txt"));
-=======
 		GoFishGame cardGame = new GoFishGame(game.clientLabels.size(), game.clientLabels, game.clientSocks, new File("cardlist.txt"));
->>>>>>> b338316e051308a1f5449cabd644a139b7e5f390
 		cardGame.assignDealear(game.clientLabels.get(0));
 		GoFishQueue playerList = (GoFishQueue)cardGame.sortPlayersInPlayOrder();
 		Player focusPlayer;
@@ -416,10 +407,10 @@ class ServerThread extends Thread{
 				boolean legal = cardGame.isLegalMove(focusPlayer, move);
 				if(legal) {
 					//LinkedList<Card> cards = focusPlayer.getActiveCards();
-					Card card = new Card("21", ""); //TODO search cards for request
-					Player source = focusPlayer; //TODO search playerList for requested
-					doesGoAgain = cardGame.queryPlayer(card.getVal(), focusPlayer, source);
-					does = false;
+					//Card card = new Card("21", ""); //TODO search cards for request
+					//Player source = focusPlayer; //TODO search playerList for requested
+					//doesGoAgain = cardGame.queryPlayer(card.getVal(), focusPlayer, source);
+					//does = false;
 				}
 			}
 			

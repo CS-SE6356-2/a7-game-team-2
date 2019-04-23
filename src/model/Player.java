@@ -1,8 +1,11 @@
-package model;/* @author Jacob */
+package model;
+/* @author Jacob */
 
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /* Represents one of the people playing the game */
 public class Player
@@ -25,23 +28,27 @@ public class Player
 	/* Constructor */
 	public Player(String cTeamName, String cRole, Socket cSock)
 	{
-		this.teamName = cTeamName;
-		this.role = cRole;
-		this.hand = new Hand();
-		this.playerSock = cSock;
+		teamName = cTeamName;
+		role = cRole;
+		hand = new Hand();
+		playerSock = cSock;
 	}
 
+	public void addCard(Card card){
+	    hand.addCard(card);
+    }
+
 	/* Adds all the cards in the list to the player's active cards */
-	public void addCards(LinkedList<Card> cards)
+	public void addCards(List<Card> cards)
 	{
-		this.hand.addCards(cards);
+		hand.addCards(cards);
 	}
 
 	/* Removes all the cards in the list from the player's active cards
 	 * and returns a list of all cards successfully removed */
-	public LinkedList<Card> removeCards(LinkedList<Card> cards)
+	public List<Card> removeCards(List<Card> cards)
 	{
-		return this.hand.removeCards(cards);
+		return hand.removeCards(cards);
 	}
 	
 	/**
@@ -49,16 +56,10 @@ public class Player
 	 * @param value - value of card to shed
 	 * @return List<Card> - list of cards with same value from hand
 	 */
-	public List<Card> shedCards(String value) {
-		
-		LinkedList<Card> matches = new LinkedList<>();
-		
-		for(int i = 0; i < this.hand.getActiveCards().size(); i++) {
-			if(this.hand.getActiveCards().get(i).getVal().equals(value))
-				matches.add(this.hand.getActiveCards().get(i));
-		}
-		
-		return this.hand.removeCards(matches);
+	public List<Card> shedPairs() {
+		List<Card> ret = hand.checkMatches();
+		hand.transferActiveToInactive(ret);
+		return ret;
 	}
 	
 	/**
@@ -66,48 +67,59 @@ public class Player
 	 * @author Chris
 	 * @return
 	 */
-	public int getNumOfCards() {return hand.getNumOfCards();}
+	public int getNumOfCards(){
+		return hand.getNumCards();
+	}
 	/**
 	 * Returns this player's role
 	 * @author Chris
 	 * @return
 	 */
-	public void assignRole(String newRole) {
-		this.role = newRole;
+	public void assignRole(String newRole){
+		role = newRole;
 	}
-	public String getRole() {return role;}
-	public String getTeamName() {return teamName;}
-	public Socket getSock() {return playerSock;}
+	public String getRole(){
+		return role;
+	}
+	public String getTeamName(){
+		return teamName;
+	}
+	public Socket getSock(){
+		return playerSock;
+	}
 	
 	/**
 	 * Checks to see if player has any cards of type category
-	 * @param category - suit of card to check for
-	 * @return true if player hand contains card with same category, false if not
+	 * @param suit - suit of card to check for
+	 * @return List<Card> which is not empty if a card of the same suit has been found, and empty if no card was found
 	 */
-	public boolean hasCardType(String value) {
-		LinkedList<Card> cards = hand.getActiveCards();
-		for(Card c : cards) {
-			if(c.getVal().equals(value))
-				return true;
-		}
-		
-		return false;
+	public List<Card> getCardsOfSuit(Card.Suit suit) {
+		return hand.getActiveCards().stream().filter(card -> card.getSuit().equals(suit)).collect(Collectors.toList());
+	}
+
+	/**
+	 * Checks to see if player has any cards of type category
+	 * @param value - suit of card to check for
+	 * @return Optional<Card> which is non-null if a card of the same suit has been found, and null if no card was found
+	 */
+	public List<Card> getCardsOfValue(Card.Value value) {
+		return hand.getActiveCards().stream().filter(card -> card.getVal().equals(value)).collect(Collectors.toList());
 	}
 
 	/* Transfers all the cards in the list from the player's active cards
 	 * to their inactive cards and returns a list of all cards successfully
 	 * transferred */
-	public LinkedList<Card> transferActiveToInactive(LinkedList<Card> cards)
+	public List<Card> transferActiveToInactive(List<Card> cards)
 	{
-		return this.hand.transferActiveToInactive(cards);
+		return hand.transferActiveToInactive(cards);
 	}
 
 	/* Transfers all the cards in the list from the player's inactive cards
 	 * to their active cards and returns a list of all cards successfully
 	 * transferred */
-	public LinkedList<Card> transferInactiveToActive(LinkedList<Card> cards)
+	public List<Card> transferInactiveToActive(List<Card> cards)
 	{
-		return this.hand.transferInactiveToActive(cards);
+		return hand.transferInactiveToActive(cards);
 	}
 
 	/* Used to perform game-specific actions that go beyond
@@ -120,20 +132,17 @@ public class Player
 	}
 
 /* Getters */
-	public LinkedList<Card> getActiveCards()
-	{
-		return this.hand.getActiveCards();
+	public List<Card> getActiveCards(){
+		return hand.getActiveCards();
 	}
 
-	public LinkedList<Card> getInactiveCards()
-	{
-		return this.hand.getInactiveCards();
+	public List<Card> getInactiveCards(){
+		return hand.getInactiveCards();
 	}
 	/**
 	 * The players card list uses 3 delimiters
-	 *	The ';' delimits the active list form the inactive list. ActiveCards|InactiveCards
-	 *	The ',' delimits the cards in a list from each other. Card1;Card2;Card3
-	 *	The ' ' delimits the specifics of a card. CardValue CardCategory
+	 *	The ';' delimits the active list form the inactive list. ActiveCards;InactiveCards
+	 *	The ',' delimits the cards in a list from each other. Card1,Card2,Card3
 	 * @author Chris
 	 * @return
 	 */
@@ -144,7 +153,7 @@ public class Player
 		if(getActiveCards().size()>0)
 		{
 			for(Card card: getActiveCards())
-				cardList.append(card.getVal()+""+card.getCategory()+",");
+				cardList.append(card.toString()).append(",");
 			cardList.setCharAt(cardList.lastIndexOf(","), ';');
 		}
 		else
@@ -153,7 +162,7 @@ public class Player
 		if(getInactiveCards().size()>0)
 		{
 			for(Card card: getInactiveCards())
-				cardList.append(card.getVal()+" "+card.getCategory()+",");
+				cardList.append(card.toString()).append(",");
 			cardList.deleteCharAt(cardList.lastIndexOf(","));
 		}
 		else

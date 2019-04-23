@@ -2,9 +2,7 @@ package model;
 
 import java.io.File;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
 
 public class GoFishGame extends CardGame
 {
@@ -20,18 +18,19 @@ public class GoFishGame extends CardGame
 	}
 	
 	/**
-	 *  Checks if source has card; if true, transfer all of that type of card from source to target, otherwise target draws one card
-	 *  @param value - String with suit of card target is testing source with
-	 *  @param target - Player querying source
-	 *  @param source - Player being query'd by target
-	 *  @return true if source has card type, false if not
+	 *  Checks if target has card; if true, transfer all of that type of card from target to source, otherwise source draws one card
+	 *  @param value - Value of card source is testing target with
+	 *  @param target - Player asking for cards
+   *  @param source - Player being asked
+	 *  @return true if target has card type, false if not
 	 */
-	public boolean queryPlayer(String value, Player target, Player source) {
-		if(source.hasCardType(value)) {
-			transferCardsFromOther(value, target, source);
+	public boolean queryPlayer(Card.Value value, Player target, Player source) {
+		List<Card> query = source.getCardsOfValue(value);
+		if(!query.isEmpty()) {
+			transferCardsFromOther(query, target, source);
 			return true;
 		}else {
-			target.addCards((LinkedList<Card>) pile.takeCards(1)); // target draws one card if source does not contain any cards of category type
+			target.addCard(cardDeck.takeCard()); // taarget draws one card if source does not contain any cards of category type
 			return false;
 		}
 	}
@@ -39,11 +38,11 @@ public class GoFishGame extends CardGame
 	/**
 	 *  Move all cards with value [value] from source to target
 	 *  @param value - String with suit of card target is testing source with
-	 *  @param target - Player querying source
-	 *  @param source - Player being query'd by target
+	 *  @param target - Player asking for cards
+   *  @param source - Player being asked
 	 */
-	public void transferCardsFromOther(String value, Player target, Player source) {
-		target.addCards((LinkedList<Card>) source.shedCards(value));
+	public void transferCardsFromOther(List<Card> cards, Player target, Player source) {
+		target.addCards(source.removeCards(cards));
 	}
 	
 	public String determineWinner(PlayerQueue playerList) {
