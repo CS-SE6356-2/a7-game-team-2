@@ -29,15 +29,15 @@ public class Hand
 		List<Card> matchingCards = new LinkedList<>();
 
 		for (int card1Index = 0;
-		     card1Index < this.activeCards.size(); 
+		     card1Index < activeCards.size(); 
 		     ++card1Index)
 		{
 			for (int card2Index = card1Index + 1;
-			     card2Index < this.activeCards.size();
+			     card2Index < activeCards.size();
 			     ++card2Index)
 			{
-				Card card1 = this.activeCards.get(card1Index);
-				Card card2 = this.activeCards.get(card2Index);
+				Card card1 = activeCards.get(card1Index);
+				Card card2 = activeCards.get(card2Index);
 
 				if (false /*TODO card1.matches(card2)*/)
 				{
@@ -65,7 +65,7 @@ public class Hand
 		     ++index)
 		{
 			Card cardToRemove = cards.get(index);
-			if (this.activeCards.remove(cardToRemove))
+			if (activeCards.remove(cardToRemove))
 			{
 				removedCards.add(cardToRemove);
 			}
@@ -83,9 +83,9 @@ public class Hand
 		     ++index)
 		{
 			Card cardToTransfer = cards.get(index);
-			if (this.activeCards.remove(cardToTransfer))
+			if (activeCards.remove(cardToTransfer))
 			{
-				this.inactiveCards.add(cardToTransfer);
+				inactiveCards.add(cardToTransfer);
 				transferredCards.add(cardToTransfer);
 			}
 		}
@@ -102,9 +102,9 @@ public class Hand
 		     ++index)
 		{
 			Card cardToTransfer = cards.get(index);
-			if (this.inactiveCards.remove(cardToTransfer))
+			if (inactiveCards.remove(cardToTransfer))
 			{
-				this.activeCards.add(cardToTransfer);
+				activeCards.add(cardToTransfer);
 				transferredCards.add(cardToTransfer);
 			}
 		}
@@ -126,11 +126,11 @@ public class Hand
 	//Both make shallow copies of the lists
 	public void setActiveCards(List<Card> activeCards)
 	{
-		this.activeCards = new LinkedList<>(activeCards);
+		activeCards = new LinkedList<>(activeCards);
 	}
 	public void setInactiveCards(List<Card> inactiveCards)
 	{
-		this.inactiveCards = new LinkedList<>(inactiveCards);
+		inactiveCards = new LinkedList<>(inactiveCards);
 	}
 
 	public int getNumOfCards() {

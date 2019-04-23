@@ -25,23 +25,23 @@ public class Player
 	/* Constructor */
 	public Player(String cTeamName, String cRole, Socket cSock)
 	{
-		this.teamName = cTeamName;
-		this.role = cRole;
-		this.hand = new Hand();
-		this.playerSock = cSock;
+		teamName = cTeamName;
+		role = cRole;
+		hand = new Hand();
+		playerSock = cSock;
 	}
 
 	/* Adds all the cards in the list to the player's active cards */
 	public void addCards(LinkedList<Card> cards)
 	{
-		this.hand.addCards(cards);
+		hand.addCards(cards);
 	}
 
 	/* Removes all the cards in the list from the player's active cards
 	 * and returns a list of all cards successfully removed */
 	public LinkedList<Card> removeCards(LinkedList<Card> cards)
 	{
-		return this.hand.removeCards(cards);
+		return hand.removeCards(cards);
 	}
 	
 	/**
@@ -53,12 +53,12 @@ public class Player
 		
 		LinkedList<Card> matches = new LinkedList<>();
 		
-		for(int i = 0; i < this.hand.getActiveCards().size(); i++) {
-			if(this.hand.getActiveCards().get(i).getVal().equals(value))
-				matches.add(this.hand.getActiveCards().get(i));
+		for(int i = 0; i < hand.getActiveCards().size(); i++) {
+			if(hand.getActiveCards().get(i).getVal().equals(value))
+				matches.add(hand.getActiveCards().get(i));
 		}
 		
-		return this.hand.removeCards(matches);
+		return hand.removeCards(matches);
 	}
 	
 	/**
@@ -73,7 +73,7 @@ public class Player
 	 * @return
 	 */
 	public void assignRole(String newRole) {
-		this.role = newRole;
+		role = newRole;
 	}
 	public String getRole() {return role;}
 	public String getTeamName() {return teamName;}
@@ -99,7 +99,7 @@ public class Player
 	 * transferred */
 	public LinkedList<Card> transferActiveToInactive(LinkedList<Card> cards)
 	{
-		return this.hand.transferActiveToInactive(cards);
+		return hand.transferActiveToInactive(cards);
 	}
 
 	/* Transfers all the cards in the list from the player's inactive cards
@@ -107,7 +107,7 @@ public class Player
 	 * transferred */
 	public LinkedList<Card> transferInactiveToActive(LinkedList<Card> cards)
 	{
-		return this.hand.transferInactiveToActive(cards);
+		return hand.transferInactiveToActive(cards);
 	}
 
 	/* Used to perform game-specific actions that go beyond
@@ -122,12 +122,12 @@ public class Player
 /* Getters */
 	public List<Card> getActiveCards()
 	{
-		return this.hand.getActiveCards();
+		return hand.getActiveCards();
 	}
 
 	public List<Card> getInactiveCards()
 	{
-		return this.hand.getInactiveCards();
+		return hand.getInactiveCards();
 	}
 	/**
 	 * The players card list uses 3 delimiters

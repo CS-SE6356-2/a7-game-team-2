@@ -89,15 +89,16 @@ public class Deck {
 	}
 
 	/****	GETTERS/SETTERS	****/
-	public Card getTopCard(){
+	public Card takeTopCard(){
 		return cards.remove(0);
 	}
+
 	//getCardAt returns the ith card, starting from 0
-	Card getCardAt(int i) {
+	Card getCardAt(int i){
 		return cards.get(i);
 	}
 
-	public int getNumOfCards() {
+	public int getNumOfCards(){
 		return cards.size();
 	}
 
