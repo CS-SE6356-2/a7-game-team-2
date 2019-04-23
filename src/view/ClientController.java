@@ -222,28 +222,32 @@ class ClientThread extends Thread{
 							   else {
 								   game.gui.turnLabel.setText("It's " + mess[2] + "'s turn");
 							   }
-						   }
-						   //Update each Client GUI's list of cards
-						   else if(mess[0].equals("cards"))
-						   {
-							   if(!mess[1].equals(" "))
+							   
+							   
+							   //Giving players their cards
+							   if(!mess[3].equals(" "))
 							   {
-								   for(String card: mess[1].split(","))
+								   for(String card: mess[3].split(","))
 									   tempList.add(new Card(card));
 								   game.gui.yourCards.setActiveCards(tempList);
 								   tempList.clear();
 							   }
-							   
-							   if(!mess[2].equals(" "))
+							   //inactive cards
+							   else if(!mess[4].equals(" "))
 							   {
-								   for(String card: mess[2].split(","))
-									   tempList.add(new Card(card));
+								   for(String card: mess[4].split(","))
+								   		tempList.add(new Card(card));
 								   game.gui.yourCards.setInactiveCards(tempList);
 								   tempList.clear();
 							   }
 							   
 							   //Test if client got the message
 							   game.gui.testLabel.setText(mes);
+						   }
+						   //Update each Client GUI's list of cards
+						   if(mess[0].equals("cards"))
+						   {
+							   
 						   }
 					   }
 					});
@@ -365,33 +369,20 @@ class ServerThread extends Thread{
 			//Get the player that goes next
 			focusPlayer = playerList.nextPlayer();
 			
-			//Group 1@@@@@Send model.Card information to each player what cards they currently have@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+			
+			//Group 1@@@@@Message of what was the last move made and who goes next@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 			for(Player p: playerList) {
 				try {
 					DataOutputStream out = new DataOutputStream(p.getSock().getOutputStream());
-					//The players card list uses 3 delimiters
-					//The ';' delimits the active list form the inactive list. ActiveCards|InactiveCards
-					//The ',' delimits the cards in a list from each other. Card1;Card2;Card3
-					//The ' ' delimits the specifics of a card. CardValue CardCategory
-					
-					//Adding in an extra first group to notify what kind of message is sent
-					//Add word "cards" to denote we are updating cards
-					out.writeUTF("cards;"+p.getCardListForUTF());
-				}
-				catch (IOException e) {}
-			}
-			
-			//Group 2@@@@@Message of what was the last move made and who goes next@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-			for(int i = 0; i < game.clientSocks.size(); i++) {
-				try {
-					DataOutputStream out = new DataOutputStream(game.clientSocks.get(i).getOutputStream());
 					//Adding in an extra first group to notify what kind of message is sent
 					//Add word "turn" to denote we are updating labels about the move made/who goes next
-					out.writeUTF("turn;"+move+";"+focusPlayer.getTeamName());
+					out.writeUTF("turn;"+move+";"+focusPlayer.getTeamName()+";"+p.getCardListForUTF());
 				}
 				catch (IOException e) {}
 			}
-			//Group 3@@@@@Receive the player's move@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+					
+			
+			//Group 2@@@@@Receive the player's move@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 			try {
 				DataInputStream in = new DataInputStream(focusPlayer.getSock().getInputStream());
 				move = focusPlayer.getTeamName() + " played " + in.readUTF();
@@ -399,22 +390,14 @@ class ServerThread extends Thread{
 			catch (IOException e) {
 				move = focusPlayer.getTeamName() + " was skipped by server";
 			}
+			
+			//Group 3@@@@@Game Logic@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+			
 			//???A good place to put model.Card game logic????
 			//CHECK MOVE
 			boolean legal = cardGame.isLegalMove(focusPlayer, move);
 			if(!legal) {
 				//TODO extend to deal with illegal moves
-			}
-			
-			//Group 4@@@@@Tells Everyone what move was made@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-			for(int i = 0; i < game.clientSocks.size(); i++) {
-				try {
-					DataOutputStream out = new DataOutputStream(game.clientSocks.get(i).getOutputStream());
-					//Adding in an extra first group to notify what kind of message is sent
-					//Add word "turn" to denote we are updating labels about the move made/who goes next
-					out.writeUTF("turn;"+move);
-				}
-				catch (IOException e) {}
 			}
 			
 			//CHECK FOR WIN CONDITION

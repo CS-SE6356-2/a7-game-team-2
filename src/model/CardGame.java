@@ -70,7 +70,7 @@ public class CardGame
 		for(dealerNum = 0;dealerNum < players.length && !players[dealerNum].getRole().equals("Dealer"); dealerNum++);
 		
 		//Move number to next in list as dealer doesn't usually go first
-		dealerNum = (dealerNum+1)%players.length;
+		dealerNum = (dealerNum)%players.length;
 		//Create the playerQueue
 		PlayerQueue playOrder = new PlayerQueue();
 		
