@@ -19,6 +19,11 @@ import java.util.LinkedList;
 
 import javafx.application.Platform;
 import model.Card;
+<<<<<<< HEAD
+=======
+import model.CardGame;
+import model.GoFishGame;
+>>>>>>> b338316e051308a1f5449cabd644a139b7e5f390
 import model.Player;
 import model.GoFishGame;
 import model.GoFishQueue;
@@ -245,10 +250,6 @@ class ClientThread extends Thread{
 							   game.gui.testLabel.setText(mes);
 						   }
 						   //Update each Client GUI's list of cards
-						   if(mess[0].equals("cards"))
-						   {
-							   
-						   }
 					   }
 					});
 				}
@@ -351,7 +352,11 @@ class ServerThread extends Thread{
 		String move = "Game started!";
 		
 		//CREATE CARD GAME OBJECT
+<<<<<<< HEAD
 		GoFishGame cardGame = new GoFishGame(game.clientLabels.size(), game.clientLabels, game.clientSocks, new File("../res/cardlist.txt"));
+=======
+		GoFishGame cardGame = new GoFishGame(game.clientLabels.size(), game.clientLabels, game.clientSocks, new File("cardlist.txt"));
+>>>>>>> b338316e051308a1f5449cabd644a139b7e5f390
 		cardGame.assignDealear(game.clientLabels.get(0));
 		GoFishQueue playerList = (GoFishQueue)cardGame.sortPlayersInPlayOrder();
 		Player focusPlayer;
@@ -380,7 +385,7 @@ class ServerThread extends Thread{
 					DataOutputStream out = new DataOutputStream(p.getSock().getOutputStream());
 					//Adding in an extra first group to notify what kind of message is sent
 					//Add word "turn" to denote we are updating labels about the move made/who goes next
-					out.writeUTF("turn;"+move+";"+focusPlayer.getTeamName()+";"+p.getCardListForUTF());
+					out.writeUTF(move+";"+focusPlayer.getTeamName()+";"+p.getCardListForUTF()+";"+cardGame.getAmtCardInDrawPile()+";"+cardGame.getAmtCardsPerAHand()+";"+cardGame.getPairsPerHand());
 				}
 				catch (IOException e) {}
 			}
