@@ -47,7 +47,7 @@ public class Player
 	/**
 	 * Removes all cards with same value as 'value' and return a list with them
 	 * @param value - value of card to shed
-	 * @return list of cards with same value from hand
+	 * @return List<Card> - list of cards with same value from hand
 	 */
 	public List<Card> shedCards(String value) {
 		

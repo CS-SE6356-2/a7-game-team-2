@@ -37,7 +37,7 @@ public class GoFishGame extends CardGame
 	}
 	
 	/**
-	 *  Move all cards with value 'value' from source to target
+	 *  Move all cards with value [value] from source to target
 	 *  @param value - String with suit of card target is testing source with
 	 *  @param target - Player querying source
 	 *  @param source - Player being query'd by target
@@ -50,6 +50,12 @@ public class GoFishGame extends CardGame
 		Iterator<Player> playerIter = playerList.iterator();
 		// TODO
 		return "";
+	}
+	
+	public GoFishQueue sortPlayersInPlayOrder() {
+		GoFishQueue playerList = (GoFishQueue) super.sortPlayersInPlayOrder();
+		
+		return playerList;
 	}
 
 	public String getAmtCardsPerAHand() {
