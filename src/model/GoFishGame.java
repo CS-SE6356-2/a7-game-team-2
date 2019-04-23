@@ -20,35 +20,41 @@ public class GoFishGame extends CardGame
 	/**
 	 *  Checks if target has card; if true, transfer all of that type of card from target to source, otherwise source draws one card
 	 *  @param value - Value of card source is testing target with
-	 *  @param source - Player querying target
-	 *  @param target - Player being query'd by source
+	 *  @param target - Player asking for cards
+   *  @param source - Player being asked
 	 *  @return true if target has card type, false if not
 	 */
-	public boolean queryPlayer(Card.Value value, Player source, Player target) {
-		List<Card> query = target.getCardsOfValue(value);
+	public boolean queryPlayer(Card.Value value, Player target, Player source) {
+		List<Card> query = source.getCardsOfValue(value);
 		if(!query.isEmpty()) {
-			transferCardsFromOther(query, source, target);
+			transferCardsFromOther(query, target, source);
 			return true;
 		}else {
-			source.addCard(cardDeck.takeCard()); // source draws one card if target does not contain any cards of category type
+			target.addCard(cardDeck.takeCard()); // taarget draws one card if source does not contain any cards of category type
 			return false;
 		}
 	}
 	
 	/**
-	 *  Move all cards with value 'value' from target to source
-	 *  @param cards - String with suit of card source is testing target with
-	 *  @param source - Player querying target
-	 *  @param target - Player being query'd by source
+	 *  Move all cards with value [value] from source to target
+	 *  @param value - String with suit of card target is testing source with
+	 *  @param target - Player asking for cards
+   *  @param source - Player being asked
 	 */
-	public void transferCardsFromOther(List<Card> cards, Player source, Player target) {
-		source.addCards(target.removeCards(cards));
+	public void transferCardsFromOther(List<Card> cards, Player target, Player source) {
+		target.addCards(source.removeCards(cards));
 	}
 	
 	public String determineWinner(PlayerQueue playerList) {
 		Iterator<Player> playerIter = playerList.iterator();
 		// TODO
 		return "";
+	}
+	
+	public GoFishQueue sortPlayersInPlayOrder() {
+		GoFishQueue playerList = (GoFishQueue) super.sortPlayersInPlayOrder();
+		
+		return playerList;
 	}
 
 	public String getAmtCardsPerAHand() {
