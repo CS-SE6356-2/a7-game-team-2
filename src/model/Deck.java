@@ -1,5 +1,5 @@
 package model;/*
-	Programmer: Tyler Heald
+	Programmer: Tyler Heald & Antonio Mendiola
 	Date: 3/30/2019
 	Description:
 	The model.Deck class contains the cards needed for playing a game.
@@ -17,17 +17,13 @@ package model;/*
 	
 	METHODS:
 	shuffle()
-		Shuffles the deck using Fisher-Yates
+		Shuffles the deck using Collections.shuffle()
+	takeTopCard()
+	    Removes and returns the top card from the deck
 	getCardAt(int i)
 		Gets the card at a given index
 	getNumOfCards()
 		Gets the number of cards in the deck
-	
-	TODO:
-	Add customization options to reading the cardList for easier processing.
-	Example: C as the header so the program can generate cards with values in
-	(values X category). Would make it easier to write a file for decks like the
-	typical 52 card deck.
 */
 
 import java.io.File;
@@ -89,7 +85,7 @@ public class Deck {
 	}
 
 	/****	GETTERS/SETTERS	****/
-	public Card takeTopCard(){
+	public Card takeCard(){
 		return cards.remove(0);
 	}
 

@@ -1,14 +1,10 @@
 package model;
 /*
-	Programmer: Tyler Heald
-	Date: 3/30/2019
+	Programmer: Antonio Mendiola
+	Date: 4/22/2019
 	Description:
-	The model.Card class is meant only to hold the value and suit of a model.Card(number and suite).
+	The model.Card class is meant only to hold the value and suit of a Card.
 	It contains that data, ways to access it, and a method to print its data
-	
-	METHODS:
-	printCard()
-		Prints the cards data in the format "suit value"
 */
 
 public class Card{
@@ -115,18 +111,21 @@ public class Card{
 	}
 
 	/****	FUNCTIONS	****/
-    Value getVal()
-	{
+    Value getVal(){
 		return value;
 	}
-	Suit getSuit()
-	{
+
+	Suit getSuit(){
 		return suit;
 	}
 
+	boolean matches(Card o){
+        return value == o.getVal();
+    }
+
 	// Override .equals for easier comparison
 	@Override
-	public boolean equals(Object card) {
+	public boolean equals(Object card){
 		if(card == this) return true;
 
 		if(card.getClass() != Card.class) return false;
@@ -137,7 +136,7 @@ public class Card{
 
 	// Override .toString for easier printing
 	@Override
-	public String toString() {
+	public String toString(){
 		return suit.toChar() + value.toShortString();
 	}
 }

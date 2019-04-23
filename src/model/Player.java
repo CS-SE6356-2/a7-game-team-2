@@ -32,14 +32,14 @@ public class Player
 	}
 
 	/* Adds all the cards in the list to the player's active cards */
-	public void addCards(LinkedList<Card> cards)
+	public void addCards(List<Card> cards)
 	{
 		hand.addCards(cards);
 	}
 
 	/* Removes all the cards in the list from the player's active cards
 	 * and returns a list of all cards successfully removed */
-	public LinkedList<Card> removeCards(LinkedList<Card> cards)
+	public List<Card> removeCards(List<Card> cards)
 	{
 		return hand.removeCards(cards);
 	}
@@ -66,7 +66,7 @@ public class Player
 	 * @author Chris
 	 * @return
 	 */
-	public int getNumOfCards() {return hand.getNumOfCards();}
+	public int getNumOfCards() {return hand.getNumCards();}
 	/**
 	 * Returns this player's role
 	 * @author Chris
@@ -97,7 +97,7 @@ public class Player
 	/* Transfers all the cards in the list from the player's active cards
 	 * to their inactive cards and returns a list of all cards successfully
 	 * transferred */
-	public LinkedList<Card> transferActiveToInactive(LinkedList<Card> cards)
+	public List<Card> transferActiveToInactive(List<Card> cards)
 	{
 		return hand.transferActiveToInactive(cards);
 	}
@@ -105,7 +105,7 @@ public class Player
 	/* Transfers all the cards in the list from the player's inactive cards
 	 * to their active cards and returns a list of all cards successfully
 	 * transferred */
-	public LinkedList<Card> transferInactiveToActive(LinkedList<Card> cards)
+	public List<Card> transferInactiveToActive(List<Card> cards)
 	{
 		return hand.transferInactiveToActive(cards);
 	}
