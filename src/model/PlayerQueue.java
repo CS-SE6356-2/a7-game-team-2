@@ -74,11 +74,12 @@ public class PlayerQueue implements Iterable<Player>
 	}
 	
 	public Player dequeue(Player person) {
-		
+		// TODO
+		return getPlayer();
 	}
 	
 	private void dequeue(Node n) {
-		
+		// TODO
 	}
 	
 	/**
