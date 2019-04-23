@@ -5,9 +5,9 @@ import java.util.List;
 
 public class Cardpile {
 
-	int numOfCards;
+	private int numOfCards;
 	String pileName;
-	LinkedList<Card> cards;//front of the list is the top of the pile
+	List<Card> cards;//front of the list is the top of the pile
 	
 	//default constructor
 	public Cardpile() {
@@ -18,7 +18,7 @@ public class Cardpile {
 	public Cardpile(String name) {
 		pileName = name;
 		numOfCards = 0;
-		cards = new LinkedList<Card>();
+		cards = new LinkedList<>();
 	}
 	
 	//Returns the specified number of cards from the pile. The first element of the returned list is the first card drawn.
@@ -33,7 +33,7 @@ public class Cardpile {
 		}
 		else {//otherwise if there are enough cards
 			for(int i = 0;i < amount; i++) {
-				taken.add(cards.removeFirst());//return one card at a time, each drawn card is added to the end of the returned list
+				taken.add(cards.remove(0));//return one card at a time, each drawn card is added to the end of the returned list
 			}
 		numOfCards -= amount;//update the number of cards left in the pile;
 		}
@@ -46,7 +46,7 @@ public class Cardpile {
 		numOfCards += cards.size();//updates the number of cards in the pile
 	}
 	
-	void addCardsOnBot(List<Card> cards) {
+	void addCardsOnBottom(List<Card> cards) {
 		this.cards.addAll(cards);//adds cards to the end of the list
 		numOfCards += cards.size();//updates the number of cards in the pile
 	}

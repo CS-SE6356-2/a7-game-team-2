@@ -8,31 +8,25 @@ import java.util.List;
 public class Hand
 {
 /* Data */
-	/* Number of active and inactive cards in the hand */
-	int numOfCards;
 
 	/* All the cards that are able to be played */
-	private LinkedList<Card> activeCards;
+	private List<Card> activeCards;
 
 	/* Cards the hand owns but cannot use (e.g. matched cards) */
-	private LinkedList<Card> inactiveCards;
+	private List<Card> inactiveCards;
 
-/* Public methods */
-
-	/* Constructor */
 	public Hand()
 	{
-		this.numOfCards = 0;
-		this.activeCards = new LinkedList<Card>();
-		this.inactiveCards = new LinkedList<Card>();
+		activeCards = new LinkedList<>();
+		inactiveCards = new LinkedList<>();
 	}
 
 	/* Looks at the activeCards for matches and returns all unique pairs
 	 * of matching cards. Games requiring a more sophisticated 
 	 * matching function would need to override this function */
-	public LinkedList<Card> checkMatches()
+	public List<Card> checkMatches()
 	{
-		LinkedList<Card> matchingCards = new LinkedList<Card>();
+		List<Card> matchingCards = new LinkedList<>();
 
 		for (int card1Index = 0;
 		     card1Index < this.activeCards.size(); 
@@ -58,21 +52,14 @@ public class Hand
 	/* Adds all the cards in the list to the active cards */
 	public void addCards(LinkedList<Card> cards)
 	{
-		for (int index = 0;
-		     index < cards.size();
-		     ++index)
-		{
-			Card cardToAdd = cards.get(index);
-			this.activeCards.add(cardToAdd);
-		}
-		updateNumOfCards();
+		activeCards.addAll(cards);
 	}
 
 	/* Removes all the cards in the list from the active cards,
 	 * returning a list of all cards successfully removed */
 	public LinkedList<Card> removeCards(LinkedList<Card> cards)
 	{
-		LinkedList<Card> removedCards = new LinkedList<Card>();
+		LinkedList<Card> removedCards = new LinkedList<>();
 		for (int index = 0;
 		     index < cards.size();
 		     ++index)
@@ -83,7 +70,6 @@ public class Hand
 				removedCards.add(cardToRemove);
 			}
 		}
-		updateNumOfCards();
 		return removedCards;
 	}
 
@@ -126,36 +112,28 @@ public class Hand
 	}
 
 /* Getters */
-	public LinkedList<Card> getActiveCards()
+	public List<Card> getActiveCards()
 	{
-		return this.activeCards;
+		return activeCards;
 	}
 	
-	public LinkedList<Card> getInactiveCards()
+	public List<Card> getInactiveCards()
 	{
-		return this.inactiveCards;
+		return inactiveCards;
 	}
 	
 	//These both are used for the hand used in the view.ClientGUI
 	//Both make shallow copies of the lists
 	public void setActiveCards(List<Card> activeCards)
 	{
-		this.activeCards = new LinkedList<Card>(activeCards);
+		this.activeCards = new LinkedList<>(activeCards);
 	}
 	public void setInactiveCards(List<Card> inactiveCards)
 	{
-		this.inactiveCards = new LinkedList<Card>(inactiveCards);
+		this.inactiveCards = new LinkedList<>(inactiveCards);
 	}
 
-	public int getNumOfCards()
-	{
-		return numOfCards;
-	}
-
-/* Private methods */
-	/* Used to recalculate numOfCards when cards are added or removed */
-	private void updateNumOfCards()
-	{
-		numOfCards = this.activeCards.size() + this.inactiveCards.size();
+	public int getNumOfCards() {
+		return activeCards.size();
 	}
 }

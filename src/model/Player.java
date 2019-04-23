@@ -81,11 +81,11 @@ public class Player
 	
 	/**
 	 * Checks to see if player has any cards of type category
-	 * @param category - suit of card to check for
+	 * @param value - suit of card to check for
 	 * @return true if player hand contains card with same category, false if not
 	 */
 	public boolean hasCardType(String value) {
-		LinkedList<Card> cards = hand.getActiveCards();
+		List<Card> cards = hand.getActiveCards();
 		for(Card c : cards) {
 			if(c.getVal().equals(value))
 				return true;
@@ -120,12 +120,12 @@ public class Player
 	}
 
 /* Getters */
-	public LinkedList<Card> getActiveCards()
+	public List<Card> getActiveCards()
 	{
 		return this.hand.getActiveCards();
 	}
 
-	public LinkedList<Card> getInactiveCards()
+	public List<Card> getInactiveCards()
 	{
 		return this.hand.getInactiveCards();
 	}
@@ -144,7 +144,7 @@ public class Player
 		if(getActiveCards().size()>0)
 		{
 			for(Card card: getActiveCards())
-				cardList.append(card.getVal()+""+card.getCategory()+",");
+				cardList.append(card.getVal()+""+card.getSuit()+",");
 			cardList.setCharAt(cardList.lastIndexOf(","), ';');
 		}
 		else
@@ -153,7 +153,7 @@ public class Player
 		if(getInactiveCards().size()>0)
 		{
 			for(Card card: getInactiveCards())
-				cardList.append(card.getVal()+" "+card.getCategory()+",");
+				cardList.append(card.getVal()+" "+card.getSuit()+",");
 			cardList.deleteCharAt(cardList.lastIndexOf(","));
 		}
 		else
