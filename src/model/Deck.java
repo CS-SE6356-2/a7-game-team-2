@@ -30,8 +30,11 @@ package model;/*
 	typical 52 card deck.
 */
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.Scanner;
 
 public class Deck {
 	//DATA FIELDS
@@ -60,7 +63,8 @@ public class Deck {
 		{
 			//Getting the value, then finishing the line with category
 			val = input.next();
-			category = input.nextLine();
+			category = input.nextLine(); // FIXME: this will make category contain a space if the cards are space separated in the file;
+										 // option use cards.add(new Card(input.nextLine()));
 			
 			//putting the card in cards[] in order of appearance
 			cards.add(new Card(val, category));
