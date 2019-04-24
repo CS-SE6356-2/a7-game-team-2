@@ -13,6 +13,9 @@ public class Card{
 	public enum Suit{
 	    SPADES, HEARTS, CLUBS, DIAMONDS;
 
+        /**
+         * @return returns a single character representation of the Suit, with each suit represented by their first character
+         */
         public char toChar() {
             return toString().charAt(0);
         }
@@ -21,6 +24,9 @@ public class Card{
     public enum Value{
 	    ACE, NUM2, NUM3, NUM4, NUM5, NUM6, NUM7, NUM8, NUM9, NUM10, JACK, QUEEN, KING;
 
+        /**
+         * @return returns a String representation of the Value. Either the number of the value or the first character of the Value
+         */
 	    public String toShortString(){
 	        switch(this){
                 case ACE:
@@ -36,14 +42,23 @@ public class Card{
             }
         }
     }
-	
-	/****	CONSTRUCTORS	****/
+
+    /**
+     * Constructs a new Card with the provided Suit and Value
+     * @param s The Suit of the Card
+     * @param v The Value of the Card
+     */
 	public Card(Suit s, Value v)
 	{
         suit = s;
 		value = v;
 	}
-	
+
+    /**
+     * Constructs a new Card based on its String representation. Invalid Strings throw an exception.
+     * @param card String representation of the Card
+     * @throws IllegalArgumentException
+     */
 	public Card(String card) throws IllegalArgumentException {
 	    char s = card.charAt(0);
 	    switch (s){
@@ -106,22 +121,32 @@ public class Card{
             default:
                 throw new IllegalArgumentException();
         }
+        if(!toString().equals(card)) throw new IllegalArgumentException();
 	}
 
-	/****	FUNCTIONS	****/
+    /**
+     * @return returns the Card's Value
+     */
     Value getVal(){
 		return value;
 	}
 
+    /**
+     * @return returns the Card's Suit
+     */
 	Suit getSuit(){
 		return suit;
 	}
 
+    /**
+     * Checks if 2 cards have the same Value
+     * @param o The other Card to be compared with this one
+     * @return returns true when both cards have the same Value, false otherwise
+     */
 	boolean matches(Card o){
         return value == o.getVal();
     }
 
-	// Override .equals for easier comparison
 	@Override
 	public boolean equals(Object card){
 		if(card == this) return true;
@@ -132,7 +157,6 @@ public class Card{
 				&& ((Card) card).getSuit().equals(suit);
 	}
 
-	// Override .toString for easier printing
 	@Override
 	public String toString(){
 		return suit.toChar() + value.toShortString();

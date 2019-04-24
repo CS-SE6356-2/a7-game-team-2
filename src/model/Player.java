@@ -2,9 +2,7 @@ package model;
 /* @author Jacob */
 
 import java.net.Socket;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /* Represents one of the people playing the game */
@@ -53,7 +51,6 @@ public class Player
 	
 	/**
 	 * Removes all cards with same value as 'value' and return a list with them
-	 * @param value - value of card to shed
 	 * @return List<Card> - list of cards with same value from hand
 	 */
 	public List<Card> shedPairs() {
@@ -65,15 +62,14 @@ public class Player
 	/**
 	 * Returns the number of cards this player has
 	 * @author Chris
-	 * @return
+	 * @return returns the number of cards in the players active hand
 	 */
 	public int getNumOfCards(){
-		return hand.getNumCards();
+		return hand.getNumActiveCards();
 	}
 	/**
 	 * Returns this player's role
 	 * @author Chris
-	 * @return
 	 */
 	public void assignRole(String newRole){
 		role = newRole;
