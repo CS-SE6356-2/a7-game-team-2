@@ -66,7 +66,7 @@ public class Hand
 			uniqueCards.add(card);
 		
 		for(Card uCard: uniqueCards)
-			cardList.append(uCard.getSuit().toChar()+""+uCard.getVal().toShortString()+" ");
+			cardList.append(uCard.getSuit().toChar()+""+uCard.getVal().toChar()+" ");
 		cardList.deleteCharAt(cardList.lastIndexOf(" "));
 		
 		return cardList.toString();
