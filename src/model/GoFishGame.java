@@ -3,17 +3,18 @@ package model;
 import java.io.File;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 public class GoFishGame extends CardGame {
 
-	private GoFishQueue playerList;
+	private GoFishQueue playerQueue;
 
 	public GoFishGame(int numOfPlayers, ArrayList<String> playerNames, ArrayList<Socket> clientSocks, File cardList) {
 		super(numOfPlayers, playerNames, clientSocks, cardList);
 
-		playerList = sortPlayersInPlayOrder();
+		playerQueue = sortPlayersInPlayOrder();
 	}
 
 	public boolean isLegalMove(Player focusPlayer, String move) {
@@ -65,14 +66,49 @@ public class GoFishGame extends CardGame {
 
 	public void checkRemovePlayer(Player source) {
 		if (source.getActiveCards().size() == 0 && cardDeck.isEmpty()) {
-			getPlayerList().dequeue(source);
+			getPlayerQueue().dequeue(source);
 		}
 	}
 
-	public String determineWinner(PlayerQueue playerList) {
-		Iterator<Player> playerIter = playerList.iterator();
-		// TODO
-		return "";
+	/**
+	 * Checks to see if the game is over, which is if no player has any active cards 
+	 * left in their hands.
+	 * This is done by checking the size of the GoFishQueue
+	 * Returns the name of the player who won.
+	 * Or
+	 * Returns null if the queue isn't empty
+	 * @author Chris
+	 * @return The Player.getTeamName() if a winner is found or null if no player wins
+	 */
+	public String determineWinner() 
+	{
+		if(playerQueue.getSize() > 0)
+			return null;
+		else
+		{
+			//int[] totals = new int[players.length];	//Create an int counter for each player that played the game
+			int currentPairs;
+			int mostPairs = -1;
+			int mostIndex = -1;
+			String temp;
+			//Get each player's total number of pairs and determine which player has the most
+			for(int i = 0; i < players.length; ++i)
+			{
+				temp = players[i].getPairs();//Check to make sure if this player got any pairs
+				if(temp.length() == 1) //If the player has no pairs, the string is " "
+					currentPairs = 0;
+				else
+					currentPairs = temp.split(" ").length;
+				
+				if(currentPairs > mostPairs)
+				{
+					mostPairs = currentPairs;
+					mostIndex = i;
+				}
+			}
+			
+			return players[mostIndex].getTeamName();
+		}
 	}
 
 	public GoFishQueue sortPlayersInPlayOrder() {
@@ -121,7 +157,8 @@ public class GoFishGame extends CardGame {
 	 * The characters for each player are separated by spaces
 	 * A player
 	 * IE
-	 * @return	DA S2 A3 D8 DT DK,A4 D5,0,...
+	 * @return	DA S2 A3 D8 DT DK,A4 D5," ",...
+	 * " " = a single space
 	 */
 	public String getPairsPerHand() 
 	{
@@ -142,7 +179,21 @@ public class GoFishGame extends CardGame {
 		return cardDeck.getNumOfCards();
 	}
 
-	public GoFishQueue getPlayerList() {
-		return playerList;
+	/**
+	 * Returns the queue of players in the game who still have cards to play. 
+	 * @return The queue of players
+	 */
+	public GoFishQueue getPlayerQueue()
+	{
+		return playerQueue;
+	}
+	
+	/**
+	 * Returns the full list of players regardless of the number of cards they have left
+	 * @return The array of Players
+	 */
+	public Player[] getPlayerList()
+	{
+		return players;
 	}
 }

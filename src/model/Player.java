@@ -71,20 +71,20 @@ public class Player
 	}
 	
 	/**
-	 * Returns a list of values of the pairs that are held by a player
+	 * Returns a list of values of the pairs that are held by a player (inactive hand)
 	 * Each card value is separated by spaces
-	 * Returns a 0 if the player has no pairs
+	 * Returns a null if the player has no pairs
 	 * IE
-	 * @return		DA S2 A3 D8 DT DK or 0
+	 * @return		DA S2 A3 D8 DT DK or " "
 	 * @author Chris
 	 */
-	public List<Card> getPairs()
+	public String getPairs()
 	{
-		if(hand.getNumActiveCards() == 0)
-			return null;
+		if(hand.getNumInactiveCards() == 0)
+			return " ";
 		else
 		{
-			return hand.checkMatches();
+			return hand.findMatches();
 		}
 	}
 	

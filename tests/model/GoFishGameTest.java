@@ -28,7 +28,7 @@ public class GoFishGameTest {
 		System.out.println(testGame.players[0].getCardListForUTF());
 		System.out.println(testGame.players[1].getCardListForUTF());
 		
-		GoFishQueueIterator iter = testGame.getPlayerList().new GoFishQueueIterator(testGame.getPlayerList());
+		GoFishQueueIterator iter = testGame.getPlayerQueue().new GoFishQueueIterator(testGame.getPlayerQueue());
 		while(iter.hasNext()) {
 			System.out.println("Player " + iter.next().getTeamName());
 		}
@@ -64,7 +64,7 @@ public class GoFishGameTest {
 			if(!containsValue) playerTurn = 1 - playerTurn;
 		}
 		
-		iter = testGame.getPlayerList().new GoFishQueueIterator(testGame.getPlayerList());
+		iter = testGame.getPlayerQueue().new GoFishQueueIterator(testGame.getPlayerQueue());
 		while(iter.hasNext()) {
 			System.out.println("Player " + iter.next().getTeamName());
 		}
