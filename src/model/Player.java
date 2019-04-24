@@ -10,7 +10,6 @@ import model.Card.Value;
 /* Represents one of the people playing the game */
 public class Player
 {
-/* Data */
 	/* Name of the team that the player belongs to */
 	private String teamName;
 
@@ -23,9 +22,12 @@ public class Player
 	//Socket that the player is connected on
 	private Socket playerSock;
 
-/* Public methods */
-	
-	/* Constructor */
+	/**
+	 * Creates a Player assigned to the given Team, with the given role, and connected with the given Socket.
+	 * @param cTeamName The Team name that this Player belongs to
+	 * @param cRole String describing this Player's role
+	 * @param cSock Socket with which the Player is connected to the Game
+	 */
 	public Player(String cTeamName, String cRole, Socket cSock)
 	{
 		teamName = cTeamName;
@@ -34,18 +36,28 @@ public class Player
 		playerSock = cSock;
 	}
 
+	/**
+	 * Adds a single Card to the Player's Hand's activeCards
+	 * @param card Card to add to the Hand
+	 */
 	public void addCard(Card card){
 	    hand.addCard(card);
     }
 
-	/* Adds all the cards in the list to the player's active cards */
+	/**
+	 * Adds a list of Cards to the Player's Hand's activeCards
+	 * @param cards List of Cards to add to the Hand
+	 */
 	public void addCards(List<Card> cards)
 	{
 		hand.addCards(cards);
 	}
 
-	/* Removes all the cards in the list from the player's active cards
-	 * and returns a list of all cards successfully removed */
+	/**
+	 * Removes all cards found in the provided list from the Player's Hand's activeCards
+	 * @param cards List of Cards to remove
+	 * @return Returns list of successfully removed Cards
+	 */
 	public List<Card> removeCards(List<Card> cards)
 	{
 		return hand.removeCards(cards);
@@ -55,10 +67,8 @@ public class Player
 	 * Removes all cards with same value as 'value' and return a list with them
 	 * @return List<Card> - list of cards with same value from hand
 	 */
-	public List<Card> shedPairs() {
-		List<Card> ret = hand.checkMatches();
-		hand.transferActiveToInactive(ret);
-		return ret;
+	public List<Card> shedMatches(Card.Value value) {
+		return hand.removeCards(hand.checkMatches(value));
 	}
 	
 	/**
@@ -74,58 +84,71 @@ public class Player
 	 * Returns a list of values of the pairs that are held by a player
 	 * Each card value is separated by spaces
 	 * Returns a 0 if the player has no pairs
-	 * IE
 	 * @return		DA S2 A3 D8 DT DK or 0
 	 * @author Chris
 	 */
-	public List<Card> getPairs()
+	String getPairs()
 	{
 		if(hand.getNumActiveCards() == 0)
-			return null;
+			return " ";
 		else
 		{
-			return hand.checkMatches();
+			return hand.findMatches();
 		}
 	}
-	
+
 	/**
-	 * Returns this player's role
-	 * @author Chris
+	 * Assigns the Player the given role
+	 * @param newRole Role to assign
 	 */
 	public void assignRole(String newRole){
 		role = newRole;
 	}
+
+	/**
+	 * @return Returns the Player's assigned role
+	 */
 	public String getRole(){
 		return role;
 	}
+
+	/**
+	 * @return Returns the Player's assigned Team name
+	 */
 	public String getTeamName(){
 		return teamName;
 	}
+
+	/**
+	 * @return Returns the Socket which belongs to the Player
+	 */
 	public Socket getSock(){
 		return playerSock;
 	}
 	
 	/**
-	 * Checks to see if player has any cards of type category
-	 * @param suit - suit of card to check for
-	 * @return List<Card> which is not empty if a card of the same suit has been found, and empty if no card was found
+	 * Checks to see if Player has any Cards of the given Suit in their Hand's activeCards
+	 * @param suit Suit of Card to check for
+	 * @return List of Cards of the given Suit currently in the Player's Hand's activeCards
 	 */
 	public List<Card> getCardsOfSuit(Card.Suit suit) {
 		return hand.getActiveCards().stream().filter(card -> card.getSuit().equals(suit)).collect(Collectors.toList());
 	}
 
 	/**
-	 * Checks to see if player has any cards of type category
-	 * @param value - suit of card to check for
-	 * @return Optional<Card> which is non-null if a card of the same suit has been found, and null if no card was found
+	 * Checks to see if Player has any Cards of given Value in their Hand's activeCards
+	 * @param value Value of card to check for
+	 * @return List of Cards of the given Value currently in the Player's Hand's activeCards
 	 */
 	public List<Card> getCardsOfValue(Card.Value value) {
 		return hand.getActiveCards().stream().filter(card -> card.getVal().equals(value)).collect(Collectors.toList());
 	}
 
-	/* Transfers all the cards in the list from the player's active cards
-	 * to their inactive cards and returns a list of all cards successfully
-	 * transferred */
+	/**
+	 * Transfers all Cards in the given list from the Player's Hand's activeCards to the Hand's inactiveCards
+	 * @param cards List of Cards to transfer
+	 * @return List of Cards successfully transferred
+	 */
 	public List<Card> transferActiveToInactive(List<Card> cards)
 	{
 		return hand.transferActiveToInactive(cards);
@@ -135,7 +158,7 @@ public class Player
 	/**
 	 * Goes through all values in Value and creates a list with the matching cards from hand. The cards are then moved to inactive if there are 4
 	 */
-	public void checkPairs() {
+	public void checkBooks() {
 		for(Value v : Value.values()) {
 			List<Card> matches = hand.getActiveCards().stream().filter(card -> card.getVal().equals(v)).collect(Collectors.toList());
 			if(matches.size() == 4) {
@@ -144,21 +167,17 @@ public class Player
 		}
 	}
 
-	/* Used to perform game-specific actions that go beyond
-	 * manipulating one's cards. Returns result of action as a String */
-	public String takeAction(String action)
-	{
-		String result = "";
-		return result;
-		/* TODO */
-	}
-
-/* Getters */
-	public List<Card> getActiveCards(){
+	/**
+	 * @return Returns the Player's Hand's activeCards list
+	 */
+	public List<Card> getActiveCards() {
 		return hand.getActiveCards();
 	}
 
-	public List<Card> getInactiveCards(){
+	/**
+	 * @return Returns the Player's Hand's inactiveCards list
+	 */
+	public List<Card> getInactiveCards() {
 		return hand.getInactiveCards();
 	}
 	/**
@@ -166,7 +185,7 @@ public class Player
 	 *	The ';' delimits the active list form the inactive list. ActiveCards;InactiveCards
 	 *	The ',' delimits the cards in a list from each other. Card1,Card2,Card3
 	 * @author Chris
-	 * @return
+	 * @return Returns String representation of the Player's Hand
 	 */
 	public String getCardListForUTF()
 	{
@@ -192,5 +211,4 @@ public class Player
 		
 		return cardList.toString();
 	}
-
 }

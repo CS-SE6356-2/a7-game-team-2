@@ -25,50 +25,27 @@ public class Hand
 	}
 
 	/**
-	 * Finds all the pairs of cards which share the same value within the Hand's activeCards
-	 * @return List of matched cards in the Hand
+	 * Finds all the Cards whose Values are equal to the provided Value within the Hand's activeCards
+     * @param value Value to find matches with
+	 * @return List of matched cards in the activeCards list
 	 */
-    List<Card> checkMatches()
+    List<Card> checkMatches(Card.Value value)
 	{
-		List<Card> matchingCards = new LinkedList<>();
-
-		for (int card1Index = 0; card1Index < activeCards.size(); ++card1Index)
-		{
-            Card card1 = activeCards.get(card1Index);
-            if (matchingCards.contains(card1)) continue;
-			for (int card2Index = card1Index + 1; card2Index < activeCards.size(); ++card2Index)
-			{
-				Card card2 = activeCards.get(card2Index);
-
-				if (card1.matches(card2))
-				{
-					matchingCards.add(card1);
-					matchingCards.add(card2);
-					break;
-				}
-			}
-		}
-		return matchingCards;
+		return activeCards.stream().filter(card -> card.getVal().equals(value)).collect(Collectors.toList());
 	}
 
 	/**
 	 * Returns a list of cards of the pairs that are held by a player
-	 * Each card is separated by spaces
-	 * Card suit and card value are stuck together
-	 * IE
 	 * @return		DA S2 A3 D8 DT DK
 	 * @author Chris
 	 */
 	public String findMatches() 
 	{
-		TreeSet<Card> uniqueCards = new TreeSet<Card>();
-		StringBuilder cardList = new StringBuilder();
-
-		for(Card card: inactiveCards)
-			uniqueCards.add(card);
+        StringBuilder cardList = new StringBuilder();
+        TreeSet<Card> uniqueCards = new TreeSet<>(inactiveCards);
 
 		for(Card uCard: uniqueCards)
-			cardList.append(uCard.getSuit().toChar()+""+uCard.getVal().toChar()+" ");
+			cardList.append(uCard.getSuit().toChar()).append(uCard.getVal().toChar()).append(" ");
 		cardList.deleteCharAt(cardList.lastIndexOf(" "));
 
 		return cardList.toString();
@@ -159,7 +136,7 @@ public class Hand
     /**
      * @return Returns the total number of Cards in the Hand, both active and inactive
      */
-    public int getNumCards()
+    int getNumCards()
     {
         return activeCards.size() + inactiveCards.size();
     }
