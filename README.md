@@ -45,5 +45,5 @@ java src.tests.model.CardGameTest
 ### To compile and run model.PlayerHandTest:
 ```
 javac src\tests\model.PlayerHandTest.java
-java src.tests.model.PlayerQueueTest
+java src.tests.model.PlayerHandTest
 ```
