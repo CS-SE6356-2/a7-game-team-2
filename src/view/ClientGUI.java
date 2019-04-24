@@ -1,4 +1,4 @@
-package view;
+package src.view;
 
 import java.io.IOException;
 
@@ -12,7 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import model.Hand;
+import src.model.Hand;
 
 public class ClientGUI extends Application{
 	

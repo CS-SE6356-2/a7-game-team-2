@@ -1,4 +1,6 @@
-package model;/*
+package src.model;
+
+/*
 	Programmer: Tyler Heald & Antonio Mendiola
 	Date: 3/30/2019
 	Description:
