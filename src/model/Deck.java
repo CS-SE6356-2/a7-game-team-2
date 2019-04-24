@@ -17,7 +17,7 @@ public class Deck {
 	/**
 	 * Creates a Deck and instantiates it with a full 52 card deck
 	 */
-	public Deck() {
+	Deck() {
 		cards = new LinkedList<>();
 		for (Card.Suit s: Card.Suit.values()) {
 			for (Card.Value v: Card.Value.values()) {
@@ -30,7 +30,7 @@ public class Deck {
 	 * Creates a Deck and instantiates it with all of the cards listen in the cardList file
 	 * @param cardList File containing list of cards to fill Deck with
 	 */
-	public Deck(File cardList)
+	Deck(File cardList)
 	{
 		cards = new LinkedList<>();
 		Scanner input = new Scanner(System.in);

@@ -40,7 +40,7 @@ public class GoFishGameTest {
 			System.out.println("\n\nTurn " + i + ":");
 			if(testGame.players[playerTurn].getActiveCards().isEmpty()) {
 				if(testGame.cardDeck.isEmpty()) {
-					testGame.players[1 - playerTurn].checkPairs();
+					testGame.players[1 - playerTurn].checkBooks();
 					testGame.checkRemovePlayer(testGame.players[playerTurn]);
 					break;
 				}
