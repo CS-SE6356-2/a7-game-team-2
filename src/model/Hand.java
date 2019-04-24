@@ -1,8 +1,10 @@
 package model;
 /* @author Jacob  */
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 
 /* Represents the cards in a specific model.Player's possession. */
@@ -45,6 +47,20 @@ public class Hand
 			}
 		}
 		return matchingCards;
+	}
+	
+	/**
+	 * Returns a list of values of the pairs that are held by a player
+	 * Each card value is separated by spaces
+	 * IE
+	 * @return		A 2 3 8 1 K
+	 * @author Chris
+	 */
+	public String findMatches() 
+	{
+		Set<Card> uniqueCardValues = new HashSet<Card>();
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	void addCard(Card card){
@@ -102,29 +118,36 @@ public class Hand
 	}
 
 /* Getters */
-	public List<Card> getActiveCards(){
+	public List<Card> getActiveCards()
+	{
 		return activeCards;
 	}
 	
-	public List<Card> getInactiveCards(){
+	public List<Card> getInactiveCards()
+	{
 		return inactiveCards;
 	}
 	
 	//These both are used for the hand used in the view.ClientGUI
 	//Both make shallow copies of the lists
-	public void setActiveCards(List<Card> activeCards){
+	public void setActiveCards(List<Card> activeCards)
+	{
 		activeCards = new LinkedList<>(activeCards);
 	}
 
-	public int getNumActiveCards(){
+	public int getNumActiveCards()
+	{
 		return activeCards.size();
 	}
 
-    public int getNumInactiveCards(){
-        return activeCards.size();
+    public int getNumInactiveCards()
+    {
+        return inactiveCards.size();
     }
 
-    public int getNumCards(){
+    public int getNumCards()
+    {
         return activeCards.size() + inactiveCards.size();
     }
+
 }

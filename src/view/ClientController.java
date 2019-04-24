@@ -209,42 +209,46 @@ class ClientThread extends Thread{
 					   public void run() {
 						   
 						   //Update players messages about the previous move and whose turn it is
-						   if(mess[0].equals("turn"))
-						   {
-							   //Tells the Client what move was made
-							   game.gui.infoLabel.setText(mess[1]);
+						 
+						   //Tells the Client what move was made
+						   game.gui.infoLabel.setText(mess[1]);
 							   
-							   //Determines if this Client is the one to go next
-							   if(mess[2].equals(game.gui.yourName)) {
-								   game.gui.turnLabel.setText("It's your turn");
-								   game.gui.root.getChildren().add(game.gui.playButton);
-							   }
-							   else {
-								   game.gui.turnLabel.setText("It's " + mess[2] + "'s turn");
-							   }
-							   
-							   
-							   //Giving players their cards
-							   if(!mess[3].equals(" "))
-							   {
-								   for(String card: mess[3].split(","))
-									   tempList.add(new Card(card));
-								   game.gui.yourCards.setActiveCards(tempList);
-								   tempList.clear();
-							   }
-							   //inactive cards
-							   else if(!mess[4].equals(" "))
-							   {
-								   for(String card: mess[4].split(","))
-								   		tempList.add(new Card(card));
-								   //game.gui.yourCards.setInactiveCards(tempList);
-								   tempList.clear();
-							   }
-							   
-							   //Test if client got the message
-							   game.gui.testLabel.setText(mes);
+						   //Determines if this Client is the one to go next
+						   if(mess[2].equals(game.gui.yourName)) {
+							   game.gui.turnLabel.setText("It's your turn");
+							   game.gui.root.getChildren().add(game.gui.playButton);
 						   }
-						   //Update each Client GUI's list of cards
+						   else {
+							   game.gui.turnLabel.setText("It's " + mess[2] + "'s turn");
+						   }
+							   
+							   
+						   //Giving players their cards
+						   if(!mess[3].equals(" "))
+						   {
+							   for(String card: mess[3].split(","))
+								   tempList.add(new Card(card));
+							   game.gui.yourCards.setActiveCards(tempList);
+							   tempList.clear();
+						   }
+						   //inactive cards
+						   else if(!mess[4].equals(" "))
+						   {
+							   for(String card: mess[4].split(","))
+								   tempList.add(new Card(card));
+							   //game.gui.yourCards.setInactiveCards(tempList);
+							   tempList.clear();
+						   }
+							   
+						   //Test if client got the message
+						   game.gui.testLabel.setText(mes);
+						   
+						   //Update each Client how many cards are in the Draw Deck
+						   
+						   
+						   //Update each client on how many card each player has
+						   
+						   //Update each client on which matches each player has
 					   }
 					});
 				}
@@ -376,7 +380,7 @@ class ServerThread extends Thread{
 					DataOutputStream out = new DataOutputStream(p.getSock().getOutputStream());
 					//Adding in an extra first group to notify what kind of message is sent
 					//Add word "turn" to denote we are updating labels about the move made/who goes next
-					out.writeUTF(move+";"+focusPlayer.getTeamName()+";"+p.getCardListForUTF()+";"+cardGame.getAmtCardInDrawPile()+";"+cardGame.getAmtCardsPerAHand()+";"+cardGame.getPairsPerHand());
+					out.writeUTF(move+";"+focusPlayer.getTeamName()+";"+p.getCardListForUTF()+";"+cardGame.getAmtCardInDrawDeck()+";"+cardGame.getAmtCardsPerAHand()+";"+cardGame.getPairsPerHand());
 				}
 				catch (IOException e) {}
 			}
