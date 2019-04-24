@@ -79,6 +79,7 @@ public class Deck {
 	 * @return Returns the removed Card
 	 */
 	Card takeCard(){
+		if(cards.isEmpty()) return null;
 		return cards.remove(0);
 	}
 

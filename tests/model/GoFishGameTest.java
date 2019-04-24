@@ -30,14 +30,13 @@ public class GoFishGameTest {
 		
 		GoFishQueueIterator iter = testGame.getPlayerList().new GoFishQueueIterator(testGame.getPlayerList());
 		while(iter.hasNext()) {
-			Player temp = iter.next();
-			System.out.println("Player " + temp.getTeamName());
+			System.out.println("Player " + iter.next().getTeamName());
 		}
 		
 		int playerTurn = 0;
 		
 		// test 20 turns with each player choosing a random value from the cards in their deck
-		for(int i = 0; i < 20; i++) {
+		for(int i = 0; i < 100; i++) {
 			System.out.println("\n\nTurn " + i + ":");
 			int randomCard = new Random().nextInt(testGame.players[playerTurn].getNumOfCards());
 			Card.Value randomValue = testGame.players[playerTurn].getActiveCards().get(randomCard).getVal();
@@ -50,6 +49,11 @@ public class GoFishGameTest {
 			System.out.println(testGame.players[1].getCardListForUTF());
 			
 			if(!containsValue) playerTurn = 1 - playerTurn;
+		}
+		
+		iter = testGame.getPlayerList().new GoFishQueueIterator(testGame.getPlayerList());
+		while(iter.hasNext()) {
+			System.out.println("Player " + iter.next().getTeamName());
 		}
 
 	}

@@ -40,7 +40,8 @@ public class GoFishGame extends CardGame {
 			checkRemovePlayer(source);
 			return true;
 		} else {
-			target.addCard(cardDeck.takeCard()); // target draws one card if source does not contain any cards of
+			if(!cardDeck.getCards().isEmpty())
+				target.addCard(cardDeck.takeCard()); // target draws one card if source does not contain any cards of
 													// category type
 			return false;
 		}
