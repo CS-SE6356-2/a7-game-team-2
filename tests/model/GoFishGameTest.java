@@ -5,6 +5,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Random;
 
+import model.GoFishQueue.GoFishQueueIterator;
+
 public class GoFishGameTest {
 
 	public static void main(String[] args) {
@@ -17,7 +19,7 @@ public class GoFishGameTest {
 		socks.add(new Socket());
 		socks.add(new Socket());
 
-		GoFishGame testGame = new GoFishGame(2, names, socks, new File("res\\cardlist.txt"));
+		GoFishGame testGame = new GoFishGame(2, names, socks, new File("resources\\cardlist.txt"));
 		
 		testGame.shuffleCards();
 		testGame.dealCards();
@@ -26,6 +28,12 @@ public class GoFishGameTest {
 		System.out.println(testGame.players[0].getCardListForUTF());
 		System.out.println(testGame.players[1].getCardListForUTF());
 		
+		GoFishQueueIterator iter = testGame.getPlayerList().new GoFishQueueIterator(testGame.getPlayerList());
+		while(iter.hasNext()) {
+			Player temp = iter.next();
+			System.out.println("Player " + temp.getTeamName());
+		}
+		
 		int playerTurn = 0;
 		
 		// test 20 turns with each player choosing a random value from the cards in their deck
@@ -33,7 +41,7 @@ public class GoFishGameTest {
 			System.out.println("\n\nTurn " + i + ":");
 			int randomCard = new Random().nextInt(testGame.players[playerTurn].getNumOfCards());
 			Card.Value randomValue = testGame.players[playerTurn].getActiveCards().get(randomCard).getVal();
-					
+			
 			boolean containsValue = testGame.queryPlayer(randomValue, testGame.players[playerTurn], testGame.players[1 - playerTurn]);
 			System.out.println("player " + (playerTurn + 1) + " testing " + randomValue);
 			System.out.println("player " + (playerTurn + 1) + " goes again: " + containsValue);

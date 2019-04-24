@@ -19,9 +19,8 @@ import java.util.LinkedList;
 
 import javafx.application.Platform;
 import model.Card;
-import model.Player;
 import model.GoFishGame;
-import model.GoFishQueue;
+import model.Player;
 
 public class ClientController {
 	
@@ -349,7 +348,6 @@ class ServerThread extends Thread{
 		//CREATE CARD GAME OBJECT
 		GoFishGame cardGame = new GoFishGame(game.clientLabels.size(), game.clientLabels, game.clientSocks, new File("resources\\cardlist.txt"));
 		cardGame.assignDealear(game.clientLabels.get(0));
-		GoFishQueue playerList = (GoFishQueue)cardGame.sortPlayersInPlayOrder();
 		Player focusPlayer;
 		boolean win = false;
 		boolean doesGoAgain = false;
@@ -367,11 +365,11 @@ class ServerThread extends Thread{
 		
 		while(game.gui.state.equals("game") && !win) {
 			//Get the player that goes next
-			focusPlayer = playerList.nextPlayer();
+			focusPlayer = cardGame.getPlayerList().nextPlayer();
 			
 			
 			//Group 1@@@@@Message of what was the last move made and who goes next@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-			for(Player p: playerList) {
+			for(Player p: cardGame.getPlayerList()) {
 				try {
 					DataOutputStream out = new DataOutputStream(p.getSock().getOutputStream());
 					//Adding in an extra first group to notify what kind of message is sent
@@ -415,7 +413,7 @@ class ServerThread extends Thread{
 			}
 			
 			//CHECK FOR WIN CONDITION
-			win = (winner = cardGame.determineWinner(playerList)) != null;
+			win = (winner = cardGame.determineWinner(cardGame.getPlayerList())) != null;
 		}
 		
 		System.out.println("A winner is "+winner);

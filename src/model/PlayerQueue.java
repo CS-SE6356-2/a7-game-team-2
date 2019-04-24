@@ -50,32 +50,45 @@ public class PlayerQueue implements Iterable<Player>
 		if(size == 0)				//Put the player at the head if there are no other players
 		{
 			head = newNode;
-			head.next = head;
-			head.prev = head;
+			getHead().next = getHead();
+			getHead().prev = getHead();
 		}
 		else if (size == 1)			//Put the player as the tail. This separates the head from being the tail
 		{
-			head.next = newNode;
-			head.prev = newNode;
-			newNode.next = head;
-			newNode.prev = head;
+			getHead().next = newNode;
+			getHead().prev = newNode;
+			newNode.next = getHead();
+			newNode.prev = getHead();
 		}
 		else			//Adds the player in the queue
 		{
 			//Set a pointer to the old tail
-			Node tail = head.prev;
+			Node tail = getHead().prev;
 			//Insert the new node into the list
 			tail.next = newNode;
-			head.prev = newNode;
+			getHead().prev = newNode;
 			//Have the new node point to its respective next and prev
-			newNode.next = head;
+			newNode.next = getHead();
 			newNode.prev = tail;
 		}
 	}
 	
 	public Player dequeue(Player person) {
-		// TODO
-		return getPlayer();
+		if(size == 0) return null;
+		else if(size == 1) return getPlayer();
+		else {
+			Node temp = getHead();
+			Node tail = getHead().prev;
+			while(temp != tail) {
+				if(temp.data.equals(person)) {
+					temp.prev.next = temp.next;
+					temp.next.prev = temp.prev;
+					return temp.data;
+				}
+				temp = temp.next;
+			}
+		}
+		return null; // return null if player not found
 	}
 	
 	private void dequeue(Node n) {
@@ -87,7 +100,7 @@ public class PlayerQueue implements Iterable<Player>
 	 * @author Chris
 	 * @return A player
 	 */
-	public Player getPlayer() {return head.data;}
+	public Player getPlayer() {return getHead().data;}
 	/**
 	 * Returns the amount of players in the queue
 	 * @return The number of players in the queue
@@ -101,8 +114,8 @@ public class PlayerQueue implements Iterable<Player>
 	 */
 	public Player nextPlayer()
 	{
-		head = reversed? head.prev: head.next;
-		return reversed? head.next.data: head.prev.data;
+		head = reversed? getHead().prev: getHead().next;
+		return reversed? getHead().next.data: getHead().prev.data;
 	}
 	/**
 	 * Moves head to the next player without getting back a player, essentially 
@@ -111,7 +124,7 @@ public class PlayerQueue implements Iterable<Player>
 	 */
 	public void skipPlayer()
 	{
-		head = (reversed)? head.prev: head.next;
+		head = (reversed)? getHead().prev: getHead().next;
 	}
 	/**
 	 * Sets the reverse flag to its opposite. Calls skipPlayer() twice to set the order to the proper model.Player
@@ -153,6 +166,14 @@ public class PlayerQueue implements Iterable<Player>
 		return new PlayerQueueIterator(this);
 	}
 	
+	public Node getHead() {
+		return head;
+	}
+
+	public int getSize() {
+		return size;
+	}
+
 	class PlayerQueueIterator implements Iterator<Player>
 	{
 		Node focus;
@@ -160,14 +181,14 @@ public class PlayerQueue implements Iterable<Player>
 
 		public PlayerQueueIterator(PlayerQueue playerQueue) 
 		{
-			focus = playerQueue.head;
+			focus = playerQueue.getHead();
 			counter = 0;
 		}
 
 		@Override
 		public boolean hasNext() 
 		{
-			return counter<size;
+			return counter<getSize();
 		}
 
 		@Override
