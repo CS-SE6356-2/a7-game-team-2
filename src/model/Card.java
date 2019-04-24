@@ -1,11 +1,13 @@
 package model;
 
+import java.util.Comparator;
+
 /**
  * @author Antonio Mendiola
  * The model.Card class is meant only to hold the value and suit of a Card.
  * It contains that data, ways to access it, and a method to print its data
  */
-public class Card {
+public class Card implements Comparator<Card>{
     private Suit suit;
     private Value value;
 
@@ -158,5 +160,18 @@ public class Card {
 	@Override
 	public String toString() {
 		return suit.toChar() + value.toShortString();
+	}
+
+	/**
+	 * Compares which card is greater than the other or if equal
+	 * Utilizes the Value enums built in compareTo() method
+	 * @param o1 - First card
+	 * @param o2 - Second card
+	 * @return 0, -1, or 1
+	 */
+	@Override
+	public int compare(Card o1, Card o2) 
+	{
+		return o1.getVal().compareTo(o2.getVal());
 	}
 }

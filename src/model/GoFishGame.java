@@ -83,7 +83,7 @@ public class GoFishGame extends CardGame
 	 * The characters for each player are separated by spaces
 	 * A player
 	 * IE
-	 * @return	A 2 3 8 1 K,4 5,0,...
+	 * @return	DA S2 A3 D8 DT DK,A4 D5,0,...
 	 */
 	public String getPairsPerHand() 
 	{
