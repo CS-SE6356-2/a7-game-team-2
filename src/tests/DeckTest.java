@@ -1,4 +1,4 @@
-package model;
+package src.tests;
 /*
 	Programmer: Tyler Heald
 	Date: 3/31/2019
@@ -21,7 +21,7 @@ package model;
 		
 */
 
-import model.Deck;
+import src.model.Deck;
 
 import java.util.*;
 import java.io.*;
