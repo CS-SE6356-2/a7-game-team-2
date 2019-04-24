@@ -1,8 +1,10 @@
 package model;
 /* @author Jacob  */
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeSet;
 
 
 /* Represents the cards in a specific model.Player's possession. */
@@ -45,6 +47,29 @@ public class Hand
 			}
 		}
 		return matchingCards;
+	}
+	
+	/**
+	 * Returns a list of cards of the pairs that are held by a player
+	 * Each card is separated by spaces
+	 * Card suit and card value are stuck together
+	 * IE
+	 * @return		DA S2 A3 D8 DT DK
+	 * @author Chris
+	 */
+	public String findMatches() 
+	{
+		TreeSet<Card> uniqueCards = new TreeSet<Card>();
+		StringBuilder cardList = new StringBuilder();
+		
+		for(Card card: inactiveCards)
+			uniqueCards.add(card);
+		
+		for(Card uCard: uniqueCards)
+			cardList.append(uCard.getSuit().toChar()+""+uCard.getVal().toShortString()+" ");
+		cardList.deleteCharAt(cardList.lastIndexOf(" "));
+		
+		return cardList.toString();
 	}
 
 	void addCard(Card card){
@@ -102,29 +127,36 @@ public class Hand
 	}
 
 /* Getters */
-	public List<Card> getActiveCards(){
+	public List<Card> getActiveCards()
+	{
 		return activeCards;
 	}
 	
-	public List<Card> getInactiveCards(){
+	public List<Card> getInactiveCards()
+	{
 		return inactiveCards;
 	}
 	
 	//These both are used for the hand used in the view.ClientGUI
 	//Both make shallow copies of the lists
-	public void setActiveCards(List<Card> activeCards){
+	public void setActiveCards(List<Card> activeCards)
+	{
 		activeCards = new LinkedList<>(activeCards);
 	}
 
-	public int getNumActiveCards(){
+	public int getNumActiveCards()
+	{
 		return activeCards.size();
 	}
 
-    public int getNumInactiveCards(){
-        return activeCards.size();
+    public int getNumInactiveCards()
+    {
+        return inactiveCards.size();
     }
 
-    public int getNumCards(){
+    public int getNumCards()
+    {
         return activeCards.size() + inactiveCards.size();
     }
+
 }

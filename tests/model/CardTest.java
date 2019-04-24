@@ -95,7 +95,7 @@ class CardTest {
         assertEquals("S7", c7.toString());
         assertEquals("S8", c8.toString());
         assertEquals("S9", c9.toString());
-        assertEquals("S10", c10.toString());
+        assertEquals("ST", c10.toString());
         assertEquals("SJ", c11.toString());
         assertEquals("SQ", c12.toString());
         assertEquals("SK", c13.toString());
