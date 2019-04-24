@@ -352,10 +352,10 @@ class ServerThread extends Thread{
 		//CREATE CARD GAME OBJECT
 		GoFishGame cardGame = new GoFishGame(game.clientLabels.size(), game.clientLabels, game.clientSocks, new File("resources\\cardlist.txt"));
 		cardGame.assignDealear(game.clientLabels.get(0));
-		Player focusPlayer;
+		Player focusPlayer = null;
 		boolean win = false;
 		boolean doesGoAgain = false;
-		String winner = "";
+		String winner = "Error";
 		
 		//4th Stage@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 		
@@ -368,11 +368,19 @@ class ServerThread extends Thread{
 		//HAVE THE SERVER SEND LIST OF STRINGS TO PLAYERS FOR THEIR HAND OF CARDS
 		
 		while(game.gui.state.equals("game") && !win) {
+			
 			//Get the player that goes next
-			focusPlayer = cardGame.getPlayerList().nextPlayer();
+			//If doesGoAgain == false
+			//		Get the next player for the turn
+			//Else if doesGoAgain == true
+			//		The Player gets to again as in their previous turn they got the card they queried for
+			
+			//The first turn will always have doesGoAgain = false
+			if(!doesGoAgain)
+				focusPlayer = cardGame.getPlayerQueue().nextPlayer();
 			
 			
-			//Group 1@@@@@Message of what was the last move made and who goes next@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+			//Group 1@@@@@Message from Server to each Client@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 			for(Player p: cardGame.getPlayerList()) {
 				try {
 					DataOutputStream out = new DataOutputStream(p.getSock().getOutputStream());
@@ -391,7 +399,7 @@ class ServerThread extends Thread{
 			}
 					
 			
-			//Group 2@@@@@Receive the player's move@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+			//Group 2@@@@@Receive the player's move the focusPlayer's client@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 			try {
 				DataInputStream in = new DataInputStream(focusPlayer.getSock().getInputStream());
 				move = focusPlayer.getTeamName() + " played " + in.readUTF();
@@ -400,8 +408,17 @@ class ServerThread extends Thread{
 				move = focusPlayer.getTeamName() + " was skipped by server";
 			}
 			
-			//Group 3@@@@@Game Logic@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-			boolean does = true;
+			//Group 3@@@@@Apply changes to the model@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+			
+			
+			//TODO
+			//Retrieve card value from message
+			//Retrieve source player name
+			//doesGoAgain = cardGame.queryPlayer(new Card("SA"), focusPlayer.getTeamName(), move);
+			
+			
+			//###What is this???###
+			/*boolean does = true;
 			while(does) {
 				try {
 					DataInputStream in = new DataInputStream(focusPlayer.getSock().getInputStream());
@@ -421,10 +438,13 @@ class ServerThread extends Thread{
 					//doesGoAgain = cardGame.queryPlayer(card.getVal(), focusPlayer, source);
 					//does = false;
 				}
-			}
+			}*/
+			
+			
+			
 			
 			//CHECK FOR WIN CONDITION
-			win = (winner = cardGame.determineWinner(cardGame.getPlayerList())) != null;
+			win = (winner = cardGame.determineWinner()) != null;
 		}
 		
 		System.out.println("A winner is "+winner);
