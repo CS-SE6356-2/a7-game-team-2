@@ -37,12 +37,14 @@ public class GoFishGame extends CardGame {
 		List<Card> query = source.getCardsOfValue(value);
 		if (!query.isEmpty()) {
 			transferCardsFromOther(query, target, source);
+			source.checkPairs();
 			checkRemovePlayer(source);
 			return true;
 		} else {
 			if(!cardDeck.getCards().isEmpty())
 				target.addCard(cardDeck.takeCard()); // target draws one card if source does not contain any cards of
 													// category type
+			source.checkPairs();
 			return false;
 		}
 	}

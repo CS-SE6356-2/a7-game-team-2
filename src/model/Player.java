@@ -5,6 +5,8 @@ import java.net.Socket;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import model.Card.Value;
+
 /* Represents one of the people playing the game */
 public class Player
 {
@@ -135,6 +137,19 @@ public class Player
 	public List<Card> transferInactiveToActive(List<Card> cards)
 	{
 		return hand.transferInactiveToActive(cards);
+	}
+	
+
+	/**
+	 * Goes through all values in Value and creates a list with the matching cards from hand. The cards are then moved to inactive if there are 4
+	 */
+	public void checkPairs() {
+		for(Value v : Value.values()) {
+			List<Card> matches = hand.getActiveCards().stream().filter(card -> card.getVal().equals(v)).collect(Collectors.toList());
+			if(matches.size() == 4) {
+				transferActiveToInactive(matches);
+			}
+		}
 	}
 
 	/* Used to perform game-specific actions that go beyond

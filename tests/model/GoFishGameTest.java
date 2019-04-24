@@ -38,7 +38,20 @@ public class GoFishGameTest {
 		// test 20 turns with each player choosing a random value from the cards in their deck
 		for(int i = 0; i < 100; i++) {
 			System.out.println("\n\nTurn " + i + ":");
-			int randomCard = new Random().nextInt(testGame.players[playerTurn].getNumOfCards());
+			if(testGame.players[playerTurn].getActiveCards().isEmpty()) {
+				if(testGame.cardDeck.isEmpty()) {
+					testGame.players[1 - playerTurn].checkPairs();
+					testGame.checkRemovePlayer(testGame.players[playerTurn]);
+					break;
+				}
+				else {
+					testGame.players[playerTurn].addCard(testGame.cardDeck.takeCard());
+					playerTurn = 1 - playerTurn;
+					continue;
+				}
+				
+			}
+			int randomCard = new Random().nextInt(testGame.players[playerTurn].getActiveCards().size());
 			Card.Value randomValue = testGame.players[playerTurn].getActiveCards().get(randomCard).getVal();
 			
 			boolean containsValue = testGame.queryPlayer(randomValue, testGame.players[playerTurn], testGame.players[1 - playerTurn]);
@@ -55,6 +68,7 @@ public class GoFishGameTest {
 		while(iter.hasNext()) {
 			System.out.println("Player " + iter.next().getTeamName());
 		}
+		System.out.println(testGame.cardDeck.getNumOfCards());
 
 	}
 
