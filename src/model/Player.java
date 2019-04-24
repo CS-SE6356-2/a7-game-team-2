@@ -130,15 +130,6 @@ public class Player
 	{
 		return hand.transferActiveToInactive(cards);
 	}
-
-<<<<<<< HEAD
-	/* Transfers all the cards in the list from the player's inactive cards
-	 * to their active cards and returns a list of all cards successfully
-	 * transferred */
-	public List<Card> transferInactiveToActive(List<Card> cards)
-	{
-		return hand.transferInactiveToActive(cards);
-	}
 	
 
 	/**
