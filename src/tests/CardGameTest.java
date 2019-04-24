@@ -1,7 +1,7 @@
-package model;
+package src.tests;
 
-import model.CardGame;
-import model.Player;
+import src.model.CardGame;
+import src.model.Player;
 
 import java.io.File;
 import java.net.Socket;

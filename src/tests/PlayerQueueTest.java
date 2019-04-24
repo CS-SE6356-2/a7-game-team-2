@@ -1,7 +1,7 @@
-package model;
+package src.tests;
 
-import model.Player;
-import model.PlayerQueue;
+import src.model.Player;
+import src.model.PlayerQueue;
 
 public class PlayerQueueTest {
 

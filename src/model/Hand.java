@@ -1,4 +1,4 @@
-package model;
+package src.model;
 /* @author Jacob  */
 
 import java.util.LinkedList;

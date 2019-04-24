@@ -1,4 +1,4 @@
-package view;
+package src.view;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -18,10 +18,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 import javafx.application.Platform;
-import model.Card;
-import model.GoFishGame;
-import model.Player;
-import model.GoFishQueue;
+import src.model.Card;
+import src.model.Player;
+import src.model.GoFishGame;
+import src.model.GoFishQueue;
 
 public class ClientController {
 	

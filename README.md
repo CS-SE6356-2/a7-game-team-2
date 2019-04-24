@@ -1,31 +1,49 @@
-Team: 
+# Go Fish
+
+### Team: 
 Antonio
+
 Cameron
+
 Chris
+
 Matthew
 
-Compilation Instructions:
-Make sure you have a Java Development Kit (JDK) installed
-Find the JDK (should be in c:\Program Files\Java
-Enter this line in command line set path=%path%;C:\Program Files\Java\jdk-9.0.1\bin
-Change Directory to the location of this project, into the src folder
+## Compilation Instructions:
+1. Make sure you have a Java Development Kit (JDK) installed.
 
-To compile and run the project: 
-javac view.ClientLauncher.java view.ClientController.java view.ClientGUI.java model.Card.java model.CardGame.java model.Deck.java model.Hand.java model.Player.java model.PlayerQueue.java
-java view.ClientLauncher
+	a) Find the JDK (should be in c:\Program Files\Java)
+	
+	b) Add JDK to path (set path=%path%;<path-to-jdk>\jdk-9.0.1\bin)
+	
+2. Change Directory to the location of this project.
+
+### To compile and run the project: 
+```
+javac src\view\ClientLauncher.java
+java src.view.ClientLauncher
+```
  
-To compile and run model.DeckTest
-javac model.DeckTest.java model.Deck.java model.Card.java
-java model.DeckTest
+### To compile and run DeckTest:
+```
+javac src\tests\DeckTest.java
+java src.tests.DeckTest
+```
  
-To compile and run model.PlayerQueueTest
-Javac model.PlayerQueueTest.java model.Player.java model.Hand.java model.Card.java
-Java model.PlayerQueueTest
+### To compile and run PlayerQueueTest:
+```
+javac src\tests\PlayerQueueTest.java
+java src.tests.PlayerQueueTest
+```
  
-To compile and run model.CardGameTest
-Javac model.CardGameTest.java model.CardGame.java model.Deck.java model.PlayerQueue.java model.Player.java model.Hand.java model.Card.java
-Java model.CardGameTest
+### To compile and run CardGameTest:
+```
+javac src\tests\CardGameTest.java
+java src.tests.CardGameTest
+```
  
-To compile and run model.PlayerHandTest
-Javac model.PlayerHandTest.java model.Player.java model.Hand.java model.Card.java model.Deck.java
-Java model.PlayerQueueTest
+### To compile and run PlayerHandTest:
+```
+javac src\tests\PlayerHandTest.java
+java src.tests.PlayerQueueTest
+```

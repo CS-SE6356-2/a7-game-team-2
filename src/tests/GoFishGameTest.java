@@ -1,4 +1,4 @@
-package model;
+package src.tests;
 
 import java.io.File;
 import java.net.Socket;
