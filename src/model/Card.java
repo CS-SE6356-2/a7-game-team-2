@@ -26,10 +26,12 @@ public class Card {
         /**
          * @return returns a String representation of the Value. Either the number of the value or the first character of the Value
          */
-	    public String toShortString() {
+	    public String toChar() {
 	        switch(this){
                 case ACE:
                     return "A";
+                case NUM10:
+                    return "T";
                 case JACK:
                     return "J";
                 case QUEEN:
@@ -104,7 +106,7 @@ public class Card {
             case '9':
                 value = Value.NUM9;
                 break;
-            case '1':
+            case 'T':
                 value = Value.NUM10;
                 break;
             case 'J':
@@ -157,6 +159,6 @@ public class Card {
 
 	@Override
 	public String toString() {
-		return suit.toChar() + value.toShortString();
+		return suit.toChar() + value.toChar();
 	}
 }
