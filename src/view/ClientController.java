@@ -379,7 +379,14 @@ class ServerThread extends Thread{
 				try {
 					DataOutputStream out = new DataOutputStream(p.getSock().getOutputStream());
 					//Adding in an extra first group to notify what kind of message is sent
-					//Add word "turn" to denote we are updating labels about the move made/who goes next
+					//The sent message will be held in a string mes then a string array mess separated by semicolons ';'
+					//mess[0] = The last move played
+					//mess[1] = The client player's name
+					//mess[2] = The list of active cards
+					//mess[3] = The list of inactive card
+					//mess[4] = The number of cards in the deck
+					//mess[5] = The number of active cards per each player
+					//mess[6] = Unique pairs held by each player
 					out.writeUTF(move+";"+focusPlayer.getTeamName()+";"+p.getCardListForUTF()+";"+cardGame.getAmtCardInDrawDeck()+";"+cardGame.getAmtCardsPerAHand()+";"+cardGame.getPairsPerHand());
 				}
 				catch (IOException e) {}

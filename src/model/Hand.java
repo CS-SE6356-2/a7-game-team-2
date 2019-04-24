@@ -1,10 +1,10 @@
 package model;
 /* @author Jacob  */
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
+import java.util.TreeSet;
 
 
 /* Represents the cards in a specific model.Player's possession. */
@@ -50,17 +50,26 @@ public class Hand
 	}
 	
 	/**
-	 * Returns a list of values of the pairs that are held by a player
-	 * Each card value is separated by spaces
+	 * Returns a list of cards of the pairs that are held by a player
+	 * Each card is separated by spaces
+	 * Card suit and card value are stuck together
 	 * IE
-	 * @return		A 2 3 8 1 K
+	 * @return		DA S2 A3 D8 DT DK
 	 * @author Chris
 	 */
 	public String findMatches() 
 	{
-		Set<Card> uniqueCardValues = new HashSet<Card>();
-		// TODO Auto-generated method stub
-		return null;
+		TreeSet<Card> uniqueCards = new TreeSet<Card>();
+		StringBuilder cardList = new StringBuilder();
+		
+		for(Card card: inactiveCards)
+			uniqueCards.add(card);
+		
+		for(Card uCard: uniqueCards)
+			cardList.append(uCard.getSuit().toChar()+""+uCard.getVal().toShortString()+" ");
+		cardList.deleteCharAt(cardList.lastIndexOf(" "));
+		
+		return cardList.toString();
 	}
 
 	void addCard(Card card){

@@ -73,7 +73,7 @@ public class Player
 	 * Each card value is separated by spaces
 	 * Returns a 0 if the player has no pairs
 	 * IE
-	 * @return		A 2 3 8 1 K or 0
+	 * @return		DA S2 A3 D8 DT DK or 0
 	 * @author Chris
 	 */
 	public String getPairs() 
