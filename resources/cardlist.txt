@@ -7,7 +7,7 @@ S6
 S7
 S8
 S9
-S1
+S10
 SJ
 SQ
 SK
@@ -20,7 +20,7 @@ D6
 D7
 D8
 D9
-D1
+D10
 DJ
 DQ
 DK
@@ -33,7 +33,7 @@ C6
 C7
 C8
 C9
-C1
+C10
 CJ
 CQ
 CK
@@ -46,7 +46,7 @@ H6
 H7
 H8
 H9
-H1
+H10
 HJ
 HQ
 HK

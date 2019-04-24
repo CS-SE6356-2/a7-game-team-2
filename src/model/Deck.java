@@ -1,32 +1,4 @@
-package src.model;
-
-/*
-	Programmer: Tyler Heald & Antonio Mendiola
-	Date: 3/30/2019
-	Description:
-	The model.Deck class contains the cards needed for playing a game.
-	When the model.Deck object is initialized with certain parameters from an external
-	file, it creates cards with the proper values. The only thing the deck can do
-	is return cards, remove cards, and shuffle itself.
-	
-	File cardList:
-	The file that contains cards to make for the deck is in the format:
-	#ncards
-	value1 category1
-	value2 category2
-	...
-	valuen categoryn
-	
-	METHODS:
-	shuffle()
-		Shuffles the deck using Collections.shuffle()
-	takeTopCard()
-	    Removes and returns the top card from the deck
-	getCardAt(int i)
-		Gets the card at a given index
-	getNumOfCards()
-		Gets the number of cards in the deck
-*/
+package model;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -35,12 +7,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
-
+/**
+ * @author Tyler Heard & Antonio Mendiola
+ */
 public class Deck {
-	//DATA FIELDS
-	List<Card> cards;
-	
-	/****	CONSTRUCTORS	****/
+	private List<Card> cards;
+
+	/**
+	 * Creates a Deck and instantiates it with a full 52 card deck
+	 */
 	public Deck() {
 		cards = new LinkedList<>();
 		for (Card.Suit s: Card.Suit.values()) {
@@ -50,19 +25,22 @@ public class Deck {
 		}
 	}
 
+	/**
+	 * Creates a Deck and instantiates it with all of the cards listen in the cardList file
+	 * @param cardList File containing list of cards to fill Deck with
+	 */
 	public Deck(File cardList)
 	{
 		cards = new LinkedList<>();
-		//Creating a scanner to read in the cardList
 		Scanner input = new Scanner(System.in);
 		try {
 			input = new Scanner(cardList);
-		}	catch(FileNotFoundException e) {
+		}
+		catch(FileNotFoundException e) {
 			System.out.println("cardList file not found!");
 			System.exit(1);
 		}
 
-		//Read in all the cards for deckSize
 		while(input.hasNextLine())
 		{
 			String card = input.nextLine();
@@ -70,7 +48,9 @@ public class Deck {
 		}
 	}
 
-	/****	FUNCTIONS	****/
+	/**
+	 * Shuffles the deck using Collections.shuffle
+	 */
 	void shuffle()
 	{
 		Collections.shuffle(cards);
@@ -90,21 +70,48 @@ public class Deck {
 		*/
 	}
 
-	/****	GETTERS/SETTERS	****/
-	public Card takeCard(){
+	List<Card> getCards(){
+		return cards;
+	}
+
+	/**
+	 * Removes a single card from the top of the Deck
+	 * @return Returns the removed Card
+	 */
+	Card takeCard(){
 		return cards.remove(0);
 	}
 
-	//getCardAt returns the ith card, starting from 0
-	Card getCardAt(int i){
+	/**
+	 * Finds the ith card in the Deck, from the top, and returns it, leaving the card in the Deck
+	 * @param i The position of the card to find
+	 * @return Returns the card found at the ith position
+	 */
+	Card getCardAt(int i) throws IndexOutOfBoundsException{
 		return cards.get(i);
 	}
 
-	public int getNumOfCards(){
+	/**
+	 * @return Returns the number of Cards left in the Deck
+	 */
+	int getNumOfCards(){
 		return cards.size();
 	}
 
-	public boolean isEmpty(){
+	/**
+	 * Returns whether or not the Deck is empty
+	 * @return Returns true if the Deck is empty, false otherwise
+	 */
+	boolean isEmpty(){
 		return cards.isEmpty();
+	}
+
+	@Override
+	public boolean equals(Object o){
+		if(o == this) return true;
+
+		if(o.getClass() != Deck.class) return false;
+
+		return ((Deck) o).getCards().equals(cards);
 	}
 }

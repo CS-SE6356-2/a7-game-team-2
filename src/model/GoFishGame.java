@@ -1,4 +1,4 @@
-package src.model;
+package model;
 
 import java.io.File;
 import java.net.Socket;
@@ -14,12 +14,12 @@ public class GoFishGame extends CardGame
 		File cardList) {
 		super(numOfPlayers, playerNames, clientSocks, cardList);
 	}
-	
+
 	public boolean isLegalMove(Player focusPlayer, String move){
 		// TODO
 		return true;
 	}
-	
+
 	/**
 	 *  Checks if target has card; if true, transfer all of that type of card from target to source, otherwise source draws one card
 	 *  @param value - Value of card source is testing target with
@@ -37,7 +37,7 @@ public class GoFishGame extends CardGame
 			return false;
 		}
 	}
-	
+
 	/**
 	 *  Move all cards with value [value] from source to target
 	 *  @param cards - List of cards to transfer
@@ -47,13 +47,13 @@ public class GoFishGame extends CardGame
 	public void transferCardsFromOther(List<Card> cards, Player target, Player source) {
 		target.addCards(source.removeCards(cards));
 	}
-	
+
 	public String determineWinner(PlayerQueue playerList) {
 		Iterator<Player> playerIter = playerList.iterator();
 		// TODO
 		return "";
 	}
-	
+
 	public GoFishQueue sortPlayersInPlayOrder() {
 		return (GoFishQueue) super.sortPlayersInPlayOrder();
 	}

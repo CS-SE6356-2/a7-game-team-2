@@ -1,16 +1,15 @@
-package src.model;
+package model;
 
 /**
  * @author Antonio Mendiola
  * The model.Card class is meant only to hold the value and suit of a Card.
  * It contains that data, ways to access it, and a method to print its data
  */
-public class Card{
-	//DATA FIELDS
+public class Card {
     private Suit suit;
     private Value value;
 
-	public enum Suit{
+	public enum Suit {
 	    SPADES, HEARTS, CLUBS, DIAMONDS;
 
         /**
@@ -21,13 +20,13 @@ public class Card{
         }
     }
 
-    public enum Value{
+    public enum Value {
 	    ACE, NUM2, NUM3, NUM4, NUM5, NUM6, NUM7, NUM8, NUM9, NUM10, JACK, QUEEN, KING;
 
         /**
          * @return returns a String representation of the Value. Either the number of the value or the first character of the Value
          */
-	    public String toShortString(){
+	    public String toShortString() {
 	        switch(this){
                 case ACE:
                     return "A";
@@ -48,8 +47,7 @@ public class Card{
      * @param s The Suit of the Card
      * @param v The Value of the Card
      */
-	public Card(Suit s, Value v)
-	{
+	public Card(Suit s, Value v) {
         suit = s;
 		value = v;
 	}
@@ -57,7 +55,7 @@ public class Card{
     /**
      * Constructs a new Card based on its String representation. Invalid Strings throw an exception.
      * @param card String representation of the Card
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException Thrown when String provided does not match a valid representation of a card.
      */
 	public Card(String card) throws IllegalArgumentException {
 	    char s = card.charAt(0);
@@ -127,14 +125,14 @@ public class Card{
     /**
      * @return returns the Card's Value
      */
-    Value getVal(){
+    Value getVal() {
 		return value;
 	}
 
     /**
      * @return returns the Card's Suit
      */
-	Suit getSuit(){
+	Suit getSuit() {
 		return suit;
 	}
 
@@ -143,12 +141,12 @@ public class Card{
      * @param o The other Card to be compared with this one
      * @return returns true when both cards have the same Value, false otherwise
      */
-	boolean matches(Card o){
+	boolean matches(Card o) {
         return value == o.getVal();
     }
 
 	@Override
-	public boolean equals(Object card){
+	public boolean equals(Object card) {
 		if(card == this) return true;
 
 		if(card.getClass() != Card.class) return false;
@@ -158,7 +156,7 @@ public class Card{
 	}
 
 	@Override
-	public String toString(){
+	public String toString() {
 		return suit.toChar() + value.toShortString();
 	}
 }

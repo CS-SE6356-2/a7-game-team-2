@@ -1,4 +1,4 @@
-package src.tests;
+package model;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -22,7 +22,7 @@ public class PlayerHandTest {
 		for(int i = 0; i < players.length; i++)
 		{
 			for(;temp.size() < 7; cardNum++)			//Get a list of cards that will be of even size to a player. UNO starts off with players having 7 cards
-				temp.add(deck.cards.get(cardNum));		//add card reference to list
+				temp.add(deck.getCards().get(cardNum));		//add card reference to list
 				//Give players their cards
 			players[i].addCards(temp);
 			

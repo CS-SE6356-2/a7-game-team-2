@@ -1,5 +1,6 @@
 package model;
 
+import model.Card;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -67,7 +68,7 @@ class CardTest {
         assertFalse(c1.matches(c2));
         assertFalse(c1.matches(c5));
         assertFalse(c2.matches(c1));
-        assertFalse(c2.matches(c2));
+        assertFalse(c2.matches(c5));
         assertFalse(c5.matches(c1));
         assertFalse(c5.matches(c2));
     }
@@ -99,6 +100,6 @@ class CardTest {
         assertEquals("SQ", c12.toString());
         assertEquals("SK", c13.toString());
         assertEquals("SA", c14.toString());
-        assertEquals("DA", c1.toString());
+        assertEquals("DA", c15.toString());
     }
 }

@@ -24,26 +24,26 @@ javac src\view\ClientLauncher.java
 java src.view.ClientLauncher
 ```
  
-### To compile and run DeckTest:
+### To compile and run model.DeckTest:
 ```
-javac src\tests\DeckTest.java
-java src.tests.DeckTest
-```
- 
-### To compile and run PlayerQueueTest:
-```
-javac src\tests\PlayerQueueTest.java
-java src.tests.PlayerQueueTest
+javac src\tests\model.DeckTest.java
+java src.tests.model.DeckTest
 ```
  
-### To compile and run CardGameTest:
+### To compile and run model.PlayerQueueTest:
 ```
-javac src\tests\CardGameTest.java
-java src.tests.CardGameTest
+javac src\tests\model.PlayerQueueTest.java
+java src.tests.model.PlayerQueueTest
 ```
  
-### To compile and run PlayerHandTest:
+### To compile and run model.CardGameTest:
 ```
-javac src\tests\PlayerHandTest.java
-java src.tests.PlayerQueueTest
+javac src\tests\model.CardGameTest.java
+java src.tests.model.CardGameTest
+```
+ 
+### To compile and run model.PlayerHandTest:
+```
+javac src\tests\model.PlayerHandTest.java
+java src.tests.model.PlayerQueueTest
 ```
