@@ -76,13 +76,13 @@ public class Player
 	 * @return		DA S2 A3 D8 DT DK or 0
 	 * @author Chris
 	 */
-	public String getPairs() 
+	public List<Card> getPairs()
 	{
-		if(hand.getNumInactiveCards() == 0)
-			return "0";
+		if(hand.getNumActiveCards() == 0)
+			return null;
 		else
 		{
-			return hand.findMatches();
+			return hand.checkMatches();
 		}
 	}
 	
@@ -127,14 +127,6 @@ public class Player
 	public List<Card> transferActiveToInactive(List<Card> cards)
 	{
 		return hand.transferActiveToInactive(cards);
-	}
-
-	/* Transfers all the cards in the list from the player's inactive cards
-	 * to their active cards and returns a list of all cards successfully
-	 * transferred */
-	public List<Card> transferInactiveToActive(List<Card> cards)
-	{
-		return hand.transferInactiveToActive(cards);
 	}
 
 	/* Used to perform game-specific actions that go beyond

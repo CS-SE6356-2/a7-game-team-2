@@ -1,20 +1,21 @@
 package model;
-/* @author Jacob  */
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
-
-/* Represents the cards in a specific model.Player's possession. */
+/**
+ * Class representing a Player's Hand, which contains both the cards they can play, and the inactive cards which belong to them.
+ * @author Jacob & Antonio Mendiola
+ */
 public class Hand
 {
-/* Data */
-	/* All the cards that are able to be played */
+	// All the cards that are able to be played
 	private List<Card> activeCards;
 
-	/* Cards the hand owns but cannot use (e.g. matched cards) */
+	// Cards the hand owns but cannot use (e.g. matched cards)
 	private List<Card> inactiveCards;
 
 	public Hand()
@@ -23,10 +24,11 @@ public class Hand
 		inactiveCards = new LinkedList<>();
 	}
 
-	/* Looks at the activeCards for matches and returns all unique pairs
-	 * of matching cards. Games requiring a more sophisticated 
-	 * matching function would need to override this function */
-	public List<Card> checkMatches()
+	/**
+	 * Finds all the pairs of cards which share the same value within the Hand's activeCards
+	 * @return List of matched cards in the Hand
+	 */
+    List<Card> checkMatches()
 	{
 		List<Card> matchingCards = new LinkedList<>();
 
@@ -48,7 +50,7 @@ public class Hand
 		}
 		return matchingCards;
 	}
-	
+
 	/**
 	 * Returns a list of cards of the pairs that are held by a player
 	 * Each card is separated by spaces
@@ -61,99 +63,102 @@ public class Hand
 	{
 		TreeSet<Card> uniqueCards = new TreeSet<Card>();
 		StringBuilder cardList = new StringBuilder();
-		
+
 		for(Card card: inactiveCards)
 			uniqueCards.add(card);
-		
+
 		for(Card uCard: uniqueCards)
 			cardList.append(uCard.getSuit().toChar()+""+uCard.getVal().toChar()+" ");
 		cardList.deleteCharAt(cardList.lastIndexOf(" "));
-		
+
 		return cardList.toString();
 	}
 
+    /**
+     * Adds a card to the activeCards list
+     * @param card Card to add to the activeCards list
+     */
 	void addCard(Card card){
 	    activeCards.add(card);
     }
 
-	/* Adds all the cards in the list to the active cards */
+	/**
+	 * Adds all cards in the provided list to the activeCards list
+	 * @param cards List of Cards to add
+	 */
     void addCards(List<Card> cards)
 	{
 		activeCards.addAll(cards);
 	}
 
-	/* Removes all the cards in the list from the active cards,
-	 * returning a list of all cards successfully removed */
+	/**
+	 * Removes every card in the provided list from the activeCards list and returns the list of Cards removed.
+	 * @param cards List of Cards to be removed from the activeCards list
+	 * @return Returns the list of removed cards
+	 */
     List<Card> removeCards(List<Card> cards)
 	{
-		List<Card> removedCards = new LinkedList<>();
-		for (int index = 0; index < cards.size(); ++index)
-		{
-			Card cardToRemove = cards.get(index);
-			if (activeCards.remove(cardToRemove))
-			{
-				removedCards.add(cardToRemove);
-			}
-		}
-		return removedCards;
+	    Map<Boolean, List<Card>> partitioned = activeCards.stream().collect(Collectors.partitioningBy(cards::contains));
+	    activeCards = partitioned.get(false);
+	    return partitioned.get(true);
 	}
 
-	/* Transfers all the cards in the list from active cards to inactive cards 
-	 * and returns a list of all cards successfully transferred */
+    /**
+     * Transfers all Cards from cards list found in activeCards list to the inactiveCards list
+     * @param cards List of Cards to transfer
+     * @return Returns list of transferred Cards
+     */
     List<Card> transferActiveToInactive(List<Card> cards)
 	{
-		List<Card> transferredCards = new LinkedList<>();
-        for (Card cardToTransfer : cards) {
-            if (activeCards.remove(cardToTransfer)) {
-                inactiveCards.add(cardToTransfer);
-                transferredCards.add(cardToTransfer);
-            }
-        }
-		return transferredCards;
+	    List<Card> ret = removeCards(cards);
+	    inactiveCards.addAll(ret);
+	    return ret;
 	}
 
-	/* Transfers all the cards in the list from inactive cards to active cards
-	 * and returns a list of all cards successfully transferred */
-    List<Card> transferInactiveToActive(List<Card> cards)
-	{
-		List<Card> transferredCards = new LinkedList<>();
-        for (Card cardToTransfer : cards) {
-            if (inactiveCards.remove(cardToTransfer)) {
-                activeCards.add(cardToTransfer);
-                transferredCards.add(cardToTransfer);
-            }
-        }
-		return transferredCards;
-	}
-
-/* Getters */
-	public List<Card> getActiveCards()
+    /**
+     * @return Returns the activeCards list
+     */
+    List<Card> getActiveCards()
 	{
 		return activeCards;
 	}
-	
-	public List<Card> getInactiveCards()
+
+    /**
+     * @return Returns the inactiveCards list
+     */
+	List<Card> getInactiveCards()
 	{
 		return inactiveCards;
 	}
-	
-	//These both are used for the hand used in the view.ClientGUI
-	//Both make shallow copies of the lists
-	public void setActiveCards(List<Card> activeCards)
+
+    /**
+     * Sets the activeCards list to the provided list of Cards
+     * @param cards New list of active Cards
+     */
+	public void setActiveCards(List<Card> cards)
 	{
-		activeCards = new LinkedList<>(activeCards);
+		activeCards = new LinkedList<>(cards);
 	}
 
-	public int getNumActiveCards()
+    /**
+     * @return Returns the number of active Cards in the Hand
+     */
+	int getNumActiveCards()
 	{
 		return activeCards.size();
 	}
 
-    public int getNumInactiveCards()
+    /**
+     * @return Returns the number of inactive Cards in the Hand
+     */
+    int getNumInactiveCards()
     {
         return inactiveCards.size();
     }
 
+    /**
+     * @return Returns the total number of Cards in the Hand, both active and inactive
+     */
     public int getNumCards()
     {
         return activeCards.size() + inactiveCards.size();

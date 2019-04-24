@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
+ * Class representing the central Deck of Cards, which begins at full and distributes Cards through the takeCard function.
  * @author Tyler Heard & Antonio Mendiola
  */
 public class Deck {
