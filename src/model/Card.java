@@ -129,14 +129,14 @@ public class Card implements Comparator<Card>{
     /**
      * @return returns the Card's Value
      */
-    Value getVal() {
+    public Value getVal() {
 		return value;
 	}
 
     /**
      * @return returns the Card's Suit
      */
-	Suit getSuit() {
+	public Suit getSuit() {
 		return suit;
 	}
 

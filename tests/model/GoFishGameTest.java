@@ -41,7 +41,7 @@ public class GoFishGameTest {
 			if(testGame.players[playerTurn].getActiveCards().isEmpty()) {
 				if(testGame.cardDeck.isEmpty()) {
 					testGame.players[1 - playerTurn].checkBooks();
-					testGame.checkRemovePlayer(testGame.players[playerTurn]);
+					testGame.lostCards(testGame.players[playerTurn]);
 					break;
 				}
 				else {
