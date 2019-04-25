@@ -457,6 +457,16 @@ class ServerThread extends Thread{
 		
 		//5th Stage@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 		
+		//Re-send out everything one more time
+		for(Player p: cardGame.getPlayerList()) {
+			try {
+				DataOutputStream out = new DataOutputStream(p.getSock().getOutputStream());
+				out.writeUTF(move+";"+focusPlayer.getTeamName()+";"+p.getCardListForUTF()+";"+cardGame.getAmtCardInDrawDeck()+";"+cardGame.getAmtCardsPerAHand()+";"+cardGame.getPairsPerHand());
+			}
+			catch (IOException e) {}
+		}
+		
+		
 		//Send message to clients to go to win screen and display who won
 		System.out.println("A winner is "+winner);
 		//Send the string "PLAY" to all of the clients
