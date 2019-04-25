@@ -9,9 +9,9 @@ import java.util.Iterator;
 public class PlayerQueue implements Iterable<Player>
 {
 	////Member Variables////
-	private Node head;			//Tracks the player to go next
-	private int size;			//Tracks the amount of players that are playing
-	private boolean reversed;	//Tracks when we go to the next player or previous player
+	Node head;			//Tracks the player to go next
+	int size;			//Tracks the amount of players that are playing
+	boolean reversed;	//Tracks when we go to the next player or previous player
 	
 	////Constructor////
 	
@@ -73,27 +73,7 @@ public class PlayerQueue implements Iterable<Player>
 		}
 	}
 	
-	public Player dequeue(Player person) {
-		if(size == 0) return null;
-		else if(size == 1) return getPlayer();
-		else {
-			Node temp = getHead();
-			Node tail = getHead().prev;
-			while(temp != tail) {
-				if(temp.data.equals(person)) {
-					temp.prev.next = temp.next;
-					temp.next.prev = temp.prev;
-					return temp.data;
-				}
-				temp = temp.next;
-			}
-		}
-		return null; // return null if player not found
-	}
 	
-	private void dequeue(Node n) {
-		// TODO
-	}
 	
 	/**
 	 * Returns the model.Player at the head of the queue
@@ -166,11 +146,18 @@ public class PlayerQueue implements Iterable<Player>
 		return new PlayerQueueIterator(this);
 	}
 	
-	public Node getHead() {
+	public Node getHead() 
+	{
 		return head;
 	}
+	
+	public void setHead(Node newHead) 
+	{
+		head = newHead;
+	}
 
-	public int getSize() {
+	public int getSize() 
+	{
 		return size;
 	}
 
