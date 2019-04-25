@@ -251,6 +251,14 @@ class ClientThread extends Thread{
 					   }
 					});
 				}
+				//Client State 4@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+				//Used with Server stage 5
+				//Making changes to the clients
+				//Sending them to the win screen and closing down all sockets
+				else if(mes.substring(0, 6).equals("Winner"))
+				{
+					
+				}
 				
 			} catch (IOException e) {
 				
@@ -447,7 +455,19 @@ class ServerThread extends Thread{
 			win = (winner = cardGame.determineWinner()) != null;
 		}
 		
+		//5th Stage@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+		
+		//Send message to clients to go to win screen and display who won
 		System.out.println("A winner is "+winner);
+		//Send the string "PLAY" to all of the clients
+		for(int i = 0; i < game.clientSocks.size(); i++) {
+			try {
+				DataOutputStream out = new DataOutputStream(game.clientSocks.get(i).getOutputStream());
+				out.writeUTF("Winner;"+winner);
+			}
+			catch (IOException e) {}
+		}
+		
 		
 	}
 }//end ServerListener

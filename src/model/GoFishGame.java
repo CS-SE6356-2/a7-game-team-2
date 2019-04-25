@@ -34,20 +34,28 @@ public class GoFishGame extends CardGame {
 	 *            - Player being asked
 	 * @return true if target has card type, false if not
 	 */
-	public boolean queryPlayer(Card.Value value, Player target, Player source) {
+	public boolean queryPlayer(Card.Value value, Player target, Player source) 
+	{
+		//Check to see if the source has cards with the same value
 		List<Card> query = source.getCardsOfValue(value);
+		boolean doesGoAgain;
+		
+		//If the source has those cards
 		if (!query.isEmpty()) {
-			transferCardsFromOther(query, target, source);
-			source.checkBooks();
-			checkRemovePlayer(source);
-			return true;
-		} else {
-			if(!cardDeck.getCards().isEmpty())
-				target.addCard(cardDeck.takeCard()); // target draws one card if source does not contain any cards of
-													// category type
-			source.checkBooks();
-			return false;
+			transferCardsFromOther(query, target, source);	//Move the cards from the source to the target
+			lostCards(source);								//Check if the source needs to gain a new hand or remove them from play
+			doesGoAgain = true;
 		}
+		//If the source does not have those cards
+		else {
+			if(!cardDeck.getCards().isEmpty())			//Check if the deck is not empty
+				target.addCard(cardDeck.takeCard()); 	// target draws one card if source does not contain any cards of
+			doesGoAgain = false;
+		}
+		
+		target.checkBooks();							//Checks if the target has a 4 of a kind pair. Sends those cards to the inactiveCards
+		lostCards(target);
+		return doesGoAgain;
 	}
 
 	/**
@@ -64,10 +72,36 @@ public class GoFishGame extends CardGame {
 		target.addCards(source.removeCards(cards));
 	}
 
-	public void checkRemovePlayer(Player source) {
-		if (source.getActiveCards().size() == 0 && cardDeck.isEmpty()) {
-			getPlayerQueue().dequeue(source);
+	/**
+	 * Checks if the player has any active cards left
+	 * If they don't, check if the draw deck has any cards left to draw
+	 * If the draw deck has no more cards left, then remove the player from the queue
+	 * Note: May perform Recursion
+	 * @param player
+	 */
+	public void lostCards(Player player) 
+	{
+		//Check if the player lost all their cards, if not then nothing else to do. But if so
+		if(player.getNumOfCards() == 0)
+		{
+			//If there are cards left in the deck
+			if(!cardDeck.isEmpty())
+			{
+				//Refill the player's hand with up to the amount they started with at the beginning of the game
+				player.addCards(cardDeck.refillHand(getStartingHandSize()));
+				//Since they are recieving cards we must check if they got a 4 of a kind
+				player.checkBooks();
+				//And if they have moved cards from the active cards to the inactive cards we must check if they got rid of their whole hand
+				lostCards(player);
+			}
+			//Else if there are no cards left in the deck
+			else
+			{
+				//Remove that player
+				playerQueue.dequeue(player);
+			}
 		}
+		
 	}
 
 	/**

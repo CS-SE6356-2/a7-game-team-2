@@ -43,7 +43,7 @@ public class CardGame
 		}
 	}
 
-	private int getStartingHandSize() {
+	protected int getStartingHandSize() {
 		if(players.length < 4) return 7;
 		else return 5;
 	}

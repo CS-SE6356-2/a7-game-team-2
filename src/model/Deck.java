@@ -2,6 +2,7 @@ package model;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -82,6 +83,21 @@ public class Deck {
 	Card takeCard(){
 		if(cards.isEmpty()) return null;
 		return cards.remove(0);
+	}
+	
+	/**
+	 * Removes up to the given amount of cards from the deck.
+	 * To be used for refilling the player's hand.
+	 * returns an empty list if there are no more cards
+	 * @param startingHandSize - Either a 5 or 7 depending on the amount of players that started the game
+	 * @return A list of cards that were removed from the deck or an empty list
+	 */
+	List<Card> refillHand(int startingHandSize)
+	{
+		List<Card> newHand = new ArrayList<>();
+		for(int i = 0; !isEmpty() && i < startingHandSize; ++i)
+			newHand.add(takeCard());
+		return newHand;
 	}
 
 	/**
