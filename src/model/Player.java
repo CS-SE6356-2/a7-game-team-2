@@ -185,12 +185,27 @@ public class Player
 	/**
 	 * The players card list uses 3 delimiters
 	 *	The ';' delimits the active list form the inactive list. ActiveCards;InactiveCards
-	 *	The ' ' delimits the cards in a list from each other. Card1 Card2 Card3
+	 *	The ' ' delimits the cards in a list from each other. Card1,Card2,Card3
 	 * @author Chris
 	 * @return Returns String representation of the Player's Hand
 	 */
 	public String getCardListForUTF()
-	{	
-		return getPairs(getActiveCards())+";"+getPairs(getInactiveCards());
+	{
+		StringBuilder cardList = new StringBuilder();
+		
+		//Get all the active cards
+		if(getActiveCards().size()>0)
+		{
+			for(Card card: getActiveCards())
+				cardList.append(card.toString()).append(" ");
+			cardList.setCharAt(cardList.lastIndexOf(" "), ';');
+		}
+		else
+			cardList.append(" ;");
+		
+		//Get the unique inactive cards
+		cardList.append(getPairs(getInactiveCards()));
+		
+		return cardList.toString();
 	}
 }

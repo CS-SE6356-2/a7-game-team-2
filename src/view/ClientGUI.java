@@ -2,6 +2,7 @@ package view;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.List;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -16,6 +17,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import model.Card;
 import model.Hand;
 
 public class ClientGUI extends Application{
@@ -24,7 +26,13 @@ public class ClientGUI extends Application{
 	
 	String state;
 	String yourName;
+	//server to client variables
+	int yourID;
 	Hand yourCards;
+	int deckCount;
+	int cardCounts[];
+	List<Card>[] playerPairs;
+	
 	
 	
 	//GUI stuff
@@ -56,7 +64,6 @@ public class ClientGUI extends Application{
 		
 		state = "";
 		yourName = "model.Player";
-		yourCards = new Hand();
 		
 		root = new VBox();
 		hostButton = new Button("Host Game");//part of main menu screen

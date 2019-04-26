@@ -43,7 +43,7 @@ public class Hand
 	 * @param A List of Cards to check
 	 * @return		DA S2 A3 D8 DT DK
 	 */
-	public String findMatchesForUTF(List<Card> cards) 
+	String findMatchesForUTF(List<Card> cards) 
 	{
         StringBuilder cardList = new StringBuilder();
         TreeSet<Card> uniqueCards = new TreeSet<>(cards);
@@ -62,7 +62,7 @@ public class Hand
 	 * @param A list of cards to check
 	 * @return The number of cards that have that value
 	 */
-    private int getDuplicityAmount(Value val, List<Card> cards) 
+    public int getDuplicityAmount(Value val, List<Card> cards) 
     {
 		int count = 0;
 		for(Card uCard: cards)
