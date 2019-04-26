@@ -49,7 +49,7 @@ public class Hand
         TreeSet<Card> uniqueCards = new TreeSet<>(cards);
 
 		for(Card uCard: uniqueCards)
-			cardList.append(getDuplicityAmount(uCard.getVal(), cards)+""+uCard.toString()+" ");
+			cardList.append(uCard.toString()+" ");
 		cardList.deleteCharAt(cardList.lastIndexOf(" "));
 
 		return cardList.toString();
@@ -134,7 +134,16 @@ public class Hand
      */
 	public void setActiveCards(List<Card> cards)
 	{
-		activeCards = new LinkedList<>(cards);
+		activeCards = cards;
+	}
+	
+	/**
+     * Sets the activeCards list to the provided list of Cards
+     * @param cards New list of active Cards
+     */
+	public void setInactiveCards(List<Card> cards)
+	{
+		inactiveCards = cards;
 	}
 
     /**

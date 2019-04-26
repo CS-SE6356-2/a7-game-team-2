@@ -16,6 +16,7 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import javafx.application.Platform;
 import model.Card;
@@ -137,6 +138,36 @@ public class ClientController {
 	void writeToServer(String mes) throws IOException {
 		DataOutputStream out = new DataOutputStream(thisSock.getOutputStream());
 		out.writeUTF(mes);
+	}
+	
+	
+	//#####Transform Server Info to Client Method#####
+	
+	/**
+	 * Sets the Client's hand with 2 Strings each in the form
+	 * card1 card2 card3 ...
+	 * @param activeList - A list of Cards
+	 * @param inactiveList - A list of Cards
+	 */
+	void fillHand(String activeList, String inactiveList)
+	{
+		gui.yourCards.setActiveCards(recreateCardList(activeList));
+		gui.yourCards.setInactiveCards(recreateCardList(inactiveList));
+	}
+	
+	/**
+	 * Creates a List object out of String in the format of a list of cards separated by spaces
+	 * @param cards card1 card2 card3 ...
+	 * @return A List object of those cards
+	 */
+	List<Card> recreateCardList(String cards)
+	{
+		List<Card> cardList = new ArrayList<>();
+		
+		for(String card: cards.split(" "))
+			cardList.add(new Card(card));
+		
+		return cardList;
 	}
 	
 	
