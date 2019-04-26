@@ -45,7 +45,7 @@ public class Hand
         TreeSet<Card> uniqueCards = new TreeSet<>(inactiveCards);
 
 		for(Card uCard: uniqueCards)
-			cardList.append(uCard.getSuit().toChar()).append(uCard.getVal().toChar()).append(" ");
+			cardList.append(uCard.toString()+" ");
 		cardList.deleteCharAt(cardList.lastIndexOf(" "));
 
 		return cardList.toString();
