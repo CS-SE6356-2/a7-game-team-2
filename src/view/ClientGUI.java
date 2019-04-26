@@ -2,6 +2,7 @@ package view;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.List;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -9,12 +10,14 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import model.Card;
 import model.Hand;
 
 public class ClientGUI extends Application{
@@ -23,7 +26,14 @@ public class ClientGUI extends Application{
 	
 	String state;
 	String yourName;
+	//server to client variables
+	int yourID;
 	Hand yourCards;
+	int deckCount;
+	int cardCounts[];
+	List<Card>[] playerPairs;
+	
+	
 	
 	//GUI stuff
 	VBox root = new VBox();
@@ -43,6 +53,7 @@ public class ClientGUI extends Application{
 	TextField addressInput;
 	TextField nameInput;
 	TextField gameInput;
+	//Label realLabel;
 	
 	@Override
 	public void start(Stage stage) throws Exception {
@@ -53,10 +64,9 @@ public class ClientGUI extends Application{
 		
 		state = "";
 		yourName = "model.Player";
-		yourCards = new Hand();
 		
 		root = new VBox();
-		hostButton = new Button();//part of main menu screen
+		hostButton = new Button("Host Game");//part of main menu screen
 		joinButton = new Button("Join Game");//part of main menu screen
 		connectButton = new Button("Connect");//part of join screen
 		serverButton = new Button("Create Server");//part of host screen
@@ -72,10 +82,13 @@ public class ClientGUI extends Application{
 		addressInput = new TextField();//part of join screen
 		nameInput = new TextField();//part of host and join screen
 		gameInput = new TextField();//part of game screen
+		//realLabel = new Label();
 		
 		Image image = new Image(new FileInputStream("resources\\2C.png"));
 		ImageView imgV = new ImageView(image);
-		hostButton.setGraphic(imgV);
+		imgV.setFitHeight(50);
+		imgV.setFitWidth(50);
+		//realLabel.setGraphic(imgV);
 		
 		//setup buttons and what-not
 		hostButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -158,7 +171,7 @@ public class ClientGUI extends Application{
 	}
 	void mainScreen() {
 		root.getChildren().clear();
-		root.getChildren().addAll(menuLabel, hostButton, joinButton, exitButton);
+		root.getChildren().addAll(/*realLabel,*/ menuLabel, hostButton, joinButton, exitButton);
 		menuLabel.setText("Main Menu");
 	}
 	

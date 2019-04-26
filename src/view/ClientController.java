@@ -16,10 +16,12 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import javafx.application.Platform;
 import model.Card;
 import model.GoFishGame;
+import model.Hand;
 import model.Player;
 
 public class ClientController {
@@ -140,6 +142,62 @@ public class ClientController {
 	}
 	
 	
+	//#####Transform Server Info to Client Method#####
+	
+	/**
+	 * Sets the Client's hand with 2 Strings each in the form
+	 * card1 card2 card3 ...
+	 * Does not set the hand lists if a respective string is empty
+	 * @param activeList - A list of Cards or " "
+	 * @param inactiveList - A list of Cards or " "
+	 */
+	void fillHand(String activeList, String inactiveList)
+	{
+		if(!activeList.equals(" "))
+			gui.yourCards.setActiveCards(recreateCardList(activeList));
+		if(!inactiveList.contentEquals(" "))
+			gui.yourCards.setInactiveCards(recreateCardList(inactiveList));
+	}
+	
+	void setCardCounts(String deckCount, String playerCardCounts)
+	{
+		gui.deckCount = Integer.parseInt(deckCount);
+		int i = 0;
+		for(String count: playerCardCounts.split(","))
+			gui.cardCounts[i++] = Integer.parseInt(count);
+	}
+	
+	void setPlayerPairs(String playerPairs)
+	{
+		int i = 0;
+		for(String cardList: playerPairs.split(","))
+		{
+			if(!cardList.equals(" "))
+			{
+				gui.playerPairs[i].clear();
+				for(String card: cardList.split(" "))
+					gui.playerPairs[i].add(new Card(card));
+			}
+			++i;
+		}
+	}
+	
+	/**
+	 * Creates a List object out of String in the format of a list of cards separated by spaces
+	 * @param cards card1 card2 card3 ...
+	 * @return A List object of those cards
+	 */
+	List<Card> recreateCardList(String cards)
+	{
+		List<Card> cardList = new LinkedList<>();
+		
+		for(String card: cards.split(" "))
+			cardList.add(new Card(card));
+		
+		return cardList;
+	}
+	
+	
 }//end controller
 
 
@@ -168,13 +226,25 @@ class ClientThread extends Thread{
 				DataInputStream in = new DataInputStream(game.thisSock.getInputStream());
 				//*DEBUG*/System.out.println(getId()+": Wating for message from server");
 				String mes = in.readUTF();
+				
 				//*DEBUG*/System.out.println(getId()+": got from server: "+mes);
 				//Client State 1@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-				if((game.gui.state.equals("lobby") || game.gui.state.equals("hosting")) && mes.equals("PLAY")){
+				if((game.gui.state.equals("lobby") || game.gui.state.equals("hosting")) && mes.length()>3 && mes.substring(0, 4).equals("PLAY")){
 					//update gui
 					Platform.runLater(new Runnable() {
-					   @Override
+					@SuppressWarnings("unchecked")
+					@Override
 					   public void run() {
+						   //Initiailize this client's variables
+						   game.gui.yourID = Integer.parseInt(mes.substring(5,6)); //Set the playerID
+						   game.gui.yourCards = new Hand();
+						   game.gui.deckCount = Integer.parseInt(mes.substring(7));	//Temporarily putting the amount of players here
+						   game.gui.cardCounts = new int[game.gui.deckCount];
+						   game.gui.playerPairs = new List[game.gui.deckCount];
+						   for(int i = 0; i < game.gui.deckCount; ++i)
+							   game.gui.playerPairs[i] = new ArrayList<Card>();
+						   
+						   //Send this client to the game state
 						   game.gui.game();
 					   }
 					});
@@ -190,16 +260,12 @@ class ClientThread extends Thread{
 				}
 				//Client State 3@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 				else if(game.gui.state.equals("game")){
-					
 					//&&&&&Part 1&&&&&
 					//Check to see if we have a valid message that has semicolons
 					if(mes.indexOf(';') == -1) continue;
 					
+					
 					//Split the in message
-					//Either
-						//turn;game info;player whose turn it is
-					//or
-						//card;activeCards;inactiveCards
 					/*String[]*/ mess = mes.split(";", 0);
 					
 					//&&&&Part 2&&&&&
@@ -210,44 +276,31 @@ class ClientThread extends Thread{
 						   //Update players messages about the previous move and whose turn it is
 						 
 						   //Tells the Client what move was made
-						   game.gui.infoLabel.setText(mess[1]);
+						   game.gui.infoLabel.setText(mess[0]);
 							   
 						   //Determines if this Client is the one to go next
-						   if(mess[2].equals(game.gui.yourName)) {
+						   if(mess[1].equals(game.gui.yourName)) {
 							   game.gui.turnLabel.setText("It's your turn");
 							   game.gui.root.getChildren().add(game.gui.playButton);
 						   }
 						   else {
-							   game.gui.turnLabel.setText("It's " + mess[2] + "'s turn");
+							   game.gui.turnLabel.setText("It's " + mess[1] + "'s turn");
 						   }
-							   
+							
+						   System.out.println(game.gui.yourCards == null);
 							   
 						   //Giving players their cards
-						   if(!mess[3].equals(" "))
-						   {
-							   for(String card: mess[3].split(","))
-								   tempList.add(new Card(card));
-							   game.gui.yourCards.setActiveCards(tempList);
-							   tempList.clear();
-						   }
-						   //inactive cards
-						   else if(!mess[4].equals(" "))
-						   {
-							   for(String card: mess[4].split(","))
-								   tempList.add(new Card(card));
-							   //game.gui.yourCards.setInactiveCards(tempList);
-							   tempList.clear();
-						   }
-							   
+						   game.fillHand(mess[2], mess[3]);
+						
 						   //Test if client got the message
 						   game.gui.testLabel.setText(mes);
 						   
 						   //Update each Client how many cards are in the Draw Deck
-						   
-						   
 						   //Update each client on how many card each player has
+						   game.setCardCounts(mess[4], mess[5]);
 						   
 						   //Update each client on which matches each player has
+						   game.setPlayerPairs(mess[6]);
 					   }
 					});
 				}
@@ -255,7 +308,7 @@ class ClientThread extends Thread{
 				//Used with Server stage 5
 				//Making changes to the clients
 				//Sending them to the win screen and closing down all sockets
-				else if(mes.substring(0, 6).equals("Winner"))
+				else if(mes.length()>5 && mes.substring(0, 6).equals("Winner"))
 				{
 					
 				}
@@ -345,11 +398,14 @@ class ServerThread extends Thread{
 		
 		//3rd Stage@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 		
+		//Temporarily reset the state to hosting so the server's client can recieve the message properly
+		game.gui.state = "hosting";
+		
 		//Send the string "PLAY" to all of the clients
 		for(int i = 0; i < game.clientSocks.size(); i++) {
 			try {
 				DataOutputStream out = new DataOutputStream(game.clientSocks.get(i).getOutputStream());
-				out.writeUTF("PLAY");
+				out.writeUTF("PLAY;"+i+";"+game.clientSocks.size());
 			}
 			catch (IOException e) {}
 		}
@@ -396,11 +452,11 @@ class ServerThread extends Thread{
 					//The sent message will be held in a string mes then a string array mess separated by semicolons ';'
 					//mess[0] = The last move played
 					//mess[1] = The client player's name
-					//mess[2] = The list of active cards
-					//mess[3] = The list of inactive card
+					//mess[2] = The list of active cards | cards are delimited by ' '
+					//mess[3] = The list of inactive cards | cards are delimited by ' '
 					//mess[4] = The number of cards in the deck
-					//mess[5] = The number of active cards per each player
-					//mess[6] = Unique pairs held by each player
+					//mess[5] = The number of active cards per each player | Players are delimited by ',' | cards are delimited by ' '
+					//mess[6] = Unique pairs held by each player | Players are delimited by ','  | cards are delimited by ' '
 					out.writeUTF(move+";"+focusPlayer.getTeamName()+";"+p.getCardListForUTF()+";"+cardGame.getAmtCardInDrawDeck()+";"+cardGame.getAmtCardsPerAHand()+";"+cardGame.getPairsPerHand());
 				}
 				catch (IOException e) {}

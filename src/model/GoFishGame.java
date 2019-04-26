@@ -179,7 +179,7 @@ public class GoFishGame extends CardGame {
 		StringBuilder cardsPerHand = new StringBuilder();
 		for(Player p: players)
 			cardsPerHand.append(p.getNumOfCards()+",");
-		cardsPerHand.setCharAt(cardsPerHand.lastIndexOf(","), ';');
+		cardsPerHand.deleteCharAt(cardsPerHand.lastIndexOf(","));
 		return cardsPerHand.toString();
 	}
 
@@ -199,8 +199,8 @@ public class GoFishGame extends CardGame {
 		StringBuilder pairsPerHand = new StringBuilder();
 		for(Player p: players)
 			pairsPerHand.append(p.getPairs(p.getInactiveCards())+",");
-		pairsPerHand.setCharAt(pairsPerHand.lastIndexOf(","), ';');
-		return " ";
+		pairsPerHand.deleteCharAt(pairsPerHand.lastIndexOf(","));
+		return pairsPerHand.toString();
 	}
 
 	/**

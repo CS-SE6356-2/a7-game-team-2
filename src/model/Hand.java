@@ -43,13 +43,13 @@ public class Hand
 	 * @param A List of Cards to check
 	 * @return		DA S2 A3 D8 DT DK
 	 */
-	public String findMatchesForUTF(List<Card> cards) 
+	String findMatchesForUTF(List<Card> cards) 
 	{
         StringBuilder cardList = new StringBuilder();
         TreeSet<Card> uniqueCards = new TreeSet<>(cards);
 
 		for(Card uCard: uniqueCards)
-			cardList.append(getDuplicityAmount(uCard.getVal(), cards)+""+uCard.toString()+" ");
+			cardList.append(uCard.toString()+" ");
 		cardList.deleteCharAt(cardList.lastIndexOf(" "));
 
 		return cardList.toString();
@@ -62,7 +62,7 @@ public class Hand
 	 * @param A list of cards to check
 	 * @return The number of cards that have that value
 	 */
-    private int getDuplicityAmount(Value val, List<Card> cards) 
+    public int getDuplicityAmount(Value val, List<Card> cards) 
     {
 		int count = 0;
 		for(Card uCard: cards)
@@ -134,7 +134,16 @@ public class Hand
      */
 	public void setActiveCards(List<Card> cards)
 	{
-		activeCards = new LinkedList<>(cards);
+		activeCards = cards;
+	}
+	
+	/**
+     * Sets the activeCards list to the provided list of Cards
+     * @param cards New list of active Cards
+     */
+	public void setInactiveCards(List<Card> cards)
+	{
+		inactiveCards = cards;
 	}
 
     /**
