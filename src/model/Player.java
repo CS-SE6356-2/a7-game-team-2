@@ -85,16 +85,17 @@ public class Player
 	 * Each card value is separated by spaces
 	 * Returns a null if the player has no pairs
 	 * IE
+	 * @param A list of cards to check
 	 * @return		DA S2 A3 D8 DT DK or " "
 	 * @author Chris
 	 */
-	public String getPairs()
+	public String getPairs(List<Card> cards)
 	{
-		if(hand.getNumInactiveCards() == 0)
+		if(cards.size() == 0)
 			return " ";
 		else
 		{
-			return hand.findMatches();
+			return hand.findMatchesForUTF(cards);
 		}
 	}
 
@@ -184,32 +185,12 @@ public class Player
 	/**
 	 * The players card list uses 3 delimiters
 	 *	The ';' delimits the active list form the inactive list. ActiveCards;InactiveCards
-	 *	The ',' delimits the cards in a list from each other. Card1,Card2,Card3
+	 *	The ' ' delimits the cards in a list from each other. Card1 Card2 Card3
 	 * @author Chris
 	 * @return Returns String representation of the Player's Hand
 	 */
 	public String getCardListForUTF()
-	{
-		StringBuilder cardList = new StringBuilder();
-		
-		if(getActiveCards().size()>0)
-		{
-			for(Card card: getActiveCards())
-				cardList.append(card.toString()).append(",");
-			cardList.setCharAt(cardList.lastIndexOf(","), ';');
-		}
-		else
-			cardList.append(" ;");
-		
-		if(getInactiveCards().size()>0)
-		{
-			for(Card card: getInactiveCards())
-				cardList.append(card.toString()).append(",");
-			cardList.deleteCharAt(cardList.lastIndexOf(","));
-		}
-		else
-			cardList.append(' ');
-		
-		return cardList.toString();
+	{	
+		return getPairs(getActiveCards())+";"+getPairs(getInactiveCards());
 	}
 }

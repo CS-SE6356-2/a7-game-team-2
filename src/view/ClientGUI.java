@@ -1,5 +1,6 @@
 package view;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import javafx.application.Application;
@@ -9,6 +10,8 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -53,7 +56,7 @@ public class ClientGUI extends Application{
 		yourCards = new Hand();
 		
 		root = new VBox();
-		hostButton = new Button("Host Game");//part of main menu screen
+		hostButton = new Button();//part of main menu screen
 		joinButton = new Button("Join Game");//part of main menu screen
 		connectButton = new Button("Connect");//part of join screen
 		serverButton = new Button("Create Server");//part of host screen
@@ -69,6 +72,10 @@ public class ClientGUI extends Application{
 		addressInput = new TextField();//part of join screen
 		nameInput = new TextField();//part of host and join screen
 		gameInput = new TextField();//part of game screen
+		
+		Image image = new Image(new FileInputStream("resources\\2C.png"));
+		ImageView imgV = new ImageView(image);
+		hostButton.setGraphic(imgV);
 		
 		//setup buttons and what-not
 		hostButton.setOnAction(new EventHandler<ActionEvent>() {
