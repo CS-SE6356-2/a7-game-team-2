@@ -1,8 +1,5 @@
 package model;
 
-import model.CardGame;
-import model.Player;
-
 import java.io.File;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -23,7 +20,7 @@ public class CardGameTest {
 		//createPlayers is tested within the constructor
 		
 		//Assign player 2 as dealer
-		game.assignDealear("model.Player 2");
+		game.assignDealer("model.Player 2");
 		//Shuffle the cards
 		game.shuffleCards();
 		//Deal the cards

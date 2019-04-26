@@ -48,12 +48,12 @@ public class Card implements Comparator<Card>{
 
     /**
      * Constructs a new Card with the provided Suit and Value
-     * @param s The Suit of the Card
      * @param v The Value of the Card
+     * @param s The Suit of the Card
      */
-	public Card(Suit s, Value v) {
-        suit = s;
+	public Card(Value v, Suit s) {
 		value = v;
+        suit = s;
 	}
 
     /**
@@ -62,25 +62,8 @@ public class Card implements Comparator<Card>{
      * @throws IllegalArgumentException Thrown when String provided does not match a valid representation of a card.
      */
 	public Card(String card) throws IllegalArgumentException {
-	    char s = card.charAt(0);
-	    switch (s){
-            case 'S':
-                suit = Suit.SPADES;
-                break;
-            case 'H':
-                suit = Suit.HEARTS;
-                break;
-            case 'C':
-                suit = Suit.CLUBS;
-                break;
-            case 'D':
-                suit = Suit.DIAMONDS;
-                break;
-            default:
-                throw new IllegalArgumentException();
-        }
-		char val = card.charAt(1);
-		switch(val){
+        char v = card.charAt(0);
+        switch(v){
             case 'A':
                 value = Value.ACE;
                 break;
@@ -123,6 +106,23 @@ public class Card implements Comparator<Card>{
             default:
                 throw new IllegalArgumentException();
         }
+	    char s = card.charAt(1);
+	    switch (s){
+            case 'S':
+                suit = Suit.SPADES;
+                break;
+            case 'H':
+                suit = Suit.HEARTS;
+                break;
+            case 'C':
+                suit = Suit.CLUBS;
+                break;
+            case 'D':
+                suit = Suit.DIAMONDS;
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
         if(!toString().equals(card)) throw new IllegalArgumentException();
 	}
 
@@ -161,7 +161,7 @@ public class Card implements Comparator<Card>{
 
 	@Override
 	public String toString() {
-		return suit.toChar() + value.toChar();
+		return value.toChar() + suit.toChar();
 	}
 
 	/**

@@ -7,11 +7,9 @@ import java.util.List;
 
 public class CardGame
 {
-	////Member Variables////
 	Player[] players;			//Holds the data for each player
 	Deck cardDeck;				//Holds the information for each card
-	
-	////Constructor////
+
 	public CardGame(int numOfPlayers, List<String> playerNames, List<Socket> clientSocks)
 	{
 		players = new Player[numOfPlayers];		//Create a list of Players
@@ -37,13 +35,13 @@ public class CardGame
 	public void dealCards()
 	{
 		for(int i = 0; i < getStartingHandSize(); i++){
-			for(int p = 0; p < players.length; p++){
-				players[p].addCard(cardDeck.takeCard());
+			for (Player player : players) {
+				player.addCard(cardDeck.takeCard());
 			}
 		}
 	}
 
-	protected int getStartingHandSize() {
+	int getStartingHandSize() {
 		if(players.length < 4) return 7;
 		else return 5;
 	}
@@ -87,7 +85,7 @@ public class CardGame
 	 * @param newDealer
 	 * @return True if a new dealer has been assigned | False if not
 	 */
-	public boolean assignDealear(String newDealer)
+	public boolean assignDealer(String newDealer)
 	{
 		for(Player p: players)
 			if(p.getTeamName().equals(newDealer))

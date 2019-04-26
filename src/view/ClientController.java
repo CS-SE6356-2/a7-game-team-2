@@ -359,7 +359,7 @@ class ServerThread extends Thread{
 		
 		//CREATE CARD GAME OBJECT
 		GoFishGame cardGame = new GoFishGame(game.clientLabels.size(), game.clientLabels, game.clientSocks, new File("resources\\cardlist.txt"));
-		cardGame.assignDealear(game.clientLabels.get(0));
+		cardGame.assignDealer(game.clientLabels.get(0));
 		Player focusPlayer = null;
 		boolean win = false;
 		boolean doesGoAgain = false;

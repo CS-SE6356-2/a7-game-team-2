@@ -19,26 +19,26 @@ class HandTest {
 
     @BeforeEach
     void setUp() {
-        c1 = new Card(Card.Suit.SPADES, Card.Value.ACE);
-        c2 = new Card(Card.Suit.HEARTS, Card.Value.NUM2);
-        c3 = new Card(Card.Suit.CLUBS, Card.Value.NUM3);
-        c4 = new Card(Card.Suit.DIAMONDS, Card.Value.NUM4);
-        c5 = new Card(Card.Suit.SPADES, Card.Value.NUM5);
-        c6 = new Card(Card.Suit.SPADES, Card.Value.NUM6);
-        c7 = new Card(Card.Suit.SPADES, Card.Value.NUM7);
-        c8 = new Card(Card.Suit.SPADES, Card.Value.NUM8);
-        c9 = new Card(Card.Suit.SPADES, Card.Value.NUM9);
-        c10 = new Card(Card.Suit.SPADES, Card.Value.NUM10);
-        c11 = new Card(Card.Suit.SPADES, Card.Value.JACK);
-        c12 = new Card(Card.Suit.SPADES, Card.Value.QUEEN);
-        c13 = new Card(Card.Suit.SPADES, Card.Value.KING);
-        c14 = new Card(Card.Suit.SPADES, Card.Value.ACE);
-        c15 = new Card(Card.Suit.DIAMONDS, Card.Value.ACE);
-        c16 = new Card(Card.Suit.HEARTS, Card.Value.JACK);
-        c17 = new Card(Card.Suit.HEARTS, Card.Value.QUEEN);
-        c18 = new Card(Card.Suit.HEARTS, Card.Value.KING);
-        c19 = new Card(Card.Suit.HEARTS, Card.Value.ACE);
-        c20 = new Card(Card.Suit.CLUBS, Card.Value.ACE);
+        c1 = new Card(Card.Value.ACE, Card.Suit.SPADES);
+        c2 = new Card(Card.Value.NUM2, Card.Suit.HEARTS);
+        c3 = new Card(Card.Value.NUM3, Card.Suit.CLUBS);
+        c4 = new Card(Card.Value.NUM4, Card.Suit.DIAMONDS);
+        c5 = new Card(Card.Value.NUM5, Card.Suit.SPADES);
+        c6 = new Card(Card.Value.NUM6, Card.Suit.SPADES);
+        c7 = new Card(Card.Value.NUM7, Card.Suit.SPADES);
+        c8 = new Card(Card.Value.NUM8, Card.Suit.SPADES);
+        c9 = new Card(Card.Value.NUM9, Card.Suit.SPADES);
+        c10 = new Card(Card.Value.NUM10, Card.Suit.SPADES);
+        c11 = new Card(Card.Value.JACK, Card.Suit.SPADES);
+        c12 = new Card(Card.Value.QUEEN, Card.Suit.SPADES);
+        c13 = new Card(Card.Value.KING, Card.Suit.SPADES);
+        c14 = new Card(Card.Value.ACE, Card.Suit.SPADES);
+        c15 = new Card(Card.Value.ACE, Card.Suit.DIAMONDS);
+        c16 = new Card(Card.Value.JACK, Card.Suit.HEARTS);
+        c17 = new Card(Card.Value.QUEEN, Card.Suit.HEARTS);
+        c18 = new Card(Card.Value.KING, Card.Suit.HEARTS);
+        c19 = new Card(Card.Value.ACE, Card.Suit.HEARTS);
+        c20 = new Card(Card.Value.ACE, Card.Suit.CLUBS);
         handa1 = new Card[]{c1, c2, c3, c4, c5};
         handi1 = new Card[]{c6, c7, c8, c9, c10};
         handa2 = new Card[]{c11, c12, c13, c14, c15};

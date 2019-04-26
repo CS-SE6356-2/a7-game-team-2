@@ -1,11 +1,8 @@
 package model;
 
-import model.Card;
-import model.Deck;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 
 import java.io.File;
 
@@ -19,9 +16,9 @@ public class DeckTest {
     void setUp() {
     	d1 = new Deck();
     	d2 = new Deck(new File("resources\\cardlist.txt"));
-    	c1 = new Card(Card.Suit.SPADES, Card.Value.ACE);
-    	c2 = new Card(Card.Suit.HEARTS, Card.Value.NUM2);
-    	c3 = new Card(Card.Suit.DIAMONDS, Card.Value.KING);
+    	c1 = new Card(Card.Value.ACE, Card.Suit.SPADES);
+    	c2 = new Card(Card.Value.NUM2, Card.Suit.HEARTS);
+    	c3 = new Card(Card.Value.KING, Card.Suit.DIAMONDS);
     }
 
     @AfterEach
@@ -49,7 +46,7 @@ public class DeckTest {
 		cur = d1.getNumOfCards();
 		assertEquals(c3, d1.takeCard());
 		assertEquals(cur-1, d1.getNumOfCards());
-		assertThrows(IndexOutOfBoundsException.class, () -> d1.takeCard());
+		assertNull(d1.takeCard());
     }
 
     @Test

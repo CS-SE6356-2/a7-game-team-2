@@ -10,21 +10,21 @@ class CardTest {
 
     @BeforeEach
     void setUp() {
-        c1 = new Card(Card.Suit.SPADES, Card.Value.ACE);
-        c2 = new Card(Card.Suit.HEARTS, Card.Value.NUM2);
-        c3 = new Card(Card.Suit.CLUBS, Card.Value.NUM3);
-        c4 = new Card(Card.Suit.DIAMONDS, Card.Value.NUM4);
-        c5 = new Card(Card.Suit.SPADES, Card.Value.NUM5);
-        c6 = new Card(Card.Suit.SPADES, Card.Value.NUM6);
-        c7 = new Card(Card.Suit.SPADES, Card.Value.NUM7);
-        c8 = new Card(Card.Suit.SPADES, Card.Value.NUM8);
-        c9 = new Card(Card.Suit.SPADES, Card.Value.NUM9);
-        c10 = new Card(Card.Suit.SPADES, Card.Value.NUM10);
-        c11 = new Card(Card.Suit.SPADES, Card.Value.JACK);
-        c12 = new Card(Card.Suit.SPADES, Card.Value.QUEEN);
-        c13 = new Card(Card.Suit.SPADES, Card.Value.KING);
-        c14 = new Card(Card.Suit.SPADES, Card.Value.ACE);
-        c15 = new Card(Card.Suit.DIAMONDS, Card.Value.ACE);
+        c1 = new Card(Card.Value.ACE, Card.Suit.SPADES);
+        c2 = new Card(Card.Value.NUM2, Card.Suit.HEARTS);
+        c3 = new Card(Card.Value.NUM3, Card.Suit.CLUBS);
+        c4 = new Card(Card.Value.NUM4, Card.Suit.DIAMONDS);
+        c5 = new Card(Card.Value.NUM5, Card.Suit.SPADES);
+        c6 = new Card(Card.Value.NUM6, Card.Suit.SPADES);
+        c7 = new Card(Card.Value.NUM7, Card.Suit.SPADES);
+        c8 = new Card(Card.Value.NUM8, Card.Suit.SPADES);
+        c9 = new Card(Card.Value.NUM9, Card.Suit.SPADES);
+        c10 = new Card(Card.Value.NUM10, Card.Suit.SPADES);
+        c11 = new Card(Card.Value.JACK, Card.Suit.SPADES);
+        c12 = new Card(Card.Value.QUEEN, Card.Suit.SPADES);
+        c13 = new Card(Card.Value.KING, Card.Suit.SPADES);
+        c14 = new Card(Card.Value.ACE, Card.Suit.SPADES);
+        c15 = new Card(Card.Value.ACE, Card.Suit.DIAMONDS);
     }
 
     @AfterEach
@@ -85,20 +85,20 @@ class CardTest {
 
     @Test
     void toStringTest(){
-        assertEquals("SA", c1.toString());
-        assertEquals("H2", c2.toString());
-        assertEquals("C3", c3.toString());
-        assertEquals("D4", c4.toString());
-        assertEquals("S5", c5.toString());
-        assertEquals("S6", c6.toString());
-        assertEquals("S7", c7.toString());
-        assertEquals("S8", c8.toString());
-        assertEquals("S9", c9.toString());
-        assertEquals("ST", c10.toString());
-        assertEquals("SJ", c11.toString());
-        assertEquals("SQ", c12.toString());
-        assertEquals("SK", c13.toString());
-        assertEquals("SA", c14.toString());
-        assertEquals("DA", c15.toString());
+        assertEquals("AS", c1.toString());
+        assertEquals("2H", c2.toString());
+        assertEquals("3C", c3.toString());
+        assertEquals("4D", c4.toString());
+        assertEquals("5S", c5.toString());
+        assertEquals("6S", c6.toString());
+        assertEquals("7S", c7.toString());
+        assertEquals("8S", c8.toString());
+        assertEquals("9S", c9.toString());
+        assertEquals("TS", c10.toString());
+        assertEquals("JS", c11.toString());
+        assertEquals("QS", c12.toString());
+        assertEquals("KS", c13.toString());
+        assertEquals("AS", c14.toString());
+        assertEquals("AD", c15.toString());
     }
 }

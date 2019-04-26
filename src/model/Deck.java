@@ -22,7 +22,7 @@ public class Deck {
 		cards = new LinkedList<>();
 		for (Card.Suit s: Card.Suit.values()) {
 			for (Card.Value v: Card.Value.values()) {
-				cards.add(new Card(s, v));
+				cards.add(new Card(v, s));
 			}
 		}
 	}
