@@ -128,7 +128,7 @@ public class GoFishGame extends CardGame {
 			//Get each player's total number of pairs and determine which player has the most
 			for(int i = 0; i < players.length; ++i)
 			{
-				temp = players[i].getPairs();//Check to make sure if this player got any pairs
+				temp = players[i].getPairs(players[i].getInactiveCards());//Check to make sure if this player got any pairs
 				if(temp.length() == 1) //If the player has no pairs, the string is " "
 					currentPairs = 0;
 				else
@@ -198,7 +198,7 @@ public class GoFishGame extends CardGame {
 	{
 		StringBuilder pairsPerHand = new StringBuilder();
 		for(Player p: players)
-			pairsPerHand.append(p.getPairs()+",");
+			pairsPerHand.append(p.getPairs(p.getInactiveCards())+",");
 		pairsPerHand.setCharAt(pairsPerHand.lastIndexOf(","), ';');
 		return " ";
 	}

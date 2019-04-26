@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import model.Card.Value;
+
 /**
  * Class representing a Player's Hand, which contains both the cards they can play, and the inactive cards which belong to them.
  * @author Jacob & Antonio Mendiola
@@ -36,22 +38,40 @@ public class Hand
 
 	/**
 	 * Returns a list of cards of the pairs that are held by a player
-	 * @return		DA S2 A3 D8 DT DK
+	 * Does not check if the list is empty
 	 * @author Chris
+	 * @param A List of Cards to check
+	 * @return		DA S2 A3 D8 DT DK
 	 */
-	public String findMatches() 
+	public String findMatchesForUTF(List<Card> cards) 
 	{
         StringBuilder cardList = new StringBuilder();
-        TreeSet<Card> uniqueCards = new TreeSet<>(inactiveCards);
+        TreeSet<Card> uniqueCards = new TreeSet<>(cards);
 
 		for(Card uCard: uniqueCards)
-			cardList.append(uCard.toString()+" ");
+			cardList.append(getDuplicityAmount(uCard.getVal(), cards)+""+uCard.toString()+" ");
 		cardList.deleteCharAt(cardList.lastIndexOf(" "));
 
 		return cardList.toString();
 	}
 
-    /**
+	/**
+	 * Returns the amount of copies of cards with the same card value
+	 * @author Chris
+	 * @param Card.Value to check for
+	 * @param A list of cards to check
+	 * @return The number of cards that have that value
+	 */
+    private int getDuplicityAmount(Value val, List<Card> cards) 
+    {
+		int count = 0;
+		for(Card uCard: cards)
+			if(uCard.getVal() == val)
+				++count;
+		return count;
+	}
+
+	/**
      * Adds a card to the activeCards list
      * @param card Card to add to the activeCards list
      */
