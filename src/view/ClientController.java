@@ -1,54 +1,47 @@
 package view;
 
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
 import javafx.application.Platform;
 import model.Card;
 import model.GoFishGame;
 import model.Hand;
 import model.Player;
 
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.net.*;
+import java.util.*;
+import java.util.List;
+
 public class ClientController {
-	
+
+	private static final int SERVER_PORT = 0;
 	ClientGUI gui;
 	
 	//server stuff
-	ServerSocket serverSock;//the 'server' that will wait for a client socket to connect
-	ArrayList<Socket> clientSocks;
-	ArrayList<String> clientLabels;
+	ServerSocket server;//the 'server' that will wait for a client socket to connect
+	HashMap<String, Socket> clients;
 	ServerThread serverThread;
 	boolean isServer;
 	
 	//client stuff
-	Socket thisSock; //the client
+	Socket serverSock; //the client
 	ClientThread clientThread;
-		
+	DataOutputStream outputStream;
+
 	public ClientController() {
 		gui = null;
 		
-		serverSock = null;//the 'server' that will wait for a client socket to connect
-		clientSocks = new ArrayList<Socket>();
-		clientLabels = new ArrayList<String>();
+		server = null; //the 'server' that will wait for a client socket to connect
+		clients = new HashMap<>();
 		serverThread = new ServerThread(this);
 		isServer = false;
 		
-		thisSock = null; //the client
+		serverSock = null; //the client
 		clientThread = new ClientThread(this);
 	}
 	
@@ -63,9 +56,9 @@ public class ClientController {
 			/*DEBUG*/System.out.println("Trying to make host");
 			attempts++;
 			try{
-				serverSock = new ServerSocket(0);//throws IOException if port is taken
+				server = new ServerSocket(SERVER_PORT);//throws IOException if port is taken
 				success = true;
-				hostIP = InetAddress.getLocalHost().getHostAddress() +":"+ serverSock.getLocalPort();
+				hostIP = server.getInetAddress().getHostAddress() +":"+ server.getLocalPort();
 				
 				//put ip in clipboard to make my life easier
 				StringSelection data = new StringSelection(hostIP);
@@ -86,14 +79,23 @@ public class ClientController {
 		
 		return hostIP;
 	}
-	
+
+	boolean isHosting(){
+		return server != null;
+	}
+
+	String getServerAddress(){
+		return server.getInetAddress().getHostAddress() + ":" + server.getLocalPort();
+	}
+
 	String connectToHost(String addressStr, String name) {
 		try {
-			thisSock = new Socket();
-			InetSocketAddress address = new InetSocketAddress(addressStr.split(":", 0)[0], Integer.parseInt(addressStr.split(":", 0)[1]));
-			thisSock.connect(address, 5000);
-			DataOutputStream out = new DataOutputStream(thisSock.getOutputStream());
-			out.writeUTF(name);
+			serverSock = new Socket();
+			String[] addressSplit = addressStr.split(":", 0);
+			InetSocketAddress address = new InetSocketAddress(addressSplit[0], Integer.parseInt(addressSplit[1]));
+			serverSock.connect(address, 5000);
+			outputStream = new DataOutputStream(serverSock.getOutputStream());
+			outputStream.writeUTF(name);
 			return "Connected!";
 		}
 		catch(UnknownHostException e){
@@ -103,47 +105,45 @@ public class ClientController {
 			return "Invalid host address!";
 		}
 		catch(SocketTimeoutException e){
-			return "Connection attemp timed out! Try again";
+			return "Connection attempt timed out! Try again";
 		}
 		catch(IOException e){
 			return "Error resolving host!";
 		}
 	}
 	
-	void closeSocks(String state){
+	void closeSocks(String state) {
 		if(state.equals("hosting")) {
 			try{
-				serverSock.close();
+				server.close();
 			}
-			catch(Exception e){}
-			serverSock = null;//the 'server' that will wait for a client socket to connect
-			for(Socket s:clientSocks) {
+			catch(Exception ignored){}
+			server = null;//the 'server' that will wait for a client socket to connect
+			for(Socket s : clients.values()) {
 				try{
 					s.close();
 				}
-				catch(Exception e){}
+				catch(Exception ignored){}
 			}
-			clientSocks = new ArrayList<Socket>();
-			clientLabels = new ArrayList<String>();
+			clients.clear();
 		}
 		else if(state.equals("lobby")) {
 			try{
-				thisSock.close();
+				serverSock.close();
 			}
-			catch(Exception e){}
-			thisSock = null; //the client
+			catch(Exception ignored){}
+			serverSock = null;
 		}
 	}
 	
 	
 	void writeToServer(String mes) throws IOException {
-		DataOutputStream out = new DataOutputStream(thisSock.getOutputStream());
-		out.writeUTF(mes);
+		outputStream.writeUTF(mes);
 	}
 	
 	
 	//#####Transform Server Info to Client Method#####
-	
+
 	/**
 	 * Sets the Client's hand with 2 Strings each in the form
 	 * card1 card2 card3 ...
@@ -158,7 +158,7 @@ public class ClientController {
 		if(!inactiveList.contentEquals(" "))
 			gui.yourCards.setInactiveCards(recreateCardList(inactiveList));
 	}
-	
+
 	void setCardCounts(String deckCount, String playerCardCounts)
 	{
 		gui.deckCount = Integer.parseInt(deckCount);
@@ -166,7 +166,7 @@ public class ClientController {
 		for(String count: playerCardCounts.split(","))
 			gui.cardCounts[i++] = Integer.parseInt(count);
 	}
-	
+
 	void setPlayerPairs(String playerPairs)
 	{
 		int i = 0;
@@ -181,7 +181,7 @@ public class ClientController {
 			++i;
 		}
 	}
-	
+
 	/**
 	 * Creates a List object out of String in the format of a list of cards separated by spaces
 	 * @param cards card1 card2 card3 ...
@@ -190,19 +190,15 @@ public class ClientController {
 	List<Card> recreateCardList(String cards)
 	{
 		List<Card> cardList = new LinkedList<>();
-		
+
 		for(String card: cards.split(" "))
 			cardList.add(new Card(card));
-		
+
 		return cardList;
 	}
-	
-	
-}//end controller
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
+}
 
 class ClientThread extends Thread{
 	
@@ -223,10 +219,10 @@ class ClientThread extends Thread{
 		while(!game.gui.state.equals("main")) {
 		
 			try {
-				DataInputStream in = new DataInputStream(game.thisSock.getInputStream());
+				DataInputStream in = new DataInputStream(game.serverSock.getInputStream());
 				//*DEBUG*/System.out.println(getId()+": Wating for message from server");
 				String mes = in.readUTF();
-				
+
 				//*DEBUG*/System.out.println(getId()+": got from server: "+mes);
 				//Client State 1@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 				if((game.gui.state.equals("lobby") || game.gui.state.equals("hosting")) && mes.length()>3 && mes.substring(0, 4).equals("PLAY")){
@@ -243,7 +239,7 @@ class ClientThread extends Thread{
 						   game.gui.playerPairs = new List[game.gui.deckCount];
 						   for(int i = 0; i < game.gui.deckCount; ++i)
 							   game.gui.playerPairs[i] = new ArrayList<Card>();
-						   
+
 						   //Send this client to the game state
 						   game.gui.game();
 					   }
@@ -251,12 +247,7 @@ class ClientThread extends Thread{
 				}
 				//Client State 2@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 				else if(game.gui.state.equals("lobby") || game.gui.state.equals("hosting")) {
-					Platform.runLater(new Runnable() {
-						   @Override
-						   public void run() {
-							   game.gui.infoLabel.setText(mes);;
-						   }
-						});
+					Platform.runLater(() -> System.out.println(mes));
 				}
 				//Client State 3@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 				else if(game.gui.state.equals("game")){
@@ -264,7 +255,7 @@ class ClientThread extends Thread{
 					//Check to see if we have a valid message that has semicolons
 					if(mes.indexOf(';') == -1) continue;
 					
-					
+
 					//Split the in message
 					/*String[]*/ mess = mes.split(";", 0);
 					
@@ -276,29 +267,29 @@ class ClientThread extends Thread{
 						   //Update players messages about the previous move and whose turn it is
 						 
 						   //Tells the Client what move was made
-						   game.gui.infoLabel.setText(mess[0]);
+						   System.out.println(mess[1]);
 							   
 						   //Determines if this Client is the one to go next
-						   if(mess[1].equals(game.gui.yourName)) {
-							   game.gui.turnLabel.setText("It's your turn");
-							   game.gui.root.getChildren().add(game.gui.playButton);
+						   if(mess[2].equals(game.gui.yourName)) {
+							   System.out.println("It's your turn");
+							   //game.gui.root.getChildren().add(game.gui.playButton);
 						   }
 						   else {
-							   game.gui.turnLabel.setText("It's " + mess[1] + "'s turn");
+							   System.out.println("It's " + mess[2] + "'s turn");
 						   }
-							
+
 						   System.out.println(game.gui.yourCards == null);
 							   
 						   //Giving players their cards
 						   game.fillHand(mess[2], mess[3]);
-						
+
 						   //Test if client got the message
-						   game.gui.testLabel.setText(mes);
+						   System.out.println(mes);
 						   
 						   //Update each Client how many cards are in the Draw Deck
 						   //Update each client on how many card each player has
 						   game.setCardCounts(mess[4], mess[5]);
-						   
+
 						   //Update each client on which matches each player has
 						   game.setPlayerPairs(mess[6]);
 					   }
@@ -333,28 +324,23 @@ class ServerThread extends Thread{
 	public void run() {
 		
 		try {
-			game.serverSock.setSoTimeout(1000);//sets time to wait for client to 1 second
+			game.server.setSoTimeout(1000);//sets time to wait for client to 1 second
 		}
 		catch(SocketException e){//thrown if the socket is bad
-			Platform.runLater(new Runnable() {
-			    @Override
-			    public void run() {
-			    	game.gui.addressLabel.setText("Unable to establish host");
-			    }
-			});
+			Platform.runLater(() -> System.out.println("Unable to establish host"));
 		}
 		//1st Stage@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 		while(game.gui.state.equals("hosting")) {
 			try {
-				Socket sock = game.serverSock.accept();
-				if(!game.gui.state.equals("hosting")) return;
+				Socket clientSocket = game.server.accept();
 				/*DEBUG*/System.out.println("Client Connected");
-				DataInputStream in = new DataInputStream(sock.getInputStream());
-				String input = in.readUTF();
-				game.clientLabels.add(input);
-				game.clientSocks.add(sock);
-				/*DEBUG*/System.out.println(input);
-				
+				DataInputStream in = new DataInputStream(clientSocket.getInputStream());
+				String clientName = in.readUTF();
+				game.clients.put(clientName, clientSocket);
+				//game.clientLabels.add(clientName);
+				//game.clientSocks.add(clientSocket);
+				/*DEBUG*/System.out.println(clientName);
+
 			}
 			catch(SocketTimeoutException e){//no clients connect within the timeout delay
 				//System.out.println("Nobody wanted to connect.");
@@ -368,28 +354,25 @@ class ServerThread extends Thread{
 				//System.out.println("IOException during accept()");
 				//oh well, won't have that client
 			}
-		
+
 			//update gui
-			String names = "";
-	    	for(int i = 0; i < game.clientSocks.size(); i++) {
-	    		if(game.clientSocks.get(i).isClosed()) {
-	    			game.clientSocks.remove(i);
-	    			game.clientLabels.remove(i);
-	    			i--;
-	    		}
-	    		else {
-	    			names = names+game.clientLabels.get(i)+"\n";
-	    		}
-	    	}
-	    	
-	    	for(int i = 0; i < game.clientSocks.size(); i++) {
-				try {
-					DataOutputStream out = new DataOutputStream(game.clientSocks.get(i).getOutputStream());
-					out.writeUTF(names);
+			StringBuilder names = new StringBuilder();
+			for(Map.Entry<String, Socket> client: game.clients.entrySet()){
+				if(client.getValue().isClosed()){
+					game.clients.remove(client.getKey());
 				}
-				catch (IOException e) {}
+				else{
+					names.append(client.getKey()).append("\n");
+				}
 			}
-	    	
+			for(Map.Entry<String, Socket> client: game.clients.entrySet()) {
+				try {
+					DataOutputStream out = new DataOutputStream(client.getValue().getOutputStream());
+					out.writeUTF(names.toString());
+				}
+				catch (IOException ignored) {}
+			}
+
 		}
 		//2nd Stage@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 		
@@ -400,12 +383,12 @@ class ServerThread extends Thread{
 		
 		//Temporarily reset the state to hosting so the server's client can recieve the message properly
 		game.gui.state = "hosting";
-		
+
 		//Send the string "PLAY" to all of the clients
-		for(int i = 0; i < game.clientSocks.size(); i++) {
+		for(Socket client : game.clients.values()) {
 			try {
-				DataOutputStream out = new DataOutputStream(game.clientSocks.get(i).getOutputStream());
-				out.writeUTF("PLAY;"+i+";"+game.clientSocks.size());
+				DataOutputStream out = new DataOutputStream(client.getOutputStream());
+				out.writeUTF("PLAY");
 			}
 			catch (IOException e) {}
 		}
@@ -414,8 +397,8 @@ class ServerThread extends Thread{
 		String move = "Game started!";
 		
 		//CREATE CARD GAME OBJECT
-		GoFishGame cardGame = new GoFishGame(game.clientLabels.size(), game.clientLabels, game.clientSocks, new File("resources\\cardlist.txt"));
-		cardGame.assignDealer(game.clientLabels.get(0));
+		GoFishGame cardGame = new GoFishGame(game.clients.size(), new ArrayList<>(game.clients.keySet()), new ArrayList<>(game.clients.values()), new File("resources\\cardlist.txt"));
+		cardGame.assignDealer(game.clients.keySet().iterator().next());
 		Player focusPlayer = null;
 		boolean win = false;
 		boolean doesGoAgain = false;
@@ -519,19 +502,19 @@ class ServerThread extends Thread{
 				DataOutputStream out = new DataOutputStream(p.getSock().getOutputStream());
 				out.writeUTF(move+";"+focusPlayer.getTeamName()+";"+p.getCardListForUTF()+";"+cardGame.getAmtCardInDrawDeck()+";"+cardGame.getAmtCardsPerAHand()+";"+cardGame.getPairsPerHand());
 			}
-			catch (IOException e) {}
+			catch (IOException ignored) {}
 		}
 		
 		
 		//Send message to clients to go to win screen and display who won
 		System.out.println("A winner is "+winner);
 		//Send the string "PLAY" to all of the clients
-		for(int i = 0; i < game.clientSocks.size(); i++) {
+		for(Socket client : game.clients.values()) {
 			try {
-				DataOutputStream out = new DataOutputStream(game.clientSocks.get(i).getOutputStream());
+				DataOutputStream out = new DataOutputStream(client.getOutputStream());
 				out.writeUTF("Winner;"+winner);
 			}
-			catch (IOException e) {}
+			catch (IOException ignored) {}
 		}
 		
 		

@@ -2,7 +2,6 @@ package model;
 
 import java.io.File;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.List;
 
 public class CardGame
@@ -19,8 +18,8 @@ public class CardGame
 		createPlayers(playerNames, clientSocks);
 	}
 
-	public CardGame(int numOfPlayers, ArrayList<String> playerNames, ArrayList<Socket> clientSocks,
-					File cardList)
+	public CardGame(int numOfPlayers, List<String> playerNames, List<Socket> clientSocks,
+                    File cardList)
 	{
 		players = new Player[numOfPlayers];		//Create a list of Players
 		cardDeck = new Deck(cardList);			//Create the deck of cards

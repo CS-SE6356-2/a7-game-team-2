@@ -10,7 +10,7 @@ public class ClientLauncher {
 		game = new ClientController();
 		gui = new ClientGUI();
 		
-		gui.launchGUI();//launches the GUI
+		gui.launchGUI();
 
 	}
 

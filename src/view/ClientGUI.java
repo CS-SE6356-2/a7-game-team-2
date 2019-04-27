@@ -1,29 +1,32 @@
 package view;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.List;
-
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.Card;
 import model.Hand;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.List;
+
 public class ClientGUI extends Application{
 	
 	ClientController game = null;
-	
+
+	private double STD_CARD_WIDTH = 150.0;
+	private double STD_CARD_HEIGHT = 210.0;
+
 	String state;
 	String yourName;
 	//server to client variables
@@ -32,190 +35,150 @@ public class ClientGUI extends Application{
 	int deckCount;
 	int cardCounts[];
 	List<Card>[] playerPairs;
-	
-	
-	
+
+
+
 	//GUI stuff
-	VBox root = new VBox();
-	Button hostButton;
-	Button joinButton;
-	Button connectButton;
-	Button serverButton;
-	Button backButton;
-	Button exitButton;
-	Button playButton;
-	Button startButton;
-	Text menuLabel;
-	Text addressLabel;
-	Text infoLabel;
-	Text turnLabel;
-	Text testLabel;
-	TextField addressInput;
-	TextField nameInput;
-	TextField gameInput;
-	//Label realLabel;
+	private Scene main;
+	private Pane root;
+	private HashMap<String, Pane> sceneMap;
 	
 	@Override
-	public void start(Stage stage) throws Exception {
-		
+	public void start(Stage stage) {
 		game = ClientLauncher.game;
 		ClientLauncher.gui = this;
 		game.gui = ClientLauncher.gui;
 		
 		state = "";
-		yourName = "model.Player";
-		
-		root = new VBox();
-		hostButton = new Button("Host Game");//part of main menu screen
-		joinButton = new Button("Join Game");//part of main menu screen
-		connectButton = new Button("Connect");//part of join screen
-		serverButton = new Button("Create Server");//part of host screen
-		backButton = new Button("Back");//part of host and join screens
-		exitButton = new Button("Exit");//part of main menu screen
-		playButton = new Button("Play");//part of game screen
-		startButton = new Button("Start Game");//part of hosting screen
-		menuLabel = new Text("Main Menu");//part of all screens
-		addressLabel = new Text("Starting server...");//part of host screen
-		infoLabel = new Text("Enter details below");//part of join and game screen
-		turnLabel = new Text();//part of game screen
-		testLabel = new Text();		//Used to test if a message is recieved
-		addressInput = new TextField();//part of join screen
-		nameInput = new TextField();//part of host and join screen
-		gameInput = new TextField();//part of game screen
-		//realLabel = new Label();
-		
-		Image image = new Image(new FileInputStream("resources\\2C.png"));
-		ImageView imgV = new ImageView(image);
-		imgV.setFitHeight(50);
-		imgV.setFitWidth(50);
-		//realLabel.setGraphic(imgV);
-		
-		//setup buttons and what-not
-		hostButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				preHost();
-			}
-		});
-		
-		serverButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				hosting();
-			}
-		});
-		
-		joinButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				join();
-			}
-		});
-		
-		connectButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				connectButton.setDisable(true);
-				
-				connect();
-				
-				connectButton.setDisable(false);
-			}
-		});
-		
-		backButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				main();
-			}
-		});
-		
-		exitButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				Platform.exit();//closes the window
-			}
-		});
-		
-		playButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				play();
-			}
-		});
-		
-		startButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				game();
-			}
-		});
+		yourName = "Player";
+		yourCards = new Hand();
+
+		root = new Pane();
+		main = new Scene(root, 1280, 720);
+		sceneMap = new HashMap<>();
+		setupMainMenuScene();
+		setupHostSetupScene();
+		setupJoinScene();
 		
 		main();
 		
-		stage.setTitle("Client Test");
-		Scene scene = new Scene(root, 800, 450);
-		stage.setScene(scene);
+		stage.setTitle("Card Game Project");
+		stage.setScene(main);
         stage.show();
-	}//end of start
-	
+	}
+	private void setupMainMenuScene() {
+		Pane mainMenu = new VBox(10);
+		Text menuLabel = new Text("Main Menu");
+		Button hostButton = new Button("Host Game");
+		hostButton.setOnAction(event -> preHost());
+		Button joinButton = new Button("Join Game");
+		joinButton.setOnAction(event -> join());
+		Button exitButton = new Button("Exit");
+		exitButton.setOnAction(event -> Platform.exit());
+		mainMenu.getChildren().addAll(menuLabel, hostButton, joinButton, exitButton);
+		sceneMap.put("MainMenu", mainMenu);
+	}
+	private void setupHostSetupScene() {
+		Pane hostSetup = new VBox(10);
+		Text menuLabel = new Text("Host a Game");
+		Text infoLabel = new Text("Enter your name and click \"Create Server\"");
+		TextField nameInput = new TextField();
+		nameInput.setPromptText("Enter Your Name");
+		nameInput.setId("NameInput");
+		Button serverButton = new Button("Create Server");
+		serverButton.setOnAction(event -> hosting());
+		Button backButton = new Button("Back");
+		backButton.setOnAction(event -> main());
+		hostSetup.getChildren().addAll(menuLabel, infoLabel, nameInput, serverButton, backButton);
+		sceneMap.put("HostSetup", hostSetup);
+	}
+	private void setupJoinScene() {
+		Pane join = new VBox(10);
+		Text menuLabel = new Text("Join a Game");
+		Text infoLabel = new Text("Enter details below");
+		TextField addressInput = new TextField();
+		addressInput.setPromptText("Enter Host Address");
+		addressInput.setId("AddressInput");
+		TextField nameInput = new TextField();
+		nameInput.setPromptText("Enter Your Name");
+		nameInput.setId("NameInput");
+		Button connectButton = new Button("Connect");//part of join screen
+		connectButton.setOnAction(event -> {
+			connectButton.setDisable(true);
+			connect();
+			connectButton.setDisable(false);
+		});
+		Button backButton = new Button("Back");
+		backButton.setOnAction(event -> main());
+		join.getChildren().addAll(menuLabel, infoLabel, addressInput, nameInput, connectButton, backButton);
+		sceneMap.put("Join", join);
+	}
+	private void setupLobbyScene(){
+		Pane lobby = new VBox(10);
+		Text menuLabel = new Text("Lobby");
+		Text addressLabel = new Text(game.server.toString());
+		Text infoLabel = new Text(yourName);
+		Button startButton = new Button("Start Game");
+		startButton.setOnAction(event -> game());
+		startButton.setDisable(!game.isServer);
+		Button leaveButton = new Button("Leave Lobby");
+		leaveButton.setOnAction(event -> main());
+		lobby.getChildren().addAll(menuLabel, addressLabel, infoLabel, startButton, leaveButton);
+		sceneMap.put("Lobby", lobby);
+	}
+	private void setupGameScene() {
+		Pane gameScene = new Pane();
+		gameScene.getChildren().addAll();
+		sceneMap.put("Game", gameScene);
+	}
+
+	private void loadScene(String scene){
+		if(sceneMap.keySet().contains(scene))
+			main.setRoot(sceneMap.get(scene));
+		else {
+			System.out.println(scene + " not found.");
+		}
+	}
 	
 	//methods called by buttons
-	void main() {
+	private void main() {
 		if(state.equals("hosting") || state.equals("lobby"))
 			game.closeSocks(state);
-		
-		mainScreen();
-		
 		state = "main";
-	}
-	void mainScreen() {
-		root.getChildren().clear();
-		root.getChildren().addAll(/*realLabel,*/ menuLabel, hostButton, joinButton, exitButton);
-		menuLabel.setText("Main Menu");
+		loadScene("MainMenu");
 	}
 	
-	void preHost() {
-		preHostScreen();
+	private void preHost() {
 		state = "host";
-	}
-	void preHostScreen() {
-		root.getChildren().clear();
-		root.getChildren().addAll(menuLabel, infoLabel, nameInput, serverButton, backButton);
-		menuLabel.setText("Host a Game");
-		infoLabel.setText("Enter your name and click \"Create Server\"");
+		loadScene("HostSetup");
 	}
 	
-	void hosting() {
-		
-		if(nameInput.getText().isEmpty()) {
-			infoLabel.setText("Enter your name!");
-			connectButton.setDisable(false);
+	private void hosting() {
+		String name = ((TextField) main.lookup("#NameInput")).getText();
+
+		if(name.isEmpty()) {
+			new Alert(Alert.AlertType.ERROR, "Enter your name!").show();
 			return;
 		}
-		else if(!validateName(nameInput.getText()))
+		else if(!validateName(name))
 		{
-			infoLabel.setText("Please use only the characters a-zA-Z0-9 or ' '");
-			connectButton.setDisable(false);
+			new Alert(Alert.AlertType.ERROR, "Please use only the characters a-zA-Z0-9 or ' '").show();
 			return;
 		}
 		
-		yourName = nameInput.getText();
-		
-		String address = game.setupHost();
-		if(address.equals("Unable to establish host")) {
-			infoLabel.setText(address);
+		game.setupHost();
+		if(!game.isHosting()) {
+			new Alert(Alert.AlertType.ERROR, "Unable to establish Host").show();
 			return;
 		}
 		
-		String result = game.connectToHost(address, yourName);
+		String result = game.connectToHost(game.getServerAddress(), name);
 		if(!result.equals("Connected!")) {
-			infoLabel.setText(result);
+			new Alert(Alert.AlertType.ERROR, result).show();
 			return;
 		}
-		addressLabel.setText(address);
 		
-		hostingScreen();
+		setupLobbyScene();
 		
 		state = "hosting";
 		
@@ -223,76 +186,55 @@ public class ClientGUI extends Application{
 		game.serverThread.start();
 		game.clientThread.start();
 	}
-	void hostingScreen() {
-		root.getChildren().clear();
-		root.getChildren().addAll(menuLabel, addressLabel, infoLabel, startButton, backButton);
-		menuLabel.setText("Host a Game");
-		infoLabel.setText(yourName);
-	}
 	
-	void join() {
-		joinScreen();
+	private void join() {
 		state = "join";
-	}
-	void joinScreen() {
-		root.getChildren().clear();
-		root.getChildren().addAll(menuLabel, infoLabel, addressInput, nameInput, connectButton, backButton);
-		menuLabel.setText("Join a Game");
-		infoLabel.setText("Enter details below");
-		addressInput.setPromptText("Enter Host Address");
-		nameInput.setPromptText("Enter Your Name");
+		loadScene("Join");
 	}
 	
-	void connect() {
-		if(addressInput.getText().isEmpty()) {
-			infoLabel.setText("Enter the host address!");
-			connectButton.setDisable(false);
+	private void connect() {
+		String name = ((TextField) main.lookup("#NameInput")).getText();
+		String address = ((TextField) main.lookup("#AddressInput")).getText();
+
+		if(name.isEmpty()) {
+			new Alert(Alert.AlertType.ERROR, "Enter your name!").show();
 			return;
 		}
-		if(nameInput.getText().isEmpty()) {
-			infoLabel.setText("Enter your name!");
-			connectButton.setDisable(false);
+		else if(!validateName(name))
+		{
+			new Alert(Alert.AlertType.ERROR, "Please use only the characters a-zA-Z0-9 or ' '").show();
 			return;
 		}
-		if(addressInput.getText().split(":", 0).length != 2) {
-			infoLabel.setText("Invalid host name!");
-			connectButton.setDisable(false);
+		if(address.isEmpty()) {
+			new Alert(Alert.AlertType.ERROR, "Enter the host address!").show();
 			return;
 		}
-		
-		String result = game.connectToHost(addressInput.getText(), nameInput.getText());
-		
-		if(result.equals("Connected!")) {
-			yourName = nameInput.getText();
-			lobby();
+		if(address.split(":", 0).length != 2) {
+			new Alert(Alert.AlertType.ERROR, "Invalid host name!").show();
+			return;
 		}
-		infoLabel.setText(result);
+
+		String result = game.connectToHost(address, name);
+
+		if(!result.equals("Connected!")) {
+			new Alert(Alert.AlertType.ERROR, result).show();
+			return;
+		}
+		lobby();
 	}
 	
-	void lobby(){
-		lobbyScreen();
+	private void lobby(){
+		setupLobbyScene();
 		state = "lobby";
 		game.clientThread.start();
 	}
-	void lobbyScreen(){
-		root.getChildren().clear();
-		root.getChildren().addAll(menuLabel, infoLabel, backButton);
-		menuLabel.setText("Lobby");
-		infoLabel.setText(yourName);
-	}
 	
 	void game() {
-		gameScreen();
+		setupGameScene();
 		state = "game";
 	}
-	void gameScreen() {
-		root.getChildren().clear();
-		root.getChildren().addAll(menuLabel, infoLabel, turnLabel, testLabel, gameInput);
-		menuLabel.setText("Game");
-		gameInput.setPromptText("Write your move here");
-	}
 	
-	void play() {
+	/*private void play() {
 		if(gameInput.getText().isEmpty()) {
 			infoLabel.setText("Enter your move");
 			return;
@@ -311,7 +253,7 @@ public class ClientGUI extends Application{
 	
 	//call this to end the clients turn
 	//pass the string to write to the server
-	//returns true if the message was sucesesfully sent without error
+	//returns true if the message was successfully sent without error
 	boolean endTurn(String messageToServer) {
 		boolean success = false;
 		int attempts = 0;//keeps track of attempts
@@ -319,17 +261,17 @@ public class ClientGUI extends Application{
 			try {
 				game.writeToServer(messageToServer);
 				success = true;
-			} catch (IOException e) {}
+			} catch (IOException ignored) {}
 		}
 		return success;
-	}
+	}*/
 
 	
-	public void launchGUI() {
+	void launchGUI() {
 		launch();
 	}
 	
-	public boolean validateName(String name)
+	private boolean validateName(String name)
 	{
 		for(char c: name.toCharArray())
 			if(!(Character.isLetterOrDigit(c)||Character.isSpaceChar(c)))	//If it is not the case that the character is a-zA-Z0-9 or ' '
@@ -338,8 +280,26 @@ public class ClientGUI extends Application{
 						
 				
 	}
-	
-}//end of GUI
+
+	private String getCardImage(Card card){
+		return "resources\\" + card.toString() + ".png";
+	}
+
+	private void drawCard(Card card, double posx, double posy, double width, double height) throws FileNotFoundException {
+		Image image = new Image(new FileInputStream(getCardImage(card)));
+		ImageView view = new ImageView(image);
+		view.setX(posx);
+		view.setY(posy);
+		view.setFitWidth(width);
+		view.setFitHeight(height);
+		root.getChildren().add(view);
+	}
+
+	void drawCard(Card card, double posx, double posy) throws FileNotFoundException {
+		drawCard(card, posx, posy, STD_CARD_WIDTH, STD_CARD_HEIGHT);
+	}
+
+}
 
 
 

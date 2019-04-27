@@ -2,16 +2,13 @@ package model;
 
 import java.io.File;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class GoFishGame extends CardGame {
 
 	private GoFishQueue playerQueue;
 
-	public GoFishGame(int numOfPlayers, ArrayList<String> playerNames, ArrayList<Socket> clientSocks, File cardList) {
+	public GoFishGame(int numOfPlayers, List<String> playerNames, List<Socket> clientSocks, File cardList) {
 		super(numOfPlayers, playerNames, clientSocks, cardList);
 
 		playerQueue = sortPlayersInPlayOrder();
