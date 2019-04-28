@@ -37,7 +37,9 @@ public class ClientGUI extends Application{
 	Hand yourCards;
 	int deckCount;
 	int cardCounts[];
+	//Holds references to all cards that represent each player's hand and pairs
 	List<Card>[] playerPairs;
+	
 	
 	//String array to easily hold the clients choices for their play on their turn
 	//userSelect[0] = The client's name, this get changed per turn
@@ -70,6 +72,9 @@ public class ClientGUI extends Application{
 	Button[] cardButtons;
 	//OtherPlayer button array
 	Button[] playerButtons;
+	//Holds a collective list of all faceup cards and facedown cards 
+	//that are not a part of the card buttons
+	List<ImageView> cardsInPlay;
 	
 	@Override
 	public void start(Stage stage) throws Exception {
@@ -351,7 +356,7 @@ public class ClientGUI extends Application{
 		launch();
 	}
 	
-	//@@@Non Scene Change Methods@@@
+	//@@@Non Scene Change Methods@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	
 	public boolean validateName(String name)
 	{
@@ -363,137 +368,8 @@ public class ClientGUI extends Application{
 				
 	}
 	
-	private String getCardImage(Card card){
-		return "resources\\" + card.toString() + ".png";
-	}
-
-	private void drawCard(Card card, double posx, double posy, double width, double height) throws FileNotFoundException {
-		Image image = new Image(new FileInputStream(getCardImage(card)));
-		ImageView view = new ImageView(image);
-		view.setX(posx);
-		view.setY(posy);
-		view.setFitWidth(width);
-		view.setFitHeight(height);
-		root.getChildren().add(view);
-	}
-
-	void drawCard(Card card, double posx, double posy) throws FileNotFoundException {
-		drawCard(card, posx, posy, STD_CARD_WIDTH, STD_CARD_HEIGHT);
-	}
-	
-	
-	//Buttons
-	
 	/**
-	 * Initializes the array of card buttons the player presses
-	 * Each one sets userSelect[2] to the character symbol of their respective card value
-	 * @author Chris
-	 */
-	void initializeCardButtons()
-	{
-		cardButtons = new Button[13];	//There are 13 card values
-		for(int i = 0; i < cardButtons.length; ++i)
-		{
-			cardButtons[i] = new Button();
-			final int temp = i;
-			
-			cardButtons[i].setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent event) {
-					userSelect[2] = numberToSymbol(temp);
-					
-				}
-			});
-		}
-	}
-	
-	
-	void initializePlayerButtons(int playerAmt) throws FileNotFoundException
-	{
-		playerButtons = new Button[playerAmt];
-		Image image = new Image(new FileInputStream("resources\\playa.png"));
-		ImageView imgV = new ImageView(image);
-		imgV.setFitHeight(STD_CARD_HEIGHT);
-		imgV.setFitWidth(STD_CARD_HEIGHT);
-		
-		for(int i = 0; i < playerAmt; ++i)
-		{
-			playerButtons[i] = new Button();
-			playerButtons[i].setGraphic(imgV);
-			
-			final int temp = i;
-			
-			playerButtons[i].setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent event) {
-					userSelect[1] = game.clientLabels.get(temp);
-					
-				}
-			});
-		}
-	}
-	
-	/**
-	 * Removes and redraws each card button as their availability 
-	 * is updated within the client's hand.
-	 * Each card is shifted towards the left side of the screen
-	 * @author Chris
-	 * @throws FileNotFoundException 
-	 */
-	void updateCardButtons() throws FileNotFoundException
-	{
-		List<Card> uCards = yourCards.getUCards();
-		double height = root.getScene().getHeight();
-		double width = root.getScene().getWidth();
-		
-		double offset = width*(20/1920);
-		double cardGap = ( (width-offset) - offset - STD_CARD_WIDTH)/uCards.size();
-		double posY = height/3 + offset;
-		
-		double posX;
-		int index;
-		
-		//Clear all the buttons currently
-		for(int i = 0; i < cardButtons.length; ++i)
-			root.getChildren().remove(cardButtons[i]);
-		
-		
-		for(Card uCard: uCards)
-		{
-			index = uCard.getVal().toInt()-1;
-			posX = (double)index*cardGap+offset;
-			
-			placeCardButton(cardButtons[index], uCard, posX, posY);
-		}
-		
-	}
-	
-	/**
-	 * Just a rehash of An
-	 * @param cardButton
-	 * @param card
-	 * @param posx
-	 * @param posy
-	 * @param width
-	 * @param height
-	 * @throws FileNotFoundException
-	 */
-	private void placeCardButton(Button cardButton, Card card, double posx, double posy, double width, double height) throws FileNotFoundException {
-		Image image = new Image(new FileInputStream(getCardImage(card)));
-		ImageView view = new ImageView(image);
-		view.setFitWidth(width);
-		view.setFitHeight(height);
-		view.setX(posx);
-		view.setY(posy);
-		cardButton.setGraphic(view);
-		root.getChildren().add(cardButton);
-	}
-	void placeCardButton(Button cardButton, Card card, double posx, double posy) throws FileNotFoundException {
-		drawCard(card, posx, posy, STD_CARD_WIDTH, STD_CARD_HEIGHT);
-	}
-	
-	/**
-	 * COnverts a card int value to its String Symbol form
+	 * Converts a card int value to its String Symbol form
 	 * @param value
 	 * @return
 	 */
@@ -574,6 +450,282 @@ public class ClientGUI extends Application{
 				break;
 		}
 		return word;
+	}
+	
+	
+	//@@@Drawing plain cards@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	
+	private String getCardImage(Card card){
+		return "resources\\" + card.toString() + ".png";
+	}
+
+	private ImageView drawCard(Card card, double posx, double posy, double width, double height) throws FileNotFoundException {
+		Image image = new Image(new FileInputStream(getCardImage(card)));
+		ImageView view = new ImageView(image);
+		view.setX(posx);
+		view.setY(posy);
+		view.setFitWidth(width);
+		view.setFitHeight(height);
+		root.getChildren().add(view);
+		return view;
+	}
+
+	ImageView drawCard(Card card, boolean mini, double posx, double posy) throws FileNotFoundException {
+		return drawCard(card, posx, posy, (mini)?STD_MINI_CARD_WIDTH:STD_CARD_WIDTH, (mini)?STD_MINI_CARD_HEIGHT:STD_CARD_HEIGHT);
+	}
+	
+	
+	private ImageView drawFaceDownCard(String color, double posx, double posy, double width, double height) throws FileNotFoundException {
+		Image image = new Image(new FileInputStream("resources\\"+color+"_back.png"));
+		ImageView view = new ImageView(image);
+		view.setX(posx);
+		view.setY(posy);
+		view.setFitWidth(width);
+		view.setFitHeight(height);
+		root.getChildren().add(view);
+		return view;
+	}
+
+	ImageView drawFaceDownCard(String color, boolean mini, double posx, double posy) throws FileNotFoundException 
+	{
+		return drawFaceDownCard(color, posx, posy, (mini)?STD_MINI_CARD_WIDTH:STD_CARD_WIDTH, (mini)?STD_MINI_CARD_HEIGHT:STD_CARD_HEIGHT);
+	}
+	
+	
+	//@@@Button drawing@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	
+	/**
+	 * Initializes the array of card buttons the player presses
+	 * Each one sets userSelect[2] to the character symbol of their respective card value
+	 * @author Chris
+	 */
+	void initializeCardButtons()
+	{
+		cardButtons = new Button[13];	//There are 13 card values
+		for(int i = 0; i < cardButtons.length; ++i)
+		{
+			cardButtons[i] = new Button();
+			final int temp = i;
+			
+			cardButtons[i].setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					userSelect[2] = numberToSymbol(temp);
+					
+				}
+			});
+		}
+	}
+	
+	/**
+	 * Sets up the player buttons
+	 * @author Chris
+	 * @param playerAmt
+	 * @throws FileNotFoundException
+	 */
+	void initializePlayerButtons(int playerAmt) throws FileNotFoundException
+	{
+		playerButtons = new Button[playerAmt];
+		Image image = new Image(new FileInputStream("resources\\playa.png"));
+		ImageView imgV = new ImageView(image);
+		imgV.setFitHeight(STD_CARD_HEIGHT);
+		imgV.setFitWidth(STD_CARD_HEIGHT);
+		
+		for(int i = 0; i < playerAmt; ++i)
+		{
+			playerButtons[i] = new Button(game.clientLabels.get(i));
+			playerButtons[i].setGraphic(imgV);
+			
+			final int temp = i;
+			
+			playerButtons[i].setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					userSelect[1] = game.clientLabels.get(temp);
+					
+				}
+			});
+		}
+	}
+	
+	/**
+	 * Removes and redraws each card button as their availability 
+	 * is updated within the client's hand.
+	 * Each card is shifted towards the left side of the screen
+	 * @author Chris
+	 * @throws FileNotFoundException 
+	 */
+	void updateCardButtons() throws FileNotFoundException
+	{
+		List<Card> uCards = yourCards.getUCards();
+		double height = root.getScene().getHeight();
+		double width = root.getScene().getWidth();
+		
+		double offset = width*(20/1920);
+		double cardGap = ( (width-offset) - offset - STD_CARD_WIDTH)/uCards.size();
+		double posY = height/3*2 + offset;
+		
+		double posX;
+		int index;
+		
+		//Clear all the buttons currently
+		for(int i = 0; i < cardButtons.length; ++i)
+			root.getChildren().remove(cardButtons[i]);
+		
+		
+		for(Card uCard: uCards)
+		{
+			index = uCard.getVal().toInt()-1;
+			posX = (double)index*cardGap+offset;
+			
+			cardButtons[index].setText("x"+yourCards.getDuplicityAmount(uCard.getVal()));
+			placeCardButton(cardButtons[index], uCard, posX, posY);
+		}
+		
+	}
+	
+	/**
+	 * Places the player buttons.
+	 * Should only be used once in the game.
+	 */
+	void placePlayerButtons()
+	{
+		double width = root.getScene().getWidth();
+		
+		double offset = width*(20/1920);
+		double playerGap = ( (width-offset) - offset - STD_CARD_WIDTH)/playerButtons.length;
+		double posY = offset;
+		
+		double posX;
+		
+		for(int i = 0; i < playerButtons.length; ++i)
+		{
+			posX = (double)i*playerGap+offset;
+			
+			playerButtons[i].setLayoutX(posX);
+			playerButtons[i].setLayoutY(posY);
+			root.getChildren().add(playerButtons[i]);
+		}
+	}
+	
+	/**
+	 * Just a rehash of An
+	 * @param cardButton
+	 * @param card
+	 * @param posx
+	 * @param posy
+	 * @param width
+	 * @param height
+	 * @throws FileNotFoundException
+	 */
+	private void placeCardButton(Button cardButton, Card card, double posx, double posy, double width, double height) throws FileNotFoundException {
+		Image image = new Image(new FileInputStream(getCardImage(card)));
+		ImageView view = new ImageView(image);
+		view.setFitWidth(width);
+		view.setFitHeight(height);
+		cardButton.setGraphic(view);
+		cardButton.setLayoutX(posx);
+		cardButton.setLayoutY(posy);
+		
+		root.getChildren().add(cardButton);
+	}
+	void placeCardButton(Button cardButton, Card card, double posx, double posy) throws FileNotFoundException {
+		drawCard(card, posx, posy, STD_CARD_WIDTH, STD_CARD_HEIGHT);
+	}
+	
+	//@@@Player cards in hand and their pairs@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	
+	/**
+	 * Removes all the cards drawn that aren't associated to the cardButtons
+	 */
+	void clearCardsInPlay()
+	{
+		for(ImageView view: cardsInPlay)
+			root.getChildren().remove(view);
+	}
+	
+	/**
+	 * Draws the cards for each player's pairs and a representation of their cards in hand face-down
+	 * NOTE: Need to make a call to remove all the nodes in cardsInPlay before calling this method again
+	 * @author Chris
+	 * @throws FileNotFoundException
+	 */
+	void drawPlayerPairsAndHands() throws FileNotFoundException
+	{
+		
+		double height = root.getScene().getHeight();
+		double width = root.getScene().getWidth();
+		double offset = width*(20/1920);
+		double playerGap = ( (width-offset) - offset - STD_CARD_WIDTH)/playerButtons.length;
+		double posY = 2*offset + STD_CARD_HEIGHT;
+		double posX;
+		
+		//Used to hold the i in case we are working on players above the client's id
+		int tempIndex;
+		
+		//Update the list of each player's pairs, and cards in hand
+		for(int i = 0; i < cardCounts.length; ++i)
+		{
+			//If we are updating this client's pairs
+			if(i == yourID)
+			{
+				//Draw only your pairs
+				drawPairs(playerPairs[i], width/3*2, height/3 + offset);
+			}
+			else //If we are updating some other player's pairs and hand
+			{
+				//Get the proper index for the other player's excluding you
+				tempIndex = (i>yourID)?i-1:i;
+				//Get the X position for the current player
+				posX = (double)tempIndex*playerGap+offset;
+				
+				drawHand(cardCounts[i], posX, posY);
+				drawPairs(playerPairs[i], posX, posY + offset);
+			}
+			
+		}
+	}
+	/**
+	 * Draws the pairs a given player has.
+	 * @author Chris
+	 * @param pairs	- The pairs the player has
+	 * @param startX - Where we will start draw the players cards on the X Pane
+	 * @param startY - Where we will start draw the players cards on the Y Pane
+	 * @throws FileNotFoundException
+	 */
+	private void drawPairs(List<Card> pairs, double startX, double startY) throws FileNotFoundException
+	{		
+		int columns = 3;
+		
+		double width = startX + STD_CARD_WIDTH;
+		double cardGap = ( width - startX - STD_MINI_CARD_WIDTH)/playerButtons.length;
+		double posX;
+		
+		int i = 0;
+		int j = 0;
+		for(Card pair: pairs)
+		{
+			posX = (double)(j%columns)*cardGap+startX;
+			cardsInPlay.add(drawCard(pair, true, posX, STD_MINI_CARD_HEIGHT*i));
+			
+			i = j/columns;
+			++j;
+		}
+	}
+	/**
+	 * Draws a group of facedown cards 
+	 * @author Chris
+	 * @param cardAmount - The number of cards this player has
+	 * @param startX - Where we will start draw the players cards on the X Pane
+	 * @param startY - Where we will start draw the players cards on the Y Pane
+	 * @throws FileNotFoundException
+	 */
+	private void drawHand(int cardAmount, double startX, double startY) throws FileNotFoundException
+	{
+		for(int i = 0; i < cardAmount; ++i)
+		{
+			cardsInPlay.add(drawFaceDownCard("red", true, startX+2*i, startY));
+		}
 	}
 	
 	
