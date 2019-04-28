@@ -62,6 +62,7 @@ public class ClientGUI extends Application{
 	Text addressLabel;
 	Text infoLabel;
 	Text turnLabel;
+	Text userSelectLabel;
 	Text testLabel;
 	TextField addressInput;
 	TextField nameInput;
@@ -105,6 +106,7 @@ public class ClientGUI extends Application{
 		addressLabel = new Text("Starting server...");//part of host screen
 		infoLabel = new Text("Enter details below");//part of join and game screen
 		turnLabel = new Text();//part of game screen
+		userSelectLabel = new Text();			//Tells what the user has selected
 		testLabel = new Text();		//Used to test if a message is recieved
 		addressInput = new TextField();//part of join screen
 		nameInput = new TextField();//part of host and join screen
@@ -369,6 +371,11 @@ public class ClientGUI extends Application{
 				
 	}
 	
+	boolean validateUserSelect()
+	{
+		return false;
+	}
+	
 	/**
 	 * Converts a card int value to its String Symbol form
 	 * @param value
@@ -453,6 +460,37 @@ public class ClientGUI extends Application{
 		return word;
 	}
 	
+	//###Initialize buttons & Update GameScreen###
+	
+	/**
+	 * Sets up the initial game gui elements, the ones that don't change throughout the game
+	 * @throws FileNotFoundException
+	 */
+	void stupGameGUI() throws FileNotFoundException
+	{
+		//Initialize
+		initializeCardButtons();
+		initializePlayerButtons(cardCounts.length);
+		
+		//Place buttons and fields that don't need to be updated
+		placePlayerButtons();
+		placeCenterField();
+	}
+	
+	/**
+	 * Updates GUI elements like cards. Should be called after everyone gets their cards
+	 * @author Chris
+	 * @throws FileNotFoundException 
+	 */
+	void updateGameGUI() throws FileNotFoundException
+	{
+		//Get rid of any card that is not involved with a button
+		clearCardsInPlay();
+		
+		drawDeck();
+		updateCardButtons();
+		drawPlayerPairsAndHands();
+	}
 	
 	//@@@Drawing plain cards@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	
@@ -499,9 +537,33 @@ public class ClientGUI extends Application{
 	{
 		for(ImageView view: cardsInPlay)
 			root.getChildren().remove(view);
+		cardsInPlay.clear();
 	}
 	
-	//@@@Draw Deck@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	//@@@Draw Deck and Center screen information@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	
+	void placeCenterField()
+	{
+		double startY = root.getScene().getHeight()/3;
+		double startX = root.getScene().getWidth()/3;
+		double offset = root.getScene().getWidth()*(10/1920);
+		
+		//Set the label that tells who turn it is
+		turnLabel.setX(startX+offset);
+		turnLabel.setY(startY);
+		//Set the label that tells what the last move was
+		infoLabel.setX(startX+offset);
+		infoLabel.setY(startY+offset);
+		//Set the label that describes what selection the user currently has
+		userSelectLabel.setX(startX+offset);
+		userSelectLabel.setY(startY+offset*2);
+		//Set the play button's spacing
+		playButton.setLayoutX(startX+offset);
+		playButton.setLayoutY(startY+offset*3);
+		
+		//Add the above labels except for the play button
+		root.getChildren().addAll(turnLabel,infoLabel,userSelectLabel);
+	}
 	
 	/**
 	 * Draws the cards in deck, each one offset by a tiny amount to kind of see 
@@ -751,7 +813,7 @@ public class ClientGUI extends Application{
 	
 	private void drawExtraHandCards(int cardAmount, double startX, double startY) throws FileNotFoundException
 	{
-		for(int i = 0; i < cardAmount; ++i)
+		for(int i = cardAmount - 1; i > 0; ++i)
 		{
 			cardsInPlay.add(drawFaceDownCard("green", true, startX, startY+2*i));
 		}
