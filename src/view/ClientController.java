@@ -238,11 +238,18 @@ class ClientThread extends Thread{
 						   //Initiailize this client's variables
 						   game.gui.yourID = Integer.parseInt(mes.substring(5,6)); //Set the playerID
 						   game.gui.yourCards = new Hand();
-						   game.gui.deckCount = Integer.parseInt(mes.substring(7));	//Temporarily putting the amount of players here
+						   game.gui.deckCount = Integer.parseInt(mes.substring(7,8));	//Temporarily putting the amount of players here
 						   game.gui.cardCounts = new int[game.gui.deckCount];
 						   game.gui.playerPairs = new List[game.gui.deckCount];
 						   for(int i = 0; i < game.gui.deckCount; ++i)
 							   game.gui.playerPairs[i] = new ArrayList<Card>();
+						   
+						   //Reset clientLabels
+						   game.clientLabels.clear();
+						   //Add all the client labels
+						   for(String name:mes.substring(9).split(","))
+							   game.clientLabels.add(name);
+							   
 						   
 						   //Send this client to the game state
 						   game.gui.game();
@@ -401,11 +408,19 @@ class ServerThread extends Thread{
 		//Temporarily reset the state to hosting so the server's client can recieve the message properly
 		game.gui.state = "hosting";
 		
+		//Get all the player names and send to the clients so they have access to them
+		String names = "";
+		for(String name: game.clientLabels) 
+		{
+    		names = names+",";
+    	}
+		names = names.substring(0, names.length()-1);	//Get rid of trailing ','
+		
 		//Send the string "PLAY" to all of the clients
 		for(int i = 0; i < game.clientSocks.size(); i++) {
 			try {
 				DataOutputStream out = new DataOutputStream(game.clientSocks.get(i).getOutputStream());
-				out.writeUTF("PLAY;"+i+";"+game.clientSocks.size());
+				out.writeUTF("PLAY;"+i+";"+game.clientSocks.size()+";"+names);
 			}
 			catch (IOException e) {}
 		}

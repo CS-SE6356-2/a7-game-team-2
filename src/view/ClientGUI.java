@@ -1,6 +1,7 @@
 package view;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -24,6 +25,11 @@ public class ClientGUI extends Application{
 	
 	ClientController game = null;
 	
+	private final int STD_CARD_WIDTH = 120;
+	private final int STD_CARD_HEIGHT = 180;
+	private final int STD_MINI_CARD_WIDTH = 30;
+	private final int STD_MINI_CARD_HEIGHT = 45;
+	
 	String state;
 	String yourName;
 	//server to client variables
@@ -33,6 +39,11 @@ public class ClientGUI extends Application{
 	int cardCounts[];
 	List<Card>[] playerPairs;
 	
+	//String array to easily hold the clients choices for their play on their turn
+	//userSelect[0] = The client's name, this get changed per turn
+	//userSelect[1] = The player the client is asking for cards
+	//userSelect[2] = The card value the user is asking for
+	String[] userSelect;
 	
 	
 	//GUI stuff
@@ -55,6 +66,11 @@ public class ClientGUI extends Application{
 	TextField gameInput;
 	//Label realLabel;
 	
+	//Card button array
+	Button[] cardButtons;
+	//OtherPlayer button array
+	Button[] playerButtons;
+	
 	@Override
 	public void start(Stage stage) throws Exception {
 		
@@ -64,6 +80,12 @@ public class ClientGUI extends Application{
 		
 		state = "";
 		yourName = "model.Player";
+		
+		//Initialize the user selection array
+		//userSelect[0] = The client's name, this get changed per turn
+		//userSelect[1] = The player the client is asking for cards
+		//userSelect[2] = The card value the user is asking for
+		userSelect = new String[3];
 		
 		root = new VBox();
 		hostButton = new Button("Host Game");//part of main menu screen
@@ -86,9 +108,9 @@ public class ClientGUI extends Application{
 		
 		Image image = new Image(new FileInputStream("resources\\2C.png"));
 		ImageView imgV = new ImageView(image);
-		imgV.setFitHeight(50);
-		imgV.setFitWidth(50);
-		//realLabel.setGraphic(imgV);
+		imgV.setFitHeight(STD_CARD_HEIGHT);
+		imgV.setFitWidth(STD_CARD_WIDTH);
+		hostButton.setGraphic(imgV);
 		
 		//setup buttons and what-not
 		hostButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -154,7 +176,7 @@ public class ClientGUI extends Application{
 		main();
 		
 		stage.setTitle("Client Test");
-		Scene scene = new Scene(root, 800, 450);
+		Scene scene = new Scene(root, 1280, 720);
 		stage.setScene(scene);
         stage.show();
 	}//end of start
@@ -329,6 +351,8 @@ public class ClientGUI extends Application{
 		launch();
 	}
 	
+	//@@@Non Scene Change Methods@@@
+	
 	public boolean validateName(String name)
 	{
 		for(char c: name.toCharArray())
@@ -338,6 +362,180 @@ public class ClientGUI extends Application{
 						
 				
 	}
+	
+	private String getCardImage(Card card){
+		return "resources\\" + card.toString() + ".png";
+	}
+
+	private void drawCard(Card card, double posx, double posy, double width, double height) throws FileNotFoundException {
+		Image image = new Image(new FileInputStream(getCardImage(card)));
+		ImageView view = new ImageView(image);
+		view.setX(posx);
+		view.setY(posy);
+		view.setFitWidth(width);
+		view.setFitHeight(height);
+		root.getChildren().add(view);
+	}
+
+	void drawCard(Card card, double posx, double posy) throws FileNotFoundException {
+		drawCard(card, posx, posy, STD_CARD_WIDTH, STD_CARD_HEIGHT);
+	}
+	
+	
+	//Buttons
+	
+	/**
+	 * Initializes the array of card buttons the player presses
+	 */
+	void initializeCardButtons()
+	{
+		cardButtons = new Button[13];	//There are 13 card values
+		for(int i = 0; i < cardButtons.length; ++i)
+		{
+			cardButtons[i] = new Button();
+			final int temp = i;
+			
+			cardButtons[i].setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					userSelect[3] = numberToSymbol(temp);
+					
+				}
+			});
+		}
+	}
+	
+	void initializePlayerButtons(int playerAmt) throws FileNotFoundException
+	{
+		playerButtons = new Button[playerAmt];
+		Image image = new Image(new FileInputStream("resources\\playa.png"));
+		ImageView imgV = new ImageView(image);
+		imgV.setFitHeight(STD_CARD_HEIGHT);
+		imgV.setFitWidth(STD_CARD_HEIGHT);
+		
+		for(int i = 0; i < playerAmt; ++i)
+		{
+			playerButtons[i] = new Button();
+			playerButtons[i].setGraphic(imgV);
+			
+			final int temp = i;
+			
+			playerButtons[i].setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					userSelect[2] = game.clientLabels.get(temp);
+					
+				}
+			});
+		}
+	}
+	
+	void updateCardButtons()
+	{
+		List<Card> uCards = yourCards.getUCards();
+		double height = root.getScene().getHeight();
+		double cardGap = (root.getScene().getWidth());
+		
+		double posX;
+		int index;
+		
+		//Clear all the buttons currently
+		for(int i = 0; i < cardButtons.length; ++i)
+			root.getChildren().remove(cardButtons[i]);
+		
+		
+		for(Card uCard: uCards)
+		{
+			index = uCard.getVal().toInt()-1;
+			posX = (double)index*cardGap+20;
+		}
+		
+	}
+	
+	/**
+	 * COnverts a card int value to its String Symbol form
+	 * @param value
+	 * @return
+	 */
+	String numberToSymbol(int value)
+	{
+		String val;
+		switch(value)
+		{
+			case 1:
+				val = "A";
+				break;	
+			case 10:
+				val = "T";
+				break;
+			case 11:
+				val = "J";
+				break;
+			case 12:
+				val = "Q";
+				break;
+			case 13:
+				val = "K";
+				break;
+			default:
+				val = value+"";
+				break;
+		}
+		return val;
+	}
+	/**
+	 * Converts a Card value symbol to the long string form
+	 * @param symbol
+	 * @return
+	 */
+	String SymbolToWord(String symbol)
+	{
+		String word = "Joker";
+		switch(symbol)
+		{
+			case "A":
+				word = "Ace";
+				break;		
+			case "2":
+				word = "Two";
+				break;	
+			case "3":
+				word = "Three";
+				break;	
+			case "4":
+				word = "Four";
+				break;	
+			case "5":
+				word = "Five";
+				break;	
+			case "6":
+				word = "Sixe";
+				break;	
+			case "7":
+				word = "Seven";
+				break;	
+			case "8":
+				word = "Eight";
+				break;	
+			case "9":
+				word = "Nine";
+				break;
+			case "T":
+				word = "Ten";
+				break;
+			case "J":
+				word = "Jack";
+				break;
+			case "Q":
+				word = "Queen";
+				break;
+			case "K":
+				word = "King";
+				break;
+		}
+		return word;
+	}
+	
 	
 }//end of GUI
 

@@ -25,6 +25,9 @@ public class Card implements Comparator<Card>{
     public enum Value {
 	    ACE, NUM2, NUM3, NUM4, NUM5, NUM6, NUM7, NUM8, NUM9, NUM10, JACK, QUEEN, KING;
 
+    	
+    	
+    	
         /**
          * @return returns a String representation of the Value. Either the number of the value or the first character of the Value
          */
@@ -44,6 +47,41 @@ public class Card implements Comparator<Card>{
                     return toString().substring(3);
             }
         }
+	    
+	    
+	    public int toInt()
+	    {
+	    	switch(this){
+            case ACE:
+            	return 1;
+            case NUM2:
+            	return 2;
+            case NUM3:
+            	return 3;
+            case NUM4:
+            	return 4;
+            case NUM5:
+            	return 5;
+            case NUM6:
+            	return 6;
+            case NUM7:
+            	return 7;
+            case NUM8:
+            	return 8;
+            case NUM9:
+            	return 9;
+            case NUM10:
+            	return 10;
+            case JACK:
+            	return 11;
+            case QUEEN:
+            	return 12;
+            case KING:
+            	return 13;
+            default:
+            	return -1;
+	    	}
+	    }
     }
 
     /**

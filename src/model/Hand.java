@@ -37,7 +37,7 @@ public class Hand
 	}
 
 	/**
-	 * Returns a list of cards of the pairs that are held by a player
+	 * Returns a String list of cards of the pairs that are held by a player
 	 * Does not check if the list is empty
 	 * @author Chris
 	 * @param A List of Cards to check
@@ -53,6 +53,19 @@ public class Hand
 		cardList.deleteCharAt(cardList.lastIndexOf(" "));
 
 		return cardList.toString();
+	}
+	
+	/**
+	 * Returns a list of unique cards that are held by a player in their activeList
+	 * Does not check if the list is empty
+	 * @author Chris
+	 * @param A List of Cards to check
+	 * @return		List<Card>
+	 */
+	public List<Card> getUCards() 
+	{
+        TreeSet<Card> uniqueCards = new TreeSet<>(activeCards);	
+		return new LinkedList<Card>(uniqueCards);
 	}
 
 	/**
