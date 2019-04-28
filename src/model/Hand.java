@@ -75,10 +75,10 @@ public class Hand
 	 * @param A list of cards to check
 	 * @return The number of cards that have that value
 	 */
-    public int getDuplicityAmount(Value val, List<Card> cards) 
+    public int getDuplicityAmount(Value val) 
     {
 		int count = 0;
-		for(Card uCard: cards)
+		for(Card uCard: activeCards)
 			if(uCard.getVal() == val)
 				++count;
 		return count;
