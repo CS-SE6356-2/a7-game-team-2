@@ -386,6 +386,8 @@ public class ClientGUI extends Application{
 	
 	/**
 	 * Initializes the array of card buttons the player presses
+	 * Each one sets userSelect[2] to the character symbol of their respective card value
+	 * @author Chris
 	 */
 	void initializeCardButtons()
 	{
@@ -398,12 +400,13 @@ public class ClientGUI extends Application{
 			cardButtons[i].setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
-					userSelect[3] = numberToSymbol(temp);
+					userSelect[2] = numberToSymbol(temp);
 					
 				}
 			});
 		}
 	}
+	
 	
 	void initializePlayerButtons(int playerAmt) throws FileNotFoundException
 	{
@@ -423,18 +426,29 @@ public class ClientGUI extends Application{
 			playerButtons[i].setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
-					userSelect[2] = game.clientLabels.get(temp);
+					userSelect[1] = game.clientLabels.get(temp);
 					
 				}
 			});
 		}
 	}
 	
-	void updateCardButtons()
+	/**
+	 * Removes and redraws each card button as their availability 
+	 * is updated within the client's hand.
+	 * Each card is shifted towards the left side of the screen
+	 * @author Chris
+	 * @throws FileNotFoundException 
+	 */
+	void updateCardButtons() throws FileNotFoundException
 	{
 		List<Card> uCards = yourCards.getUCards();
 		double height = root.getScene().getHeight();
-		double cardGap = (root.getScene().getWidth());
+		double width = root.getScene().getWidth();
+		
+		double offset = width*(20/1920);
+		double cardGap = ( (width-offset) - offset - STD_CARD_WIDTH)/uCards.size();
+		double posY = height/3 + offset;
 		
 		double posX;
 		int index;
@@ -447,9 +461,35 @@ public class ClientGUI extends Application{
 		for(Card uCard: uCards)
 		{
 			index = uCard.getVal().toInt()-1;
-			posX = (double)index*cardGap+20;
+			posX = (double)index*cardGap+offset;
+			
+			placeCardButton(cardButtons[index], uCard, posX, posY);
 		}
 		
+	}
+	
+	/**
+	 * Just a rehash of An
+	 * @param cardButton
+	 * @param card
+	 * @param posx
+	 * @param posy
+	 * @param width
+	 * @param height
+	 * @throws FileNotFoundException
+	 */
+	private void placeCardButton(Button cardButton, Card card, double posx, double posy, double width, double height) throws FileNotFoundException {
+		Image image = new Image(new FileInputStream(getCardImage(card)));
+		ImageView view = new ImageView(image);
+		view.setFitWidth(width);
+		view.setFitHeight(height);
+		view.setX(posx);
+		view.setY(posy);
+		cardButton.setGraphic(view);
+		root.getChildren().add(cardButton);
+	}
+	void placeCardButton(Button cardButton, Card card, double posx, double posy) throws FileNotFoundException {
+		drawCard(card, posx, posy, STD_CARD_WIDTH, STD_CARD_HEIGHT);
 	}
 	
 	/**
