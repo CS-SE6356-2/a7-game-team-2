@@ -412,7 +412,7 @@ class ServerThread extends Thread{
 		String names = "";
 		for(String name: game.clientLabels) 
 		{
-    		names = names+",";
+    		names += name+",";
     	}
 		names = names.substring(0, names.length()-1);	//Get rid of trailing ','
 		

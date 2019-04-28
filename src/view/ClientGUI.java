@@ -182,6 +182,7 @@ public class ClientGUI extends Application{
 		
 		stage.setTitle("Client Test");
 		Scene scene = new Scene(root, 1280, 720);
+		//Scene scene = new Scene(root, 600, 500);
 		stage.setScene(scene);
         stage.show();
 	}//end of start
@@ -491,6 +492,33 @@ public class ClientGUI extends Application{
 		return drawFaceDownCard(color, posx, posy, (mini)?STD_MINI_CARD_WIDTH:STD_CARD_WIDTH, (mini)?STD_MINI_CARD_HEIGHT:STD_CARD_HEIGHT);
 	}
 	
+	/**
+	 * Removes all the cards drawn that aren't associated to the cardButtons
+	 */
+	void clearCardsInPlay()
+	{
+		for(ImageView view: cardsInPlay)
+			root.getChildren().remove(view);
+	}
+	
+	//@@@Draw Deck@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	
+	/**
+	 * Draws the cards in deck, each one offset by a tiny amount to kind of see 
+	 * how many cards there are.
+	 * Should call clearCardsInPlay() before calling this again.
+	 * @throws FileNotFoundException
+	 */
+	void drawDeck() throws FileNotFoundException
+	{
+		double offset = root.getScene().getWidth()*(20/1920);
+		double posY = root.getScene().getHeight()/3 + offset;
+		
+		for(int i = 0; i < deckCount; ++i)
+		{
+			cardsInPlay.add(drawFaceDownCard("green", false, offset+i/100, posY+i/100));
+		}
+	}
 	
 	//@@@Button drawing@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	
@@ -552,6 +580,7 @@ public class ClientGUI extends Application{
 	 * Removes and redraws each card button as their availability 
 	 * is updated within the client's hand.
 	 * Each card is shifted towards the left side of the screen
+	 * NOTE: Need to make a call to clearCardsInPlay() before calling this again (for the duplicate cards drawn below the face up card).
 	 * @author Chris
 	 * @throws FileNotFoundException 
 	 */
@@ -568,7 +597,7 @@ public class ClientGUI extends Application{
 		double posX;
 		int index;
 		
-		//Clear all the buttons currently
+		//Clear all the buttons currently, If the button is not there, no Ill effects occur
 		for(int i = 0; i < cardButtons.length; ++i)
 			root.getChildren().remove(cardButtons[i]);
 		
@@ -578,7 +607,8 @@ public class ClientGUI extends Application{
 			index = uCard.getVal().toInt()-1;
 			posX = (double)index*cardGap+offset;
 			
-			cardButtons[index].setText("x"+yourCards.getDuplicityAmount(uCard.getVal()));
+			drawExtraHandCards(yourCards.getDuplicityAmount(uCard.getVal()), posX, posY);
+			//cardButtons[index].setText("x"+yourCards.getDuplicityAmount(uCard.getVal()));
 			placeCardButton(cardButtons[index], uCard, posX, posY);
 		}
 		
@@ -630,23 +660,14 @@ public class ClientGUI extends Application{
 		root.getChildren().add(cardButton);
 	}
 	void placeCardButton(Button cardButton, Card card, double posx, double posy) throws FileNotFoundException {
-		drawCard(card, posx, posy, STD_CARD_WIDTH, STD_CARD_HEIGHT);
+		placeCardButton(cardButton, card, posx, posy, STD_CARD_WIDTH, STD_CARD_HEIGHT);
 	}
 	
 	//@@@Player cards in hand and their pairs@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	
 	/**
-	 * Removes all the cards drawn that aren't associated to the cardButtons
-	 */
-	void clearCardsInPlay()
-	{
-		for(ImageView view: cardsInPlay)
-			root.getChildren().remove(view);
-	}
-	
-	/**
 	 * Draws the cards for each player's pairs and a representation of their cards in hand face-down
-	 * NOTE: Need to make a call to remove all the nodes in cardsInPlay before calling this method again
+	 * NOTE: Need to make a call to clearCardsInPlay() before calling this again.
 	 * @author Chris
 	 * @throws FileNotFoundException
 	 */
@@ -725,6 +746,14 @@ public class ClientGUI extends Application{
 		for(int i = 0; i < cardAmount; ++i)
 		{
 			cardsInPlay.add(drawFaceDownCard("red", true, startX+2*i, startY));
+		}
+	}
+	
+	private void drawExtraHandCards(int cardAmount, double startX, double startY) throws FileNotFoundException
+	{
+		for(int i = 0; i < cardAmount; ++i)
+		{
+			cardsInPlay.add(drawFaceDownCard("green", true, startX, startY+2*i));
 		}
 	}
 	
