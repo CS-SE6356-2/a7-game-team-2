@@ -1,17 +1,24 @@
 package view;
 
-public class ClientLauncher {	
+public class ClientLauncher {
 
-	static ClientController game;
-	static ClientGUI gui;
+	private static ClientController client;
+	private static ServerController server;
+	private static ClientGUI gui;
 	
 	public static void main(String[] args) {
-		
-		game = new ClientController();
-		gui = new ClientGUI();
-		
-		gui.launchGUI();
-
+		ClientGUI.launchGUI(args);
 	}
 
+	public static void setGui(ClientGUI gui){
+		ClientLauncher.gui = gui;
+	}
+
+	public static ServerController launchServer(){
+		return server = new ServerController(gui);
+	}
+
+	public static ClientController launchClient(){
+		return client = new ClientController(gui);
+	}
 }
