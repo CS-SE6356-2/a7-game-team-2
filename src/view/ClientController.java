@@ -504,16 +504,19 @@ class ServerThread extends Thread{
 					//mess[5] = The number of active cards per each player | Players are delimited by ',' | cards are delimited by ' '
 					//mess[6] = Unique pairs held by each player | Players are delimited by ','  | cards are delimited by ' '
 					out.writeUTF(move+";"+focusPlayer.getTeamName()+";"+p.getCardListForUTF()+";"+cardGame.getAmtCardInDrawDeck()+";"+cardGame.getAmtCardsPerAHand()+";"+cardGame.getPairsPerHand());
+					
+					//Have the server wait 500 milliseconds and let the clients update
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
 				catch (IOException e) {}
 			}
-			//Have the server wait a minute and let the clients update
-			try {
-				Thread.sleep(20000);
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+			
+			
 			
 			//Group 2@@@@@Receive the player's move the focusPlayer's client@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 			try {
