@@ -34,6 +34,7 @@ public class ClientGUI extends Application{
 	
 	String state;
 	String yourName;
+	boolean canSelect;	//Used for cleanliness
 	//server to client variables
 	int yourID;
 	Hand yourCards;
@@ -44,9 +45,8 @@ public class ClientGUI extends Application{
 	
 	
 	//String array to easily hold the clients choices for their play on their turn
-	//userSelect[0] = The client's name, this get changed per turn
-	//userSelect[1] = The player the client is asking for cards
-	//userSelect[2] = The card value the user is asking for
+	//userSelect[0] = The player the client is asking for cards
+	//userSelect[1] = The card value the user is asking for
 	String[] userSelect;
 	
 	
@@ -93,10 +93,9 @@ public class ClientGUI extends Application{
 		yourName = "model.Player";
 		
 		//Initialize the user selection array
-		//userSelect[0] = The client's name, this get changed per turn
-		//userSelect[1] = The player the client is asking for cards
-		//userSelect[2] = The card value the user is asking for
-		userSelect = new String[3];
+		//userSelect[0] = The player the client is asking for cards
+		//userSelect[1] = The card value the user is asking for
+		userSelect = new String[2];
 		
 		root = new VBox();
 		gamePane = new Group();
@@ -341,7 +340,7 @@ public class ClientGUI extends Application{
 		if(!validateUserSelect())
 			return;
 		
-		boolean success = endTurn(userSelect[0]+" "+userSelect[1]+" "+userSelect[2]);
+		boolean success = endTurn(userSelect[0]+" "+userSelect[1]);
 		
 		if(success) {
 			playButton.setVisible(false);
@@ -387,17 +386,12 @@ public class ClientGUI extends Application{
 	//Makes sure the user made a selection
 	boolean validateUserSelect()
 	{
-		if(!userSelect[0].equals(yourName))
-		{
-			infoLabel.setText("Error in your name!");
-			return false;
-		}
-		else if(userSelect[1] == "<player>")
+		if(userSelect[0] == "<player>")
 		{
 			infoLabel.setText("Please select a player!");
 			return false;
 		}
-		else if(userSelect[2] == "<card>")
+		else if(userSelect[1] == "<card>")
 		{
 			infoLabel.setText("Please select a card!");
 			return false;
@@ -405,9 +399,10 @@ public class ClientGUI extends Application{
 		return true;
 	}
 	
-	void updateUserSelect()
+	void updateUserSelect(boolean canUpdate)
 	{
-		userSelectLabel.setText("Ask player "+userSelect[1]+" for any "+symbolToWord(userSelect[2])+"'s");
+		if(canUpdate)
+			userSelectLabel.setText("Ask player "+userSelect[0]+" for any "+symbolToWord(userSelect[1])+"'s");
 	}
 	
 	/**
@@ -507,9 +502,8 @@ public class ClientGUI extends Application{
 		//Initialize
 		initializeCardButtons();
 		initializePlayerButtons(cardCounts.length);
-		userSelect[0] = yourName;
-		userSelect[1] = "<player>";
-		userSelect[2] = "<card>";
+		userSelect[0] = "<player>";
+		userSelect[1] = "<card>";
 		
 		//Initialize the list that holds references to all cards in play
 		cardsInPlay = new ArrayList<>();
@@ -528,9 +522,9 @@ public class ClientGUI extends Application{
 	{
 		//Get rid of any card that is not involved with a button
 		clearCardsInPlay();
-		userSelect[1] = "<player>";
-		userSelect[2] = "<card>";
-		updateUserSelect();
+		userSelect[0] = "<player>";
+		userSelect[1] = "<card>";
+		updateUserSelect(canSelect);
 		
 		//Redraw the deck
 		drawDeck();
@@ -631,7 +625,7 @@ public class ClientGUI extends Application{
 	
 	/**
 	 * Initializes the array of card buttons the player presses
-	 * Each one sets userSelect[2] to the character symbol of their respective card value
+	 * Each one sets userSelect[1] to the character symbol of their respective card value
 	 * @author Chris
 	 */
 	void initializeCardButtons()
@@ -646,8 +640,8 @@ public class ClientGUI extends Application{
 				@Override
 				public void handle(ActionEvent event) {
 					System.out.println(numberToSymbol(temp));
-					userSelect[2] = numberToSymbol(temp);
-					updateUserSelect();
+					userSelect[1] = numberToSymbol(temp);
+					updateUserSelect(canSelect);
 				}
 			});
 		}
@@ -679,8 +673,8 @@ public class ClientGUI extends Application{
 			playerButtons[i].setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
-					userSelect[1] = game.clientLabels.get(temp);
-					updateUserSelect();
+					userSelect[0] = game.clientLabels.get(temp);
+					updateUserSelect(canSelect);
 				}
 			});
 		}
@@ -815,7 +809,7 @@ public class ClientGUI extends Application{
 				posX = (double)tempIndex*playerGap+offset;
 				
 				drawHand(cardCounts[i], posX, posY);
-				drawPairs(playerPairs[i], posX, posY + offset);
+				drawPairs(playerPairs[i], posX, posY + STD_MINI_CARD_HEIGHT);
 			}
 			
 		}
@@ -830,21 +824,25 @@ public class ClientGUI extends Application{
 	 */
 	private void drawPairs(List<Card> pairs, double startX, double startY) throws FileNotFoundException
 	{		
-		int columns = 3;
+		int columns = 4;
 		
 		double width = startX + STD_CARD_WIDTH;
-		double cardGap = ( width - startX - STD_MINI_CARD_WIDTH)/playerButtons.length;
+		double cardGap = (width)/playerButtons.length;
 		double posX;
 		
 		int i = 0;
 		int j = 0;
 		for(Card pair: pairs)
 		{
-			posX = (double)(j%columns)*cardGap+startX;
-			cardsInPlay.add(drawCard(pair, true, posX, STD_MINI_CARD_HEIGHT*i));
+			posX = (double)j*cardGap+startX;
+			cardsInPlay.add(drawCard(pair, true, posX, startY+STD_MINI_CARD_HEIGHT*i));
 			
-			i = j/columns;
 			++j;
+			if(j == columns)
+			{
+				j = 0;
+				++i;
+			}
 		}
 	}
 	/**
