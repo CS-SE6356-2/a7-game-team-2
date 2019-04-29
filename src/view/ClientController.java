@@ -6,6 +6,7 @@ import java.awt.datatransfer.StringSelection;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -252,7 +253,12 @@ class ClientThread extends Thread{
 							   
 						   
 						   //Send this client to the game state
-						   game.gui.game();
+						   try {
+							game.gui.game();
+						} catch (FileNotFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					   }
 					});
 				}

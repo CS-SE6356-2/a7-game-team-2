@@ -176,7 +176,12 @@ public class ClientGUI extends Application{
 		startButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				game();
+				try {
+					game();
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
 		
@@ -311,13 +316,14 @@ public class ClientGUI extends Application{
 		infoLabel.setText(yourName);
 	}
 	
-	void game() {
+	void game() throws FileNotFoundException {
 		gameScreen();
 		state = "game";
 	}
-	void gameScreen() {
+	void gameScreen() throws FileNotFoundException {
 		root.getChildren().clear();
-		root.getChildren().addAll(menuLabel, infoLabel, turnLabel, testLabel, gameInput);
+		
+		//root.getChildren().addAll(menuLabel, infoLabel, turnLabel, testLabel, gameInput);
 		menuLabel.setText("Game");
 		gameInput.setPromptText("Write your move here");
 	}
@@ -327,6 +333,9 @@ public class ClientGUI extends Application{
 			infoLabel.setText("Enter your move");
 			return;
 		}
+		//Check if the user made a selection
+		if(!validateUserSelect())
+			return;
 		
 		boolean success = endTurn(gameInput.getText());
 		
@@ -371,9 +380,30 @@ public class ClientGUI extends Application{
 				
 	}
 	
+	//Makes sure the user made a selection
 	boolean validateUserSelect()
 	{
-		return false;
+		if(!userSelect[0].equals(yourName))
+		{
+			infoLabel.setText("Error in your name!");
+			return false;
+		}
+		else if(userSelect[1] == "<name>")
+		{
+			infoLabel.setText("Please select a player!");
+			return false;
+		}
+		else if(userSelect[2] == "<card>")
+		{
+			infoLabel.setText("Please select a card!");
+			return false;
+		}
+		return true;
+	}
+	
+	void updateUserSelect()
+	{
+		userSelectLabel.setText("Ask player "+userSelect[1]+" for any "+symbolToWord(userSelect[2])+"'s");
 	}
 	
 	/**
@@ -412,7 +442,7 @@ public class ClientGUI extends Application{
 	 * @param symbol
 	 * @return
 	 */
-	String SymbolToWord(String symbol)
+	String symbolToWord(String symbol)
 	{
 		String word = "Joker";
 		switch(symbol)
@@ -466,7 +496,7 @@ public class ClientGUI extends Application{
 	 * Sets up the initial game gui elements, the ones that don't change throughout the game
 	 * @throws FileNotFoundException
 	 */
-	void stupGameGUI() throws FileNotFoundException
+	void setupGameGUI() throws FileNotFoundException
 	{
 		//Initialize
 		initializeCardButtons();
@@ -487,8 +517,11 @@ public class ClientGUI extends Application{
 		//Get rid of any card that is not involved with a button
 		clearCardsInPlay();
 		
+		//Redraw the deck
 		drawDeck();
+		//Update the cardButtons or the UI representation of the player's activeCards
 		updateCardButtons();
+		//Update each player's pairs
 		drawPlayerPairsAndHands();
 	}
 	
@@ -601,7 +634,7 @@ public class ClientGUI extends Application{
 				@Override
 				public void handle(ActionEvent event) {
 					userSelect[2] = numberToSymbol(temp);
-					
+					updateUserSelect();
 				}
 			});
 		}
@@ -632,7 +665,7 @@ public class ClientGUI extends Application{
 				@Override
 				public void handle(ActionEvent event) {
 					userSelect[1] = game.clientLabels.get(temp);
-					
+					updateUserSelect();
 				}
 			});
 		}
