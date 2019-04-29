@@ -645,7 +645,7 @@ public class ClientGUI extends Application{
 		for(int i = 0; i < cardButtons.length; ++i)
 		{
 			cardButtons[i] = new Button();
-			final int temp = i;
+			final int temp = i+1;
 			
 			cardButtons[i].setOnAction(new EventHandler<ActionEvent>() {
 				@Override
@@ -716,11 +716,11 @@ public class ClientGUI extends Application{
 		for(int i = 0; i < cardButtons.length; ++i)
 			gamePane.getChildren().remove(cardButtons[i]);
 		
-		
+		int i = 0;
 		for(Card uCard: uCards)
 		{
 			index = uCard.getVal().toInt()-1;
-			posX = (double)index*cardGap+offset;
+			posX = (double)(i++)*cardGap+offset;
 			
 			drawExtraHandCards(yourCards.getDuplicityAmount(uCard.getVal()), posX, posY);
 			//cardButtons[index].setText("x"+yourCards.getDuplicityAmount(uCard.getVal()));
@@ -743,13 +743,19 @@ public class ClientGUI extends Application{
 		
 		double posX;
 		
+		int tempIndex;
 		for(int i = 0; i < playerButtons.length; ++i)
 		{
-			posX = (double)i*playerGap+offset;
+			//Get the proper index for the other player's excluding you
+			tempIndex = (i>yourID)?i-1:i;
+			if(i!=yourID)
+			{
+				posX = (double)tempIndex*playerGap+offset;
 			
-			playerButtons[i].setLayoutX(posX);
-			playerButtons[i].setLayoutY(posY);
-			gamePane.getChildren().add(playerButtons[i]);
+				playerButtons[i].setLayoutX(posX);
+				playerButtons[i].setLayoutY(posY);
+				gamePane.getChildren().add(playerButtons[i]);
+			}
 		}
 	}
 	
