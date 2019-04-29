@@ -218,6 +218,6 @@ public class Card implements Comparator<Card>, Comparable<Card>{
 	@Override
 	public int compareTo(Card o) {
 		
-		return 1;
+		return compare(this,o);
 	}
 }

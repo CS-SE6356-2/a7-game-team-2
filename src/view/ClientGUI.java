@@ -294,6 +294,12 @@ public class ClientGUI extends Application{
 			connectButton.setDisable(false);
 			return;
 		}
+		else if(!validateName(nameInput.getText()))
+		{
+			infoLabel.setText("Please use only the characters a-zA-Z0-9 or ' '");
+			connectButton.setDisable(false);
+			return;
+		}
 		if(addressInput.getText().split(":", 0).length != 2) {
 			infoLabel.setText("Invalid host name!");
 			connectButton.setDisable(false);
@@ -392,7 +398,7 @@ public class ClientGUI extends Application{
 			infoLabel.setText("Error in your name!");
 			return false;
 		}
-		else if(userSelect[1] == "<name>")
+		else if(userSelect[1] == "<player>")
 		{
 			infoLabel.setText("Please select a player!");
 			return false;
@@ -467,7 +473,7 @@ public class ClientGUI extends Application{
 				word = "Five";
 				break;	
 			case "6":
-				word = "Sixe";
+				word = "Six";
 				break;	
 			case "7":
 				word = "Seven";
@@ -628,7 +634,7 @@ public class ClientGUI extends Application{
 		
 		for(int i = deckCount; i > 0; --i)
 		{
-			cardsInPlay.add(drawFaceDownCard("green", false, offset+i/1000, posY+i/1000));
+			cardsInPlay.add(drawFaceDownCard("green", false, offset+i/2, posY+i/5));
 		}
 	}
 	
@@ -864,9 +870,9 @@ public class ClientGUI extends Application{
 	 */
 	private void drawHand(int cardAmount, double startX, double startY) throws FileNotFoundException
 	{
-		for(int i = 0; i < cardAmount; ++i)
+		for(int i = cardAmount; i > 0; --i)
 		{
-			cardsInPlay.add(drawFaceDownCard("red", true, startX+2*i, startY));
+			cardsInPlay.add(drawFaceDownCard("red", true, startX+15*(i-1), startY));
 		}
 	}
 	
