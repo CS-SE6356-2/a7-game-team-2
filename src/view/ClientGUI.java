@@ -3,12 +3,14 @@ package view;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -25,8 +27,8 @@ public class ClientGUI extends Application{
 	
 	ClientController game = null;
 	
-	private final int STD_CARD_WIDTH = 120;
-	private final int STD_CARD_HEIGHT = 180;
+	private final int STD_CARD_WIDTH = 60;
+	private final int STD_CARD_HEIGHT = 90;
 	private final int STD_MINI_CARD_WIDTH = 30;
 	private final int STD_MINI_CARD_HEIGHT = 45;
 	
@@ -50,6 +52,7 @@ public class ClientGUI extends Application{
 	
 	//GUI stuff
 	VBox root = new VBox();
+	Group gamePane;
 	Button hostButton;
 	Button joinButton;
 	Button connectButton;
@@ -75,7 +78,11 @@ public class ClientGUI extends Application{
 	Button[] playerButtons;
 	//Holds a collective list of all faceup cards and facedown cards 
 	//that are not a part of the card buttons
+	//Gets initialized with setupGameGUI
 	List<ImageView> cardsInPlay;
+	
+	
+	//Image faceDownCard;
 	
 	@Override
 	public void start(Stage stage) throws Exception {
@@ -94,6 +101,8 @@ public class ClientGUI extends Application{
 		userSelect = new String[3];
 		
 		root = new VBox();
+		gamePane = new Group();
+		gamePane.setManaged(false);
 		hostButton = new Button("Host Game");//part of main menu screen
 		joinButton = new Button("Join Game");//part of main menu screen
 		connectButton = new Button("Connect");//part of join screen
@@ -112,12 +121,13 @@ public class ClientGUI extends Application{
 		nameInput = new TextField();//part of host and join screen
 		gameInput = new TextField();//part of game screen
 		//realLabel = new Label();
-		
-		Image image = new Image(new FileInputStream("resources\\2C.png"));
+		/*Image image = new Image(new FileInputStream("resources\\2C.png"));
 		ImageView imgV = new ImageView(image);
 		imgV.setFitHeight(STD_CARD_HEIGHT);
 		imgV.setFitWidth(STD_CARD_WIDTH);
-		hostButton.setGraphic(imgV);
+		hostButton.setGraphic(imgV);*/
+		
+		//faceDownCard = new Image(new FileInputStream("resources\\green_back.png"));
 		
 		//setup buttons and what-not
 		hostButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -176,12 +186,7 @@ public class ClientGUI extends Application{
 		startButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				try {
-					game();
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				state = "game";
 			}
 		});
 		
@@ -323,25 +328,24 @@ public class ClientGUI extends Application{
 	void gameScreen() throws FileNotFoundException {
 		root.getChildren().clear();
 		
+		//Setup the gameGUI
+		setupGameGUI();
+		
 		//root.getChildren().addAll(menuLabel, infoLabel, turnLabel, testLabel, gameInput);
 		menuLabel.setText("Game");
 		gameInput.setPromptText("Write your move here");
 	}
 	
 	void play() {
-		if(gameInput.getText().isEmpty()) {
-			infoLabel.setText("Enter your move");
-			return;
-		}
 		//Check if the user made a selection
 		if(!validateUserSelect())
 			return;
 		
-		boolean success = endTurn(gameInput.getText());
+		boolean success = endTurn(userSelect[0]+" "+userSelect[1]+" "+userSelect[2]);
 		
 		if(success) {
 			gameInput.setText("");
-			root.getChildren().remove(playButton);
+			gamePane.getChildren().remove(playButton);
 		}
 		else {
 			infoLabel.setText("Failed to reach server, try again");
@@ -444,7 +448,7 @@ public class ClientGUI extends Application{
 	 */
 	String symbolToWord(String symbol)
 	{
-		String word = "Joker";
+		String word = "<card>";
 		switch(symbol)
 		{
 			case "A":
@@ -498,9 +502,17 @@ public class ClientGUI extends Application{
 	 */
 	void setupGameGUI() throws FileNotFoundException
 	{
+		gamePane.getChildren().clear();
+		root.getChildren().add(gamePane);
 		//Initialize
 		initializeCardButtons();
 		initializePlayerButtons(cardCounts.length);
+		userSelect[0] = yourName;
+		userSelect[1] = "<player>";
+		userSelect[2] = "<card>";
+		
+		//Initialize the list that holds references to all cards in play
+		cardsInPlay = new ArrayList<>();
 		
 		//Place buttons and fields that don't need to be updated
 		placePlayerButtons();
@@ -516,6 +528,9 @@ public class ClientGUI extends Application{
 	{
 		//Get rid of any card that is not involved with a button
 		clearCardsInPlay();
+		userSelect[1] = "<player>";
+		userSelect[2] = "<card>";
+		updateUserSelect();
 		
 		//Redraw the deck
 		drawDeck();
@@ -523,6 +538,7 @@ public class ClientGUI extends Application{
 		updateCardButtons();
 		//Update each player's pairs
 		drawPlayerPairsAndHands();
+		
 	}
 	
 	//@@@Drawing plain cards@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -538,7 +554,7 @@ public class ClientGUI extends Application{
 		view.setY(posy);
 		view.setFitWidth(width);
 		view.setFitHeight(height);
-		root.getChildren().add(view);
+		gamePane.getChildren().add(view);
 		return view;
 	}
 
@@ -549,12 +565,13 @@ public class ClientGUI extends Application{
 	
 	private ImageView drawFaceDownCard(String color, double posx, double posy, double width, double height) throws FileNotFoundException {
 		Image image = new Image(new FileInputStream("resources\\"+color+"_back.png"));
+		//ImageView view = new ImageView(faceDownCard);
 		ImageView view = new ImageView(image);
 		view.setX(posx);
 		view.setY(posy);
 		view.setFitWidth(width);
 		view.setFitHeight(height);
-		root.getChildren().add(view);
+		gamePane.getChildren().add(view);
 		return view;
 	}
 
@@ -569,7 +586,7 @@ public class ClientGUI extends Application{
 	void clearCardsInPlay()
 	{
 		for(ImageView view: cardsInPlay)
-			root.getChildren().remove(view);
+			gamePane.getChildren().remove(view);
 		cardsInPlay.clear();
 	}
 	
@@ -595,7 +612,7 @@ public class ClientGUI extends Application{
 		playButton.setLayoutY(startY+offset*3);
 		
 		//Add the above labels except for the play button
-		root.getChildren().addAll(turnLabel,infoLabel,userSelectLabel);
+		gamePane.getChildren().addAll(turnLabel,infoLabel,userSelectLabel);
 	}
 	
 	/**
@@ -609,9 +626,9 @@ public class ClientGUI extends Application{
 		double offset = root.getScene().getWidth()*(20/1920);
 		double posY = root.getScene().getHeight()/3 + offset;
 		
-		for(int i = 0; i < deckCount; ++i)
+		for(int i = deckCount; i > 0; --i)
 		{
-			cardsInPlay.add(drawFaceDownCard("green", false, offset+i/100, posY+i/100));
+			cardsInPlay.add(drawFaceDownCard("green", false, offset+i/1000, posY+i/1000));
 		}
 	}
 	
@@ -633,6 +650,7 @@ public class ClientGUI extends Application{
 			cardButtons[i].setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
+					System.out.println(numberToSymbol(temp));
 					userSelect[2] = numberToSymbol(temp);
 					updateUserSelect();
 				}
@@ -650,12 +668,14 @@ public class ClientGUI extends Application{
 	{
 		playerButtons = new Button[playerAmt];
 		Image image = new Image(new FileInputStream("resources\\playa.png"));
-		ImageView imgV = new ImageView(image);
-		imgV.setFitHeight(STD_CARD_HEIGHT);
-		imgV.setFitWidth(STD_CARD_HEIGHT);
+		ImageView imgV;
 		
 		for(int i = 0; i < playerAmt; ++i)
 		{
+			imgV = new ImageView(image);
+			imgV.setFitHeight(STD_CARD_HEIGHT);
+			imgV.setFitWidth(STD_CARD_HEIGHT);
+			
 			playerButtons[i] = new Button(game.clientLabels.get(i));
 			playerButtons[i].setGraphic(imgV);
 			
@@ -694,7 +714,7 @@ public class ClientGUI extends Application{
 		
 		//Clear all the buttons currently, If the button is not there, no Ill effects occur
 		for(int i = 0; i < cardButtons.length; ++i)
-			root.getChildren().remove(cardButtons[i]);
+			gamePane.getChildren().remove(cardButtons[i]);
 		
 		
 		for(Card uCard: uCards)
@@ -729,7 +749,7 @@ public class ClientGUI extends Application{
 			
 			playerButtons[i].setLayoutX(posX);
 			playerButtons[i].setLayoutY(posY);
-			root.getChildren().add(playerButtons[i]);
+			gamePane.getChildren().add(playerButtons[i]);
 		}
 	}
 	
@@ -752,7 +772,7 @@ public class ClientGUI extends Application{
 		cardButton.setLayoutX(posx);
 		cardButton.setLayoutY(posy);
 		
-		root.getChildren().add(cardButton);
+		gamePane.getChildren().add(cardButton);
 	}
 	void placeCardButton(Button cardButton, Card card, double posx, double posy) throws FileNotFoundException {
 		placeCardButton(cardButton, card, posx, posy, STD_CARD_WIDTH, STD_CARD_HEIGHT);

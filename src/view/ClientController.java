@@ -294,7 +294,7 @@ class ClientThread extends Thread{
 						   //Determines if this Client is the one to go next
 						   if(mess[1].equals(game.gui.yourName)) {
 							   game.gui.turnLabel.setText("It's your turn");
-							   game.gui.root.getChildren().add(game.gui.playButton);
+							   game.gui.gamePane.getChildren().add(game.gui.playButton);
 						   }
 						   else {
 							   game.gui.turnLabel.setText("It's " + mess[1] + "'s turn");
@@ -306,7 +306,7 @@ class ClientThread extends Thread{
 						   game.fillHand(mess[2], mess[3]);
 						
 						   //Test if client got the message
-						   game.gui.testLabel.setText(mes);
+						   //game.gui.testLabel.setText(mes);
 						   
 						   //Update each Client how many cards are in the Draw Deck
 						   //Update each client on how many card each player has
@@ -314,6 +314,14 @@ class ClientThread extends Thread{
 						   
 						   //Update each client on which matches each player has
 						   game.setPlayerPairs(mess[6]);
+						   
+						   //Update the gameGUI
+						   try {
+							   game.gui.updateGameGUI();
+						   } catch (FileNotFoundException e) {
+							// TODO Auto-generated catch block
+							   e.printStackTrace();
+						   }
 					   }
 					});
 				}
@@ -430,7 +438,8 @@ class ServerThread extends Thread{
 			}
 			catch (IOException e) {}
 		}
-		
+		//Double make sure we are in the game state
+		game.gui.state = "game";
 		//Initial startup for the game@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 		String move = "Game started!";
 		
@@ -500,31 +509,6 @@ class ServerThread extends Thread{
 			//Retrieve card value from message
 			//Retrieve source player name
 			//doesGoAgain = cardGame.queryPlayer(new Card("SA"), focusPlayer.getTeamName(), move);
-			
-			
-			//###What is this???###
-			/*boolean does = true;
-			while(does) {
-				try {
-					DataInputStream in = new DataInputStream(focusPlayer.getSock().getInputStream());
-					move = focusPlayer.getTeamName() + " played " + in.readUTF();
-				}
-				catch (IOException e) {
-					move = focusPlayer.getTeamName() + " was skipped by server";
-					does = doesGoAgain = false;
-				}
-			
-				//CHECK MOVE
-				boolean legal = cardGame.isLegalMove(focusPlayer, move);
-				if(legal) {
-					//LinkedList<Card> cards = focusPlayer.getActiveCards();
-					//Card card = new Card("21", ""); //TODO search cards for request
-					//Player source = focusPlayer; //TODO search playerList for requested
-					//doesGoAgain = cardGame.queryPlayer(card.getVal(), focusPlayer, source);
-					//does = false;
-				}
-			}*/
-			
 			
 			
 			
