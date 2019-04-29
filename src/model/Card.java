@@ -220,4 +220,37 @@ public class Card implements Comparator<Card>, Comparable<Card>{
 		
 		return compare(this,o);
 	}
+	public static Value symbolToValue(String symbol)
+	{
+		switch(symbol.charAt(0)){
+	    case 'A':
+	        return Value.ACE;
+	    case '2':
+	    	return Value.NUM2;
+	    case '3':
+	    	return Value.NUM3;
+	    case '4':
+	    	return Value.NUM4;
+	    case '5':
+	    	return Value.NUM5;
+	    case '6':
+	    	return Value.NUM6;
+	    case '7':
+	    	return Value.NUM7;
+	    case '8':
+	    	return Value.NUM8;
+	    case '9':
+	    	return Value.NUM9;
+	    case 'T':
+	    	return Value.NUM10;
+	    case 'J':
+	    	return Value.JACK;
+	    case 'Q':
+	    	return Value.QUEEN;
+	    case 'K':
+	    	return Value.KING;
+	    default:
+	        throw new IllegalArgumentException();
+		}
+	}
 }

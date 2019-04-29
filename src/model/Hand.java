@@ -162,7 +162,7 @@ public class Hand
     /**
      * @return Returns the number of active Cards in the Hand
      */
-	int getNumActiveCards()
+	public int getNumActiveCards()
 	{
 		return activeCards.size();
 	}

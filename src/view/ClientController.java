@@ -222,8 +222,6 @@ class ClientThread extends Thread{
 		/*DEBUG*/System.out.println(getId()+": Thread started");
 		
 		while(!game.gui.state.equals("main")) {
-			if(!game.isServer)
-				System.out.println("Where am I");
 			try {
 				DataInputStream in = new DataInputStream(game.thisSock.getInputStream());
 				//*DEBUG*/System.out.println(getId()+": Wating for message from server");
@@ -310,8 +308,10 @@ class ClientThread extends Thread{
 						   if(mess[1].equals(game.gui.yourName)) {
 							   game.gui.turnLabel.setText("It's your turn");
 							   game.gui.playButton.setVisible(true);
+							   game.gui.canSelect = true;
 						   }
 						   else {
+							   game.gui.canSelect = false;
 							   game.gui.turnLabel.setText("It's " + mess[1] + "'s turn");
 						   }
 							
@@ -329,6 +329,14 @@ class ClientThread extends Thread{
 						   
 						   //Update each client on which matches each player has
 						   game.setPlayerPairs(mess[6]);
+						   
+						   
+						   
+						   if(game.gui.yourCards.getNumActiveCards()>0)
+							   game.gui.userSelectLabel.setText("We must wait until it is your turn");
+						   else //if this client has no cards left
+							   game.gui.userSelectLabel.setText("No more cards to draw, we must wait until EndGame");
+						   
 						   
 						   //Update the gameGUI
 						   try {
@@ -521,7 +529,7 @@ class ServerThread extends Thread{
 			//Group 2@@@@@Receive the player's move the focusPlayer's client@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 			try {
 				DataInputStream in = new DataInputStream(focusPlayer.getSock().getInputStream());
-				move = focusPlayer.getTeamName() + " played " + in.readUTF();
+				move = in.readUTF();
 			}
 			catch (IOException e) {
 				move = focusPlayer.getTeamName() + " was skipped by server";
@@ -533,8 +541,21 @@ class ServerThread extends Thread{
 			//TODO
 			//Retrieve card value from message
 			//Retrieve source player name
-			//doesGoAgain = cardGame.queryPlayer(new Card("SA"), focusPlayer.getTeamName(), move);
+			doesGoAgain = cardGame.queryPlayer(move.substring(move.lastIndexOf(' ')+1), focusPlayer, move.substring(0,move.lastIndexOf(' ')));
 			
+			
+			
+			//###Modify move string###
+			move = focusPlayer.getTeamName() + " asked " + move.substring(0,move.lastIndexOf(' ')) + 
+					" for " + game.gui.symbolToWord(move.substring(move.lastIndexOf(' ')+1)) + "'s. ";
+			if(doesGoAgain)
+			{
+				move += focusPlayer.getTeamName() + " got their cards and gets to go again!";
+			}
+			else
+			{
+				move += focusPlayer.getTeamName() + " didn't get their cards and gets to go GO FISH!";
+			}
 			
 			
 			//CHECK FOR WIN CONDITION
@@ -542,7 +563,7 @@ class ServerThread extends Thread{
 		}
 		
 		//5th Stage@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-		
+		System.out.println("A winner is "+winner);
 		//Re-send out everything one more time
 		for(Player p: cardGame.getPlayerList()) {
 			try {

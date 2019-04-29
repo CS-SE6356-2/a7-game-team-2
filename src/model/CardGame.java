@@ -122,13 +122,5 @@ public class CardGame
 		return false;
 	}
 	
-	/**
-	 * 
-	 */
-	public boolean queryPlayer(String sourceName, String cardValue, String targetName) {
-		
-		
-		return false;
-	}
 
 }
