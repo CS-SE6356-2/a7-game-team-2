@@ -66,10 +66,8 @@ public class ClientGUI extends Application{
 	Text infoLabel;
 	Text turnLabel;
 	Text userSelectLabel;
-	Text testLabel;
 	TextField addressInput;
 	TextField nameInput;
-	TextField gameInput;
 	//Label realLabel;
 	
 	//Card button array
@@ -116,10 +114,8 @@ public class ClientGUI extends Application{
 		infoLabel = new Text("Enter details below");//part of join and game screen
 		turnLabel = new Text();//part of game screen
 		userSelectLabel = new Text();			//Tells what the user has selected
-		testLabel = new Text();		//Used to test if a message is recieved
 		addressInput = new TextField();//part of join screen
 		nameInput = new TextField();//part of host and join screen
-		gameInput = new TextField();//part of game screen
 		//realLabel = new Label();
 		/*Image image = new Image(new FileInputStream("resources\\2C.png"));
 		ImageView imgV = new ImageView(image);
@@ -337,9 +333,7 @@ public class ClientGUI extends Application{
 		//Setup the gameGUI
 		setupGameGUI();
 		
-		//root.getChildren().addAll(menuLabel, infoLabel, turnLabel, testLabel, gameInput);
 		menuLabel.setText("Game");
-		gameInput.setPromptText("Write your move here");
 	}
 	
 	void play() {
@@ -350,8 +344,8 @@ public class ClientGUI extends Application{
 		boolean success = endTurn(userSelect[0]+" "+userSelect[1]+" "+userSelect[2]);
 		
 		if(success) {
-			gameInput.setText("");
-			gamePane.getChildren().remove(playButton);
+			playButton.setVisible(false);
+			//gamePane.getChildren().remove(playButton);
 		}
 		else {
 			infoLabel.setText("Failed to reach server, try again");
@@ -600,25 +594,20 @@ public class ClientGUI extends Application{
 	
 	void placeCenterField()
 	{
-		double startY = root.getScene().getHeight()/3;
+		double offset = root.getScene().getWidth()/1920*100;
+		double startY = root.getScene().getHeight()/3+offset;
 		double startX = root.getScene().getWidth()/3;
-		double offset = root.getScene().getWidth()*(10/1920);
 		
-		//Set the label that tells who turn it is
-		turnLabel.setX(startX+offset);
-		turnLabel.setY(startY);
-		//Set the label that tells what the last move was
-		infoLabel.setX(startX+offset);
-		infoLabel.setY(startY+offset);
-		//Set the label that describes what selection the user currently has
-		userSelectLabel.setX(startX+offset);
-		userSelectLabel.setY(startY+offset*2);
-		//Set the play button's spacing
-		playButton.setLayoutX(startX+offset);
-		playButton.setLayoutY(startY+offset*3);
+		VBox center = new VBox();
+		center.setLayoutX(startX);
+		center.setLayoutY(startY);
 		
+		//Set each label in
+		center.getChildren().addAll(turnLabel, infoLabel, userSelectLabel, playButton);
+		//Make the playbutton invisible
+		playButton.setVisible(false);
 		//Add the above labels except for the play button
-		gamePane.getChildren().addAll(turnLabel,infoLabel,userSelectLabel);
+		gamePane.getChildren().addAll(center);
 	}
 	
 	/**
@@ -629,12 +618,12 @@ public class ClientGUI extends Application{
 	 */
 	void drawDeck() throws FileNotFoundException
 	{
-		double offset = root.getScene().getWidth()*(20/1920);
+		double offset = root.getScene().getWidth()/1920*100;
 		double posY = root.getScene().getHeight()/3 + offset;
 		
 		for(int i = deckCount; i > 0; --i)
 		{
-			cardsInPlay.add(drawFaceDownCard("green", false, offset+i/2, posY+i/5));
+			cardsInPlay.add(drawFaceDownCard("green", false, offset+i*2, posY+i/5));
 		}
 	}
 	
@@ -711,9 +700,9 @@ public class ClientGUI extends Application{
 		double height = root.getScene().getHeight();
 		double width = root.getScene().getWidth();
 		
-		double offset = width*(20/1920);
+		double offset = width/1920*50;
 		double cardGap = ( (width-offset) - offset - STD_CARD_WIDTH)/uCards.size();
-		double posY = height/3*2 + offset;
+		double posY = height/3*2;
 		
 		double posX;
 		int index;
@@ -728,7 +717,7 @@ public class ClientGUI extends Application{
 			index = uCard.getVal().toInt()-1;
 			posX = (double)(i++)*cardGap+offset;
 			System.out.println(uCard.toString());
-			//drawExtraHandCards(yourCards.getDuplicityAmount(uCard.getVal()), posX, posY);
+			drawExtraHandCards(yourCards.getDuplicityAmount(uCard.getVal()), posX, posY+STD_CARD_HEIGHT/5*4);
 			cardButtons[index].setText("x"+yourCards.getDuplicityAmount(uCard.getVal()));
 			placeCardButton(cardButtons[index], uCard, posX, posY);
 		}
@@ -743,9 +732,8 @@ public class ClientGUI extends Application{
 	{
 		double width = root.getScene().getWidth();
 		
-		double offset = width*(20/1920);
+		double offset = width/1920*50;
 		double playerGap = ( (width-offset) - offset - STD_CARD_WIDTH)/playerButtons.length;
-		double posY = offset;
 		
 		double posX;
 		
@@ -759,7 +747,6 @@ public class ClientGUI extends Application{
 				posX = (double)tempIndex*playerGap+offset;
 			
 				playerButtons[i].setLayoutX(posX);
-				playerButtons[i].setLayoutY(posY);
 				gamePane.getChildren().add(playerButtons[i]);
 			}
 		}
@@ -803,9 +790,9 @@ public class ClientGUI extends Application{
 		
 		double height = root.getScene().getHeight();
 		double width = root.getScene().getWidth();
-		double offset = width*(20/1920);
+		double offset = width/1920*50;
 		double playerGap = ( (width-offset) - offset - STD_CARD_WIDTH)/playerButtons.length;
-		double posY = 2*offset + STD_CARD_HEIGHT;
+		double posY = STD_CARD_HEIGHT;
 		double posX;
 		
 		//Used to hold the i in case we are working on players above the client's id
@@ -818,7 +805,7 @@ public class ClientGUI extends Application{
 			if(i == yourID)
 			{
 				//Draw only your pairs
-				//drawPairs(playerPairs[i], width/3*2, height/3 + offset);
+				drawPairs(playerPairs[i], width/3*2, height/3 + offset);
 			}
 			else //If we are updating some other player's pairs and hand
 			{
@@ -828,7 +815,7 @@ public class ClientGUI extends Application{
 				posX = (double)tempIndex*playerGap+offset;
 				
 				drawHand(cardCounts[i], posX, posY);
-				//drawPairs(playerPairs[i], posX, posY + offset);
+				drawPairs(playerPairs[i], posX, posY + offset);
 			}
 			
 		}
@@ -878,9 +865,9 @@ public class ClientGUI extends Application{
 	
 	private void drawExtraHandCards(int cardAmount, double startX, double startY) throws FileNotFoundException
 	{
-		for(int i = cardAmount - 1; i > 0; ++i)
+		for(int i = cardAmount - 1; i > 0; --i)
 		{
-			cardsInPlay.add(drawFaceDownCard("green", true, startX, startY+2*i));
+			cardsInPlay.add(drawFaceDownCard("green", false, startX, startY+10*i));
 		}
 	}
 	

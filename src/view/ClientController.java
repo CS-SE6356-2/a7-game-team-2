@@ -222,7 +222,8 @@ class ClientThread extends Thread{
 		/*DEBUG*/System.out.println(getId()+": Thread started");
 		
 		while(!game.gui.state.equals("main")) {
-		
+			if(!game.isServer)
+				System.out.println("Where am I");
 			try {
 				DataInputStream in = new DataInputStream(game.thisSock.getInputStream());
 				//*DEBUG*/System.out.println(getId()+": Wating for message from server");
@@ -237,6 +238,11 @@ class ClientThread extends Thread{
 					@Override
 					   public void run() {
 						   //Initiailize this client's variables
+							//mess[0] = "Play"
+							//mess[1] = The player ID
+							//mess[2] = The number of players
+							//mess[3] = A comma separated list of player names
+							System.out.println("CS1 "+mes);
 						   game.gui.yourID = Integer.parseInt(mes.substring(5,6)); //Set the playerID
 						   game.gui.yourCards = new Hand();
 						   game.gui.deckCount = Integer.parseInt(mes.substring(7,8));	//Temporarily putting the amount of players here
@@ -287,20 +293,29 @@ class ClientThread extends Thread{
 					   public void run() {
 						   
 						   //Update players messages about the previous move and whose turn it is
-						 
+						   //mess[0] = The last move played
+						   //mess[1] = The client player's name
+						   //mess[2] = The list of active cards | cards are delimited by ' '
+						   //mess[3] = The list of inactive cards | cards are delimited by ' '
+						   //mess[4] = The number of cards in the deck
+						   //mess[5] = The number of active cards per each player | Players are delimited by ',' | cards are delimited by ' '
+						   //mess[6] = Unique pairs held by each player | Players are delimited by ','  | cards are delimited by ' '
+						   System.out.println("CS3 "+mes);
+						   
+						   
 						   //Tells the Client what move was made
 						   game.gui.infoLabel.setText(mess[0]);
 							   
 						   //Determines if this Client is the one to go next
 						   if(mess[1].equals(game.gui.yourName)) {
 							   game.gui.turnLabel.setText("It's your turn");
-							   game.gui.gamePane.getChildren().add(game.gui.playButton);
+							   game.gui.playButton.setVisible(true);
 						   }
 						   else {
 							   game.gui.turnLabel.setText("It's " + mess[1] + "'s turn");
 						   }
 							
-						   System.out.println(game.gui.yourCards == null);
+						   System.out.println("CS3 "+game.gui.yourCards == null);
 							   
 						   //Giving players their cards
 						   game.fillHand(mess[2], mess[3]);
@@ -434,12 +449,14 @@ class ServerThread extends Thread{
 		for(int i = 0; i < game.clientSocks.size(); i++) {
 			try {
 				DataOutputStream out = new DataOutputStream(game.clientSocks.get(i).getOutputStream());
+				//mess[0] = "Play"
+				//mess[1] = The player ID
+				//mess[2] = The number of players
+				//mess[3] = A comma separated list of player names
 				out.writeUTF("PLAY;"+i+";"+game.clientSocks.size()+";"+names);
 			}
 			catch (IOException e) {}
 		}
-		//Double make sure we are in the game state
-		game.gui.state = "game";
 		//Initial startup for the game@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 		String move = "Game started!";
 		
@@ -460,7 +477,7 @@ class ServerThread extends Thread{
 		
 		//TENTATIVELY
 		//HAVE THE SERVER SEND LIST OF STRINGS TO PLAYERS FOR THEIR HAND OF CARDS
-		
+		while(game.gui.state.equals("hosting")) {System.out.println("Stuck in state: "+game.gui.state);}	//Before starting the game, make sure we enter re enter the game state first
 		while(game.gui.state.equals("game") && !win) {
 			
 			//Get the player that goes next
@@ -478,7 +495,6 @@ class ServerThread extends Thread{
 			for(Player p: cardGame.getPlayerList()) {
 				try {
 					DataOutputStream out = new DataOutputStream(p.getSock().getOutputStream());
-					//Adding in an extra first group to notify what kind of message is sent
 					//The sent message will be held in a string mes then a string array mess separated by semicolons ';'
 					//mess[0] = The last move played
 					//mess[1] = The client player's name
@@ -491,7 +507,13 @@ class ServerThread extends Thread{
 				}
 				catch (IOException e) {}
 			}
-					
+			//Have the server wait a minute and let the clients update
+			try {
+				Thread.sleep(20000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			
 			//Group 2@@@@@Receive the player's move the focusPlayer's client@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 			try {
