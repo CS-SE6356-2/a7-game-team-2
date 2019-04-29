@@ -7,7 +7,7 @@ import java.util.Comparator;
  * The model.Card class is meant only to hold the value and suit of a Card.
  * It contains that data, ways to access it, and a method to print its data
  */
-public class Card implements Comparator<Card>{
+public class Card implements Comparator<Card>, Comparable<Card>{
     private Suit suit;
     private Value value;
 
@@ -213,5 +213,11 @@ public class Card implements Comparator<Card>{
 	public int compare(Card o1, Card o2) 
 	{
 		return o1.getVal().compareTo(o2.getVal());
+	}
+
+	@Override
+	public int compareTo(Card o) {
+		
+		return compare(this,o);
 	}
 }

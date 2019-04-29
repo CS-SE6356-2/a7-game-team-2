@@ -6,6 +6,7 @@ import java.awt.datatransfer.StringSelection;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -221,7 +222,8 @@ class ClientThread extends Thread{
 		/*DEBUG*/System.out.println(getId()+": Thread started");
 		
 		while(!game.gui.state.equals("main")) {
-		
+			if(!game.isServer)
+				System.out.println("Where am I");
 			try {
 				DataInputStream in = new DataInputStream(game.thisSock.getInputStream());
 				//*DEBUG*/System.out.println(getId()+": Wating for message from server");
@@ -236,6 +238,11 @@ class ClientThread extends Thread{
 					@Override
 					   public void run() {
 						   //Initiailize this client's variables
+							//mess[0] = "Play"
+							//mess[1] = The player ID
+							//mess[2] = The number of players
+							//mess[3] = A comma separated list of player names
+							System.out.println("CS1 "+mes);
 						   game.gui.yourID = Integer.parseInt(mes.substring(5,6)); //Set the playerID
 						   game.gui.yourCards = new Hand();
 						   game.gui.deckCount = Integer.parseInt(mes.substring(7,8));	//Temporarily putting the amount of players here
@@ -252,7 +259,12 @@ class ClientThread extends Thread{
 							   
 						   
 						   //Send this client to the game state
-						   game.gui.game();
+						   try {
+							game.gui.game();
+						} catch (FileNotFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					   }
 					});
 				}
@@ -281,26 +293,35 @@ class ClientThread extends Thread{
 					   public void run() {
 						   
 						   //Update players messages about the previous move and whose turn it is
-						 
+						   //mess[0] = The last move played
+						   //mess[1] = The client player's name
+						   //mess[2] = The list of active cards | cards are delimited by ' '
+						   //mess[3] = The list of inactive cards | cards are delimited by ' '
+						   //mess[4] = The number of cards in the deck
+						   //mess[5] = The number of active cards per each player | Players are delimited by ',' | cards are delimited by ' '
+						   //mess[6] = Unique pairs held by each player | Players are delimited by ','  | cards are delimited by ' '
+						   System.out.println("CS3 "+mes);
+						   
+						   
 						   //Tells the Client what move was made
 						   game.gui.infoLabel.setText(mess[0]);
 							   
 						   //Determines if this Client is the one to go next
 						   if(mess[1].equals(game.gui.yourName)) {
 							   game.gui.turnLabel.setText("It's your turn");
-							   game.gui.root.getChildren().add(game.gui.playButton);
+							   game.gui.playButton.setVisible(true);
 						   }
 						   else {
 							   game.gui.turnLabel.setText("It's " + mess[1] + "'s turn");
 						   }
 							
-						   System.out.println(game.gui.yourCards == null);
+						   System.out.println("CS3 "+game.gui.yourCards == null);
 							   
 						   //Giving players their cards
 						   game.fillHand(mess[2], mess[3]);
 						
 						   //Test if client got the message
-						   game.gui.testLabel.setText(mes);
+						   //game.gui.testLabel.setText(mes);
 						   
 						   //Update each Client how many cards are in the Draw Deck
 						   //Update each client on how many card each player has
@@ -308,6 +329,14 @@ class ClientThread extends Thread{
 						   
 						   //Update each client on which matches each player has
 						   game.setPlayerPairs(mess[6]);
+						   
+						   //Update the gameGUI
+						   try {
+							   game.gui.updateGameGUI();
+						   } catch (FileNotFoundException e) {
+							// TODO Auto-generated catch block
+							   e.printStackTrace();
+						   }
 					   }
 					});
 				}
@@ -420,11 +449,14 @@ class ServerThread extends Thread{
 		for(int i = 0; i < game.clientSocks.size(); i++) {
 			try {
 				DataOutputStream out = new DataOutputStream(game.clientSocks.get(i).getOutputStream());
+				//mess[0] = "Play"
+				//mess[1] = The player ID
+				//mess[2] = The number of players
+				//mess[3] = A comma separated list of player names
 				out.writeUTF("PLAY;"+i+";"+game.clientSocks.size()+";"+names);
 			}
 			catch (IOException e) {}
 		}
-		
 		//Initial startup for the game@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 		String move = "Game started!";
 		
@@ -445,7 +477,7 @@ class ServerThread extends Thread{
 		
 		//TENTATIVELY
 		//HAVE THE SERVER SEND LIST OF STRINGS TO PLAYERS FOR THEIR HAND OF CARDS
-		
+		while(game.gui.state.equals("hosting")) {System.out.println("Stuck in state: "+game.gui.state);}	//Before starting the game, make sure we enter re enter the game state first
 		while(game.gui.state.equals("game") && !win) {
 			
 			//Get the player that goes next
@@ -463,7 +495,6 @@ class ServerThread extends Thread{
 			for(Player p: cardGame.getPlayerList()) {
 				try {
 					DataOutputStream out = new DataOutputStream(p.getSock().getOutputStream());
-					//Adding in an extra first group to notify what kind of message is sent
 					//The sent message will be held in a string mes then a string array mess separated by semicolons ';'
 					//mess[0] = The last move played
 					//mess[1] = The client player's name
@@ -476,7 +507,13 @@ class ServerThread extends Thread{
 				}
 				catch (IOException e) {}
 			}
-					
+			//Have the server wait a minute and let the clients update
+			try {
+				Thread.sleep(20000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			
 			//Group 2@@@@@Receive the player's move the focusPlayer's client@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 			try {
@@ -494,31 +531,6 @@ class ServerThread extends Thread{
 			//Retrieve card value from message
 			//Retrieve source player name
 			//doesGoAgain = cardGame.queryPlayer(new Card("SA"), focusPlayer.getTeamName(), move);
-			
-			
-			//###What is this???###
-			/*boolean does = true;
-			while(does) {
-				try {
-					DataInputStream in = new DataInputStream(focusPlayer.getSock().getInputStream());
-					move = focusPlayer.getTeamName() + " played " + in.readUTF();
-				}
-				catch (IOException e) {
-					move = focusPlayer.getTeamName() + " was skipped by server";
-					does = doesGoAgain = false;
-				}
-			
-				//CHECK MOVE
-				boolean legal = cardGame.isLegalMove(focusPlayer, move);
-				if(legal) {
-					//LinkedList<Card> cards = focusPlayer.getActiveCards();
-					//Card card = new Card("21", ""); //TODO search cards for request
-					//Player source = focusPlayer; //TODO search playerList for requested
-					//doesGoAgain = cardGame.queryPlayer(card.getVal(), focusPlayer, source);
-					//does = false;
-				}
-			}*/
-			
 			
 			
 			
