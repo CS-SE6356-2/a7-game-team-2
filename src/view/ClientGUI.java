@@ -721,9 +721,9 @@ public class ClientGUI extends Application{
 		{
 			index = uCard.getVal().toInt()-1;
 			posX = (double)(i++)*cardGap+offset;
-			
-			drawExtraHandCards(yourCards.getDuplicityAmount(uCard.getVal()), posX, posY);
-			//cardButtons[index].setText("x"+yourCards.getDuplicityAmount(uCard.getVal()));
+			System.out.println(uCard.toString());
+			//drawExtraHandCards(yourCards.getDuplicityAmount(uCard.getVal()), posX, posY);
+			cardButtons[index].setText("x"+yourCards.getDuplicityAmount(uCard.getVal()));
 			placeCardButton(cardButtons[index], uCard, posX, posY);
 		}
 		
@@ -812,7 +812,7 @@ public class ClientGUI extends Application{
 			if(i == yourID)
 			{
 				//Draw only your pairs
-				drawPairs(playerPairs[i], width/3*2, height/3 + offset);
+				//drawPairs(playerPairs[i], width/3*2, height/3 + offset);
 			}
 			else //If we are updating some other player's pairs and hand
 			{
@@ -822,7 +822,7 @@ public class ClientGUI extends Application{
 				posX = (double)tempIndex*playerGap+offset;
 				
 				drawHand(cardCounts[i], posX, posY);
-				drawPairs(playerPairs[i], posX, posY + offset);
+				//drawPairs(playerPairs[i], posX, posY + offset);
 			}
 			
 		}
