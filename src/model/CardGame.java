@@ -112,12 +112,6 @@ public class CardGame
 		//TODO extend into a specific game type (set of rules)
 		return focusPlayer.getNumOfCards() == 0;
 	}
-	
-	/**
-	 * 
-	 */
-	public boolean queryPlayer(String sourceName, String cardValue, String targetName) {
-		return false;
-	}
+
 
 }

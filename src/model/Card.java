@@ -7,7 +7,7 @@ import java.util.Comparator;
  * The model.Card class is meant only to hold the value and suit of a Card.
  * It contains that data, ways to access it, and a method to print its data
  */
-public class Card implements Comparator<Card>{
+public class Card implements Comparator<Card>, Comparable<Card>{
     private Suit suit;
     private Value value;
 
@@ -44,6 +44,40 @@ public class Card implements Comparator<Card>{
                     return toString().substring(3);
             }
         }
+
+	    public int toInt()
+	    {
+	    	switch(this){
+            case ACE:
+            	return 1;
+            case NUM2:
+            	return 2;
+            case NUM3:
+            	return 3;
+            case NUM4:
+            	return 4;
+            case NUM5:
+            	return 5;
+            case NUM6:
+            	return 6;
+            case NUM7:
+            	return 7;
+            case NUM8:
+            	return 8;
+            case NUM9:
+            	return 9;
+            case NUM10:
+            	return 10;
+            case JACK:
+            	return 11;
+            case QUEEN:
+            	return 12;
+            case KING:
+            	return 13;
+            default:
+            	return -1;
+	    	}
+	    }
 
         public static Value parseValue(String s){
 	        for(Value v : Value.values()){
@@ -183,5 +217,44 @@ public class Card implements Comparator<Card>{
 	public int compare(Card o1, Card o2) 
 	{
 		return o1.getVal().compareTo(o2.getVal());
+	}
+
+	@Override
+	public int compareTo(Card o) {
+
+		return compare(this,o);
+	}
+	public static Value symbolToValue(String symbol)
+	{
+		switch(symbol.charAt(0)){
+	    case 'A':
+	        return Value.ACE;
+	    case '2':
+	    	return Value.NUM2;
+	    case '3':
+	    	return Value.NUM3;
+	    case '4':
+	    	return Value.NUM4;
+	    case '5':
+	    	return Value.NUM5;
+	    case '6':
+	    	return Value.NUM6;
+	    case '7':
+	    	return Value.NUM7;
+	    case '8':
+	    	return Value.NUM8;
+	    case '9':
+	    	return Value.NUM9;
+	    case 'T':
+	    	return Value.NUM10;
+	    case 'J':
+	    	return Value.JACK;
+	    case 'Q':
+	    	return Value.QUEEN;
+	    case 'K':
+	    	return Value.KING;
+	    default:
+	        throw new IllegalArgumentException();
+		}
 	}
 }

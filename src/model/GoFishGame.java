@@ -15,6 +15,11 @@ public class GoFishGame extends CardGame {
 		return true;
 	}
 
+	public boolean queryPlayer(String cardSymbol, Player target, String sourceName) 
+	{
+		return queryPlayer(Card.symbolToValue(cardSymbol), target, getPlayer(sourceName));
+	}
+	
 	/**
 	 * Checks if target has card; if true, transfer all of that type of card from
 	 * target to source, otherwise source draws one card
@@ -185,4 +190,13 @@ public class GoFishGame extends CardGame {
 	public List<Player> getPlayerList() {
 		return players;
 	}
+	
+	public Player getPlayer(String name)
+	{
+		for(int i = 0; i < players.length; i++)
+			if(players[i].getTeamName().equals(name))
+				return players[i];
+		return null;
+	}
+	
 }
