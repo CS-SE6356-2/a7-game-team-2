@@ -13,15 +13,16 @@ import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import model.Card;
-import model.Hand;
+import src.model.Card;
+import src.model.Hand;
+import src.view.ClientController;
+import src.view.ClientLauncher;
 
 public class ClientGUI extends Application{
 	
@@ -55,6 +56,7 @@ public class ClientGUI extends Application{
 	Group gamePane;
 	Button hostButton;
 	Button joinButton;
+	Button rulesButton;
 	Button connectButton;
 	Button serverButton;
 	Button backButton;
@@ -102,6 +104,7 @@ public class ClientGUI extends Application{
 		gamePane.setManaged(false);
 		hostButton = new Button("Host Game");//part of main menu screen
 		joinButton = new Button("Join Game");//part of main menu screen
+		rulesButton = new Button("Rules");
 		connectButton = new Button("Connect");//part of join screen
 		serverButton = new Button("Create Server");//part of host screen
 		backButton = new Button("Back");//part of host and join screens
@@ -146,6 +149,13 @@ public class ClientGUI extends Application{
 			}
 		});
 		
+		rulesButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				rules();
+			}
+		});
+
 		connectButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -206,7 +216,13 @@ public class ClientGUI extends Application{
 	}
 	void mainScreen() {
 		root.getChildren().clear();
-		root.getChildren().addAll(/*realLabel,*/ menuLabel, hostButton, joinButton, exitButton);
+
+		VBox rootGrid = new VBox();
+		rootGrid.getChildren().addAll(menuLabel, hostButton, joinButton, rulesButton, exitButton);
+		rootGrid.setAlignment(Pos.BASELINE_CENTER);
+		rootGrid.setTranslateY(250);
+		
+		root.getChildren.add(rootGrid);
 		menuLabel.setText("Main Menu");
 	}
 	
@@ -277,6 +293,33 @@ public class ClientGUI extends Application{
 		addressInput.setPromptText("Enter Host Address");
 		nameInput.setPromptText("Enter Your Name");
 	}
+	
+	void rules() {
+		rulesScreen();
+		state = "rules";
+	}
+	void rulesScreen() {
+		root.getChildren().clear();
+
+		root.getChildren().addAll(menuLabel, infoLabel, backButton);
+		menuLabel.setText("RULES OF GO FISH");
+		
+		try {
+			Scanner in = new Scanner(new FileReader("resources\\rules.txt"));
+
+			StringBuilder rules = new StringBuilder();
+			while(in.hasNextLine()) rules.append(in.nextLine() + "\n");
+			
+			infoLabel.setText(rules.toString());
+			infoLabel.setTextAlignment(TextAlignment.CENTER);
+			in.close();
+		} catch (FileNotFoundException e) {
+			infoLabel.setText("Error retrieving rules.txt.");
+			System.out.println("Error in rulesScreen()");
+			e.printStackTrace();
+		}
+	}
+	
 	
 	void connect() {
 		if(addressInput.getText().isEmpty()) {
