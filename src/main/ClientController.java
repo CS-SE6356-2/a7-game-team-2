@@ -18,8 +18,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ClientController {
-
-	private static final int SERVER_PORT = 0;
 	ClientGUI gui;
 
     enum ClientState{
@@ -31,7 +29,7 @@ public class ClientController {
     private DataOutputStream outputStream;
 	private DataInputStream inputStream;
 	private List<String> players;
-	Player thisPlayer;
+	private Player thisPlayer;
 
 	ClientController(ClientGUI gui) {
 	    this.gui = gui;
@@ -103,6 +101,7 @@ public class ClientController {
                 Platform.runLater(() -> gui.updateGame(thisPlayer));
             }
             System.out.println("Winner is " + message[1]);
+            closeSocks();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -120,7 +119,7 @@ public class ClientController {
         }
     }
 	
-	void closeSocks(String state) {
+	private void closeSocks() {
         try{
             serverSock.close();
         }
@@ -128,7 +127,7 @@ public class ClientController {
         serverSock = null;
 	}
 
-    public ClientState getState() {
+    ClientState getState() {
         return state;
     }
 
@@ -160,9 +159,8 @@ public class ClientController {
 	    return ret;
     }
 	
-	
-	//#####Transform Server Info to Client Method#####
 
+    /*
 	/**
 	 * Sets the Client's hand with 2 Strings each in the form
 	 * card1 card2 card3 ...
@@ -170,7 +168,8 @@ public class ClientController {
 	 * @param activeList - A list of Cards or " "
 	 * @param inactiveList - A list of Cards or " "
 	 */
-	/*void fillHand(String activeList, String inactiveList)
+	/*
+	void fillHand(String activeList, String inactiveList)
 	{
 		if(!activeList.equals(" "))
 			gui.yourCards.setActiveCards(recreateCardList(activeList));

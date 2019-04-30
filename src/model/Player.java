@@ -75,7 +75,7 @@ public class Player
 	 * @author Chris
 	 * @return returns the number of cards in the players active hand
 	 */
-	public int getNumOfCards(){
+	int getNumOfCards(){
 		return hand.getNumActiveCards();
 	}
 	
@@ -88,7 +88,7 @@ public class Player
 	 * @return		DA S2 A3 D8 DT DK or " "
 	 * @author Chris
 	 */
-	public String getPairs(List<Card> cards)
+	String getPairs(List<Card> cards)
 	{
 		if(cards.size() == 0)
 			return " ";
@@ -102,7 +102,7 @@ public class Player
 	 * Assigns the Player the given role
 	 * @param newRole Role to assign
 	 */
-	public void assignRole(String newRole){
+	void assignRole(String newRole){
 		role = newRole;
 	}
 
@@ -150,7 +150,7 @@ public class Player
 	 * @param cards List of Cards to transfer
 	 * @return List of Cards successfully transferred
 	 */
-	public List<Card> transferActiveToInactive(List<Card> cards)
+	List<Card> transferActiveToInactive(List<Card> cards)
 	{
 		return hand.transferActiveToInactive(cards);
 	}
@@ -159,7 +159,7 @@ public class Player
 	/**
 	 * Goes through all values in Value and creates a list with the matching cards from hand. The cards are then moved to inactive if there are 4
 	 */
-	public void checkBooks() {
+	void checkBooks() {
 		for(Value v : Value.values()) {
 			List<Card> matches = hand.getActiveCards().stream().filter(card -> card.getVal().equals(v)).collect(Collectors.toList());
 			if(matches.size() == 4) {

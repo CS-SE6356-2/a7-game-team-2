@@ -33,8 +33,7 @@ public class ClientGUI extends Application{
 
 	//GUI stuff
 	private Scene main;
-	private Pane root;
-	private HashMap<String, Pane> sceneMap;
+    private HashMap<String, Pane> sceneMap;
 
     public static void launchGUI(String args[]) {
         launch(args);
@@ -44,7 +43,7 @@ public class ClientGUI extends Application{
 	public void start(Stage stage) {
         ClientLauncher.setGui(this);
 
-		root = new Pane();
+        Pane root = new Pane();
 		main = new Scene(root, 1280, 720);
 		sceneMap = new HashMap<>();
 		setupMainMenuScene();
