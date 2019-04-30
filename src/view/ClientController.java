@@ -571,7 +571,7 @@ class ServerThread extends Thread{
 			
 			
 			//CHECK FOR WIN CONDITION
-			win = true;//(winner = cardGame.determineWinner()) != null;
+			win = (winner = cardGame.determineWinner()) != null;
 		}
 		
 		//5th Stage@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
