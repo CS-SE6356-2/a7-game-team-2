@@ -20,6 +20,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
@@ -58,6 +59,7 @@ public class ClientGUI extends Application{
 	//GUI stuff
 	VBox root = new VBox();
 	Group gamePane;
+  Group background;
 	Button hostButton;
 	Button joinButton;
 	Button rulesButton;
@@ -214,7 +216,7 @@ public class ClientGUI extends Application{
 	
 	//methods called by buttons
 	void main() {
-		if(state.equals("hosting") || state.equals("lobby"))
+		if(state.equals("hosting") || state.equals("lobby") || state.equals("winner"))
 			game.closeSocks(state);
 		
 		mainScreen();
@@ -222,13 +224,30 @@ public class ClientGUI extends Application{
 		state = "main";
 	}
 	void mainScreen() {
+    menuLabel.setFill(Color.WHITE);
+    infoLabel.setFill(Color.WHITE);
+    
 		root.getChildren().clear();
 
 		VBox rootGrid = new VBox();
+    background = new Group();
+    background.setManaged(false);
+    Image image;
+    try {
+        image = new Image(new FileInputStream("resources\\background.png"));
+        ImageView imgV = new ImageView(image);
+           
+        background.getChildren().add(imgV);
+           
+    } catch (FileNotFoundException e) {
+        e.printStackTrace();
+    }
 		rootGrid.getChildren().addAll(menuLabel, hostButton, joinButton, rulesButton, exitButton);
 		rootGrid.setAlignment(Pos.BASELINE_CENTER);
 		rootGrid.setTranslateY(250);
 		
+    background.getChildren();
+    root.getChildren().add(background);
 		root.getChildren().add(rootGrid);
 		menuLabel.setText("Main Menu");
 	}
@@ -239,6 +258,7 @@ public class ClientGUI extends Application{
 	}
 	void preHostScreen() {
 		root.getChildren().clear();
+    root.getChildren().add(background);
 		root.getChildren().addAll(menuLabel, infoLabel, nameInput, serverButton, backButton);
 		menuLabel.setText("Host a Game");
 		infoLabel.setText("Enter your name and click \"Create Server\"");
@@ -283,8 +303,10 @@ public class ClientGUI extends Application{
 	}
 	void hostingScreen() {
 		root.getChildren().clear();
+    root.getChildren().add(background);
 		root.getChildren().addAll(menuLabel, addressLabel, infoLabel, startButton, backButton);
-		menuLabel.setText("Host a Game");
+		addressLabel.setFill(Color.WHITE);
+    menuLabel.setText("Host a Game");
 		infoLabel.setText(yourName);
 	}
 	
@@ -294,6 +316,7 @@ public class ClientGUI extends Application{
 	}
 	void joinScreen() {
 		root.getChildren().clear();
+    root.getChildren().add(background);
 		root.getChildren().addAll(menuLabel, infoLabel, addressInput, nameInput, connectButton, backButton);
 		menuLabel.setText("Join a Game");
 		infoLabel.setText("Enter details below");
@@ -307,7 +330,7 @@ public class ClientGUI extends Application{
 	}
 	void rulesScreen() {
 		root.getChildren().clear();
-
+    root.getChildren().add(background);
 		root.getChildren().addAll(menuLabel, infoLabel, backButton);
 		menuLabel.setText("RULES OF GO FISH");
 		
@@ -367,6 +390,7 @@ public class ClientGUI extends Application{
 	}
 	void lobbyScreen(){
 		root.getChildren().clear();
+    root.getChildren().add(background);
 		root.getChildren().addAll(menuLabel, infoLabel, backButton);
 		menuLabel.setText("Lobby");
 		infoLabel.setText(yourName);
@@ -566,6 +590,9 @@ public class ClientGUI extends Application{
 		ImageView imgV = new ImageView(image);
 		
 		gamePane.getChildren().add(imgV);
+    infoLabel.setFill(Color.BLACK);
+    menuLabel.setFill(Color.BLACK);
+    addressLabel.setFill(Color.BLACK);
 		
 		//Initialize the list that holds references to all cards in play
 		cardsInPlay = new ArrayList<>();
@@ -933,6 +960,3 @@ public class ClientGUI extends Application{
 	
 	
 }//end of GUI
-
-
-

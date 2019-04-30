@@ -112,7 +112,7 @@ public class ClientController {
 	}
 	
 	void closeSocks(String state){
-		if(state.equals("hosting")) {
+		if(state.equals("hosting") || (state.equals("winner") && isServer)) {
 			try{
 				serverSock.close();
 			}
@@ -127,7 +127,7 @@ public class ClientController {
 			clientSocks = new ArrayList<Socket>();
 			clientLabels = new ArrayList<String>();
 		}
-		else if(state.equals("lobby")) {
+		else if(state.equals("lobby") || (state.equals("winner") && !isServer)) {
 			try{
 				thisSock.close();
 			}
@@ -275,6 +275,27 @@ class ClientThread extends Thread{
 						   }
 						});
 				}
+        //Client State 4@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        //Used with Server stage 5
+        //Making changes to the clients
+        //Sending them to the win screen and closing down all sockets
+        else if(mes.length()>5 && mes.substring(0, 6).equals("Winner"))
+        {
+            Platform.runLater(new Runnable(){
+            @Override
+            public void run() {
+                mess = mes.split(";", 0);
+                System.out.println("We are where we need to be");
+                game.gui.infoLabel.setText("The winner is " + mess[1]);
+                //game.closeSocks();
+                game.gui.gamePane.getChildren().add(game.gui.backButton);
+                game.gui.backButton.setLayoutY(350);
+                game.gui.backButton.setLayoutX(350);
+                game.gui.playButton.setVisible(false);
+                game.gui.state = "winner";
+            }
+            });
+        }
 				//Client State 3@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 				else if(game.gui.state.equals("game")){
 					//&&&&&Part 1&&&&&
@@ -349,14 +370,6 @@ class ClientThread extends Thread{
 						   }
 					   }
 					});
-				}
-				//Client State 4@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-				//Used with Server stage 5
-				//Making changes to the clients
-				//Sending them to the win screen and closing down all sockets
-				else if(mes.length()>5 && mes.substring(0, 6).equals("Winner"))
-				{
-					
 				}
 				
 			} catch (IOException e) {
@@ -566,27 +579,21 @@ class ServerThread extends Thread{
 		}
 		
 		//5th Stage@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-		System.out.println("A winner is "+winner);
-		//Re-send out everything one more time
-		for(Player p: cardGame.getPlayerList()) {
-			try {
-				DataOutputStream out = new DataOutputStream(p.getSock().getOutputStream());
-				out.writeUTF(move+";"+focusPlayer.getTeamName()+";"+p.getCardListForUTF()+";"+cardGame.getAmtCardInDrawDeck()+";"+cardGame.getAmtCardsPerAHand()+";"+cardGame.getPairsPerHand());
-			}
-			catch (IOException e) {}
-		}
-		
-		
-		//Send message to clients to go to win screen and display who won
-		System.out.println("A winner is "+winner);
-		//Send the string "PLAY" to all of the clients
-		for(int i = 0; i < game.clientSocks.size(); i++) {
-			try {
-				DataOutputStream out = new DataOutputStream(game.clientSocks.get(i).getOutputStream());
-				out.writeUTF("Winner;"+winner);
-			}
-			catch (IOException e) {}
-		}
+    System.out.println("A winner is "+winner);
+    //Re-send out everything one more time
+    for(Player p: cardGame.getPlayerList()) {
+        try {
+           DataOutputStream out = new DataOutputStream(p.getSock().getOutputStream());
+           out.writeUTF("Winner;"+winner+";"+p.getCardListForUTF()+";"+cardGame.getAmtCardInDrawDeck()+";"+cardGame.getAmtCardsPerAHand()+";"+cardGame.getPairsPerHand());
+        }
+        catch (IOException e) {}
+    }
+       
+       
+    //Send message to clients to go to win screen and display who won
+    System.out.println("A winner is "+winner);
+       
+    while(game.gui.state.equals("winner"));
 		
 		
 	}
