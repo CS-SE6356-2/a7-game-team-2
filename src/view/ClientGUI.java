@@ -2,14 +2,17 @@ package view;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -18,11 +21,12 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import src.model.Card;
-import src.model.Hand;
-import src.view.ClientController;
-import src.view.ClientLauncher;
+import model.Card;
+import model.Hand;
+import view.ClientController;
+import view.ClientLauncher;
 
 public class ClientGUI extends Application{
 	
@@ -222,7 +226,7 @@ public class ClientGUI extends Application{
 		rootGrid.setAlignment(Pos.BASELINE_CENTER);
 		rootGrid.setTranslateY(250);
 		
-		root.getChildren.add(rootGrid);
+		root.getChildren().add(rootGrid);
 		menuLabel.setText("Main Menu");
 	}
 	
