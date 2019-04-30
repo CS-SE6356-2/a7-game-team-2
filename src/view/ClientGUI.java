@@ -552,6 +552,11 @@ public class ClientGUI extends Application{
 		userSelect[0] = "<player>";
 		userSelect[1] = "<card>";
 		
+		Image image = new Image(new FileInputStream("resources\\background.png"));
+		ImageView imgV = new ImageView(image);
+		
+		gamePane.getChildren().add(imgV);
+		
 		//Initialize the list that holds references to all cards in play
 		cardsInPlay = new ArrayList<>();
 		
