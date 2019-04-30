@@ -10,7 +10,7 @@ public class PlayerHandTest {
 		
 		for(int i = 0; i < players.length; i++)
 		{
-			players[i] = new Player("model.Player "+i,"Test",null);
+			players[i] = new Player("model.Player "+i,i,"Test",null);
 			System.out.println("Added "+players[i].getTeamName());
 		}
 		

@@ -12,7 +12,7 @@ public class PlayerQueueTest {
 		//Test adding to queue and print each players name
 		for(int i = 0; i < 5; i++)
 		{
-			players.enqueue(new Player("Player "+i,"S",null));
+			players.enqueue(new Player("Player "+i, i, "S",null));
 			System.out.println("Added "+players.getPlayer().getTeamName());
 		}
 		
