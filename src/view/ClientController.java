@@ -289,6 +289,9 @@ class ClientThread extends Thread{
                 game.gui.infoLabel.setText("The winner is " + mess[1]);
                 //game.closeSocks();
                 game.gui.gamePane.getChildren().add(game.gui.backButton);
+                //Clear all the buttons currently, If the button is not there, no Ill effects occur
+				for(int i = 0; i < game.gui.cardButtons.length; ++i)
+					game.gui.gamePane.getChildren().remove(game.gui.cardButtons[i]);
                 game.gui.backButton.setLayoutY(350);
                 game.gui.backButton.setLayoutX(350);
                 game.gui.playButton.setVisible(false);
