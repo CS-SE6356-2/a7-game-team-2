@@ -285,6 +285,31 @@ class ClientThread extends Thread{
             @Override
             public void run() {
                 mess = mes.split(";", 0);
+                
+                
+                //Giving players their cards
+				   game.fillHand(mess[2], mess[3]);
+				
+				   //Test if client got the message
+				   //game.gui.testLabel.setText(mes);
+				   
+				   //Update each Client how many cards are in the Draw Deck
+				   //Update each client on how many card each player has
+				   game.setCardCounts(mess[4], mess[5]);
+				   
+				   //Update each client on which matches each player has
+				   game.setPlayerPairs(mess[6]);
+                
+                
+              //Update the gameGUI
+				   try {
+					   game.gui.updateGameGUI();
+				   } catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					   e.printStackTrace();
+				   }
+                
+                
                 System.out.println("We are where we need to be");
                 game.gui.infoLabel.setText("The winner is " + mess[1]);
                 //game.closeSocks();
