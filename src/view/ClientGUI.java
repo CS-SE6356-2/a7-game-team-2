@@ -888,7 +888,7 @@ public class ClientGUI extends Application{
 			if(i == yourID)
 			{
 				//Draw only your pairs
-				drawPairs(playerPairs[i], width/3*2, height/3 + offset);
+				drawOwnPairs(playerPairs[i], width/5*4, height/3 + offset);
 			}
 			else //If we are updating some other player's pairs and hand
 			{
@@ -916,7 +916,38 @@ public class ClientGUI extends Application{
 		int columns = 4;
 		
 		double width = startX + STD_CARD_WIDTH;
-		double cardGap = (width)/playerButtons.length;
+		double cardGap = (width)/columns;
+		double posX;
+		
+		int i = 0;
+		int j = 0;
+		for(Card pair: pairs)
+		{
+			posX = (double)j*cardGap+startX;
+			cardsInPlay.add(drawCard(pair, true, posX, startY+STD_MINI_CARD_HEIGHT*i));
+			
+			++j;
+			if(j == columns)
+			{
+				j = 0;
+				++i;
+			}
+		}
+	}
+	/**
+	 * Draws the pairs a given player has.
+	 * @author Chris
+	 * @param pairs	- The pairs the player has
+	 * @param startX - Where we will start draw the players cards on the X Pane
+	 * @param startY - Where we will start draw the players cards on the Y Pane
+	 * @throws FileNotFoundException
+	 */
+	private void drawOwnPairs(List<Card> pairs, double startX, double startY) throws FileNotFoundException
+	{		
+		int columns = 4;
+		
+		double width = root.getScene().getWidth();
+		double cardGap = (width - startX)/columns;
 		double posX;
 		
 		int i = 0;
