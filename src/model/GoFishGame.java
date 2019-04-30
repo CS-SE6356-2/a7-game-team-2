@@ -24,7 +24,9 @@ public class GoFishGame extends CardGame {
 
 	public boolean queryPlayer(String cardSymbol, Player target, String sourceName) 
 	{
-		return queryPlayer(Card.symbolToValue(cardSymbol), target, getPlayer(sourceName));
+		Player source = getPlayer(sourceName);
+		System.out.println(source.getTeamName());
+		return queryPlayer(Card.symbolToValue(cardSymbol), target, source);
 	}
 	
 	/**
@@ -236,10 +238,12 @@ public class GoFishGame extends CardGame {
 		return players;
 	}
 	
-	public Player getPlayer(String name)
+	public Player getPlayer(String ID)
 	{
+		System.out.println("Getting player "+ID);
+		int temp = Integer.parseInt(ID);
 		for(int i = 0; i < players.length; i++)
-			if(players[i].getTeamName().equals(name))
+			if(players[i].getID() == (temp))
 				return players[i];
 		return null;
 	}

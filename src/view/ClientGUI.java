@@ -436,7 +436,7 @@ public class ClientGUI extends Application{
 	//Makes sure the user made a selection
 	boolean validateUserSelect()
 	{
-		if(userSelect[0] == "<player>")
+		if(userSelect[0] == "-1")
 		{
 			infoLabel.setText("Please select a player!");
 			return false;
@@ -452,7 +452,7 @@ public class ClientGUI extends Application{
 	void updateUserSelect(boolean canUpdate)
 	{
 		if(canUpdate)
-			userSelectLabel.setText("Ask player "+userSelect[0]+" for any "+symbolToWord(userSelect[1])+"'s");
+			userSelectLabel.setText("Ask player "+IDtoName(userSelect[0])+" for any "+symbolToWord(userSelect[1])+"'s");
 	}
 	
 	/**
@@ -539,6 +539,13 @@ public class ClientGUI extends Application{
 		return word;
 	}
 	
+	String IDtoName(String ID) {
+		int temp = Integer.parseInt(ID);
+		if(temp == -1)
+			return "<player>";
+		return game.clientLabels.get(Integer.parseInt(ID));
+	}
+	
 	//###Initialize buttons & Update GameScreen###
 	
 	/**
@@ -552,7 +559,7 @@ public class ClientGUI extends Application{
 		//Initialize
 		initializeCardButtons();
 		initializePlayerButtons(cardCounts.length);
-		userSelect[0] = "<player>";
+		userSelect[0] = "-1";
 		userSelect[1] = "<card>";
 		
 		Image image = new Image(new FileInputStream("resources\\background.png"));
@@ -577,7 +584,7 @@ public class ClientGUI extends Application{
 	{
 		//Get rid of any card that is not involved with a button
 		clearCardsInPlay();
-		userSelect[0] = "<player>";
+		userSelect[0] = "-1";
 		userSelect[1] = "<card>";
 		updateUserSelect(canSelect);
 		
@@ -728,7 +735,7 @@ public class ClientGUI extends Application{
 			playerButtons[i].setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
-					userSelect[0] = game.clientLabels.get(temp);
+					userSelect[0] = temp+"";
 					updateUserSelect(canSelect);
 				}
 			});

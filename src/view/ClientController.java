@@ -298,6 +298,7 @@ class ClientThread extends Thread{
 						   //mess[4] = The number of cards in the deck
 						   //mess[5] = The number of active cards per each player | Players are delimited by ',' | cards are delimited by ' '
 						   //mess[6] = Unique pairs held by each player | Players are delimited by ','  | cards are delimited by ' '
+						   //mess[7] = The client player's ID
 						   System.out.println("CS3 "+mes);
 						   
 						   
@@ -305,7 +306,8 @@ class ClientThread extends Thread{
 						   game.gui.infoLabel.setText(mess[0]);
 							   
 						   //Determines if this Client is the one to go next
-						   if(mess[1].equals(game.gui.yourName)) {
+						   System.out.println("You are player "+game.gui.yourID+" and it is player "+mess[7]+"'s turn.");
+						   if(Integer.parseInt(mess[7]) == (game.gui.yourID)) {
 							   game.gui.turnLabel.setText("It's your turn");
 							   game.gui.playButton.setVisible(true);
 							   game.gui.canSelect = true;
@@ -511,7 +513,8 @@ class ServerThread extends Thread{
 					//mess[4] = The number of cards in the deck
 					//mess[5] = The number of active cards per each player | Players are delimited by ',' | cards are delimited by ' '
 					//mess[6] = Unique pairs held by each player | Players are delimited by ','  | cards are delimited by ' '
-					out.writeUTF(move+";"+focusPlayer.getTeamName()+";"+p.getCardListForUTF()+";"+cardGame.getAmtCardInDrawDeck()+";"+cardGame.getAmtCardsPerAHand()+";"+cardGame.getPairsPerHand());
+					//mess[7] = The client player's ID
+					out.writeUTF(move+";"+focusPlayer.getTeamName()+";"+p.getCardListForUTF()+";"+cardGame.getAmtCardInDrawDeck()+";"+cardGame.getAmtCardsPerAHand()+";"+cardGame.getPairsPerHand()+";"+focusPlayer.getID());
 					
 					//Have the server wait 500 milliseconds and let the clients update
 					try {
@@ -546,7 +549,7 @@ class ServerThread extends Thread{
 			
 			
 			//###Modify move string###
-			move = focusPlayer.getTeamName() + " asked " + move.substring(0,move.lastIndexOf(' ')) + 
+			move = focusPlayer.getTeamName() + " asked " + game.gui.IDtoName(move.substring(0,move.lastIndexOf(' '))) + 
 					" for " + game.gui.symbolToWord(move.substring(move.lastIndexOf(' ')+1)) + "'s. ";
 			if(doesGoAgain)
 			{

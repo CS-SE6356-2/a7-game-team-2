@@ -12,6 +12,7 @@ public class Player
 {
 	/* Name of the team that the player belongs to */
 	private String teamName;
+	private int ID;
 
 	/* Identifier marking the role the player has in the game */
 	private String role;
@@ -28,9 +29,10 @@ public class Player
 	 * @param cRole String describing this Player's role
 	 * @param cSock Socket with which the Player is connected to the Game
 	 */
-	public Player(String cTeamName, String cRole, Socket cSock)
+	public Player(String cTeamName, int cID, String cRole, Socket cSock)
 	{
 		teamName = cTeamName;
+		ID = cID;
 		role = cRole;
 		hand = new Hand();
 		playerSock = cSock;
@@ -119,6 +121,13 @@ public class Player
 	 */
 	public String getTeamName(){
 		return teamName;
+	}
+	
+	/**
+	 * @return Returns the Player's ID
+	 */
+	public int getID() {
+		return ID;
 	}
 
 	/**
