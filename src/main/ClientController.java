@@ -7,6 +7,7 @@ import view.ClientGUI;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -74,10 +75,23 @@ public class ClientController {
 	    try{
 	        System.out.println("Start Game");
             state = ClientState.GAME;
+            Platform.runLater(() -> {
+                try {
+                    gui.startGame();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            });
             List<String> hand = new ArrayList<>(Arrays.asList(readFromServer().split(":")));
             if(!hand.remove(0).equals(ServerMessage.DEAL_HAND.toString())) throw new IllegalStateException();
             thisPlayer.addCards(recreateCardList(hand));
-            Platform.runLater(() -> gui.updateGame(thisPlayer));
+            Platform.runLater(() -> {
+                try {
+                    gui.updateGame();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            });
             gameLoop();
 
         } catch (IOException e) {
@@ -98,7 +112,13 @@ public class ClientController {
                 else if(message[0].equals(ServerMessage.QUERY.toString())){
                     thisPlayer.removeCards(thisPlayer.getCardsOfValue(Card.Value.parseValue(message[1])));
                 }
-                Platform.runLater(() -> gui.updateGame(thisPlayer));
+                Platform.runLater(() -> {
+                    try {
+                        gui.updateGame();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                });
             }
             System.out.println("Winner is " + message[1]);
             closeSocks();
@@ -107,10 +127,10 @@ public class ClientController {
         }
     }
 
-    void sendQuery(Card c, Player target){
+    public void sendQuery(String c, String target){
         try {
             String query = ServerMessage.QUERY.toUTF() +
-                    c.getVal().toChar() + ":" +
+                    c + ":" +
                     thisPlayer.getName() + ":" +
                     target;
             writeToServer(query);
@@ -118,7 +138,7 @@ public class ClientController {
             e.printStackTrace();
         }
     }
-	
+
 	private void closeSocks() {
         try{
             serverSock.close();
@@ -134,6 +154,10 @@ public class ClientController {
     public String getServerAddress(){
         if(serverSock == null) return null;
         return serverSock.getInetAddress().getHostAddress() + ":" + serverSock.getLocalPort();
+    }
+
+    public Player getPlayer(){
+	    return thisPlayer;
     }
 
     public List<String> getPlayers() {

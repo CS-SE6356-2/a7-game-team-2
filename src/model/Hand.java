@@ -40,7 +40,7 @@ public class Hand
 	 * Returns a String list of cards of the pairs that are held by a player
 	 * Does not check if the list is empty
 	 * @author Chris
-	 * @param A List of Cards to check
+	 * @param cards List of Cards to check
 	 * @return		DA S2 A3 D8 DT DK
 	 */
 	String findMatchesForUTF(List<Card> cards) 
@@ -54,25 +54,11 @@ public class Hand
 
 		return cardList.toString();
 	}
-	
-	/**
-	 * Returns a list of unique cards that are held by a player in their activeList
-	 * Does not check if the list is empty
-	 * @author Chris
-	 * @param A List of Cards to check
-	 * @return		List<Card>
-	 */
-	public List<Card> getUCards() 
-	{
-        TreeSet<Card> uniqueCards = new TreeSet<>(activeCards);	
-		return new LinkedList<Card>(uniqueCards);
-	}
 
 	/**
 	 * Returns the amount of copies of cards with the same card value
 	 * @author Chris
-	 * @param Card.Value to check for
-	 * @param A list of cards to check
+	 * @param val Card.Value to check for
 	 * @return The number of cards that have that value
 	 */
     public int getDuplicityAmount(Value val) 

@@ -2,7 +2,9 @@ package model;
 /* @author Jacob */
 
 import java.net.Socket;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import model.Card.Value;
@@ -180,6 +182,18 @@ public class Player
 	 */
 	public List<Card> getInactiveCards() {
 		return hand.getInactiveCards();
+	}
+
+	/**
+	 * Returns a list of unique cards that are held by a player in their activeList
+	 * Does not check if the list is empty
+	 * @author Chris
+	 * @return		List<Card>
+	 */
+	public List<Card> getUCards()
+	{
+		TreeSet<Card> uniqueCards = new TreeSet<>(hand.getActiveCards());
+		return new LinkedList<>(uniqueCards);
 	}
 	/**
 	 * The players card list uses 3 delimiters

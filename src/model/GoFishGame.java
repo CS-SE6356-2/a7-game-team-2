@@ -193,10 +193,7 @@ public class GoFishGame extends CardGame {
 	
 	public Player getPlayer(String name)
 	{
-		for(int i = 0; i < players.length; i++)
-			if(players[i].getTeamName().equals(name))
-				return players[i];
-		return null;
+		return players.stream().filter(player -> player.getName().equals(name)).findFirst().orElse(null);
 	}
 	
 }
