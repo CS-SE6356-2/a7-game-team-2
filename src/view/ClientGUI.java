@@ -195,7 +195,10 @@ public class ClientGUI extends Application{
 		startButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				state = "game";
+				if(game.clientLabels.size() >= 2 && game.clientLabels.size() <= 6)
+					state = "game";
+				else
+					menuLabel.setText("Please connect between 2 and 6 players.");
 			}
 		});
 		
