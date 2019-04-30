@@ -275,27 +275,30 @@ class ClientThread extends Thread{
 						   }
 						});
 				}
-				//Client State 4@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-				//Used with Server stage 5
-				//Making changes to the clients
-				//Sending them to the win screen and closing down all sockets
-				else if(mes.length()>5 && mes.substring(0, 6).equals("Winner"))
-				{
-					Platform.runLater(new Runnable(){
-						@Override
-						public void run() {
-							mess = mes.split(";", 0);
-							System.out.println("We are where we need to be");
-							game.gui.infoLabel.setText("The winner is " + mess[1]);
-							//game.closeSocks();
-							game.gui.gamePane.getChildren().add(game.gui.backButton);
-							game.gui.backButton.setLayoutY(350);
-							game.gui.backButton.setLayoutX(350);
-							game.gui.playButton.setVisible(false);
-							game.gui.state = "winner";
-						}
-					});
-				}
+        //Client State 4@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        //Used with Server stage 5
+        //Making changes to the clients
+        //Sending them to the win screen and closing down all sockets
+        else if(mes.length()>5 && mes.substring(0, 6).equals("Winner"))
+        {
+            Platform.runLater(new Runnable(){
+            @Override
+            public void run() {
+                mess = mes.split(";", 0);
+                System.out.println("We are where we need to be");
+                game.gui.infoLabel.setText("The winner is " + mess[1]);
+                //game.closeSocks();
+                game.gui.gamePane.getChildren().add(game.gui.backButton);
+                //Clear all the buttons currently, If the button is not there, no Ill effects occur
+				for(int i = 0; i < game.gui.cardButtons.length; ++i)
+					game.gui.gamePane.getChildren().remove(game.gui.cardButtons[i]);
+                game.gui.backButton.setLayoutY(350);
+                game.gui.backButton.setLayoutX(350);
+                game.gui.playButton.setVisible(false);
+                game.gui.state = "winner";
+            }
+            });
+        }
 				//Client State 3@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 				else if(game.gui.state.equals("game")){
 					//&&&&&Part 1&&&&&
@@ -319,6 +322,7 @@ class ClientThread extends Thread{
 						   //mess[4] = The number of cards in the deck
 						   //mess[5] = The number of active cards per each player | Players are delimited by ',' | cards are delimited by ' '
 						   //mess[6] = Unique pairs held by each player | Players are delimited by ','  | cards are delimited by ' '
+						   //mess[7] = The client player's ID
 						   System.out.println("CS3 "+mes);
 						   
 						   
@@ -326,7 +330,8 @@ class ClientThread extends Thread{
 						   game.gui.infoLabel.setText(mess[0]);
 							   
 						   //Determines if this Client is the one to go next
-						   if(mess[1].equals(game.gui.yourName)) {
+						   System.out.println("You are player "+game.gui.yourID+" and it is player "+mess[7]+"'s turn.");
+						   if(Integer.parseInt(mess[7]) == (game.gui.yourID)) {
 							   game.gui.turnLabel.setText("It's your turn");
 							   game.gui.playButton.setVisible(true);
 							   game.gui.canSelect = true;
@@ -368,7 +373,8 @@ class ClientThread extends Thread{
 						   }
 					   }
 					});
-				}				
+				}
+				
 			} catch (IOException e) {
 				
 			}
@@ -499,7 +505,7 @@ class ServerThread extends Thread{
 		//HAVE THE SERVER SEND LIST OF STRINGS TO PLAYERS FOR THEIR HAND OF CARDS
 		while(game.gui.state.equals("hosting")) {System.out.println("Stuck in state: "+game.gui.state);}	//Before starting the game, make sure we enter re enter the game state first
 		while(game.gui.state.equals("game") && !win) {
-
+			
 			//Get the player that goes next
 			//If doesGoAgain == false
 			//		Get the next player for the turn
@@ -523,7 +529,8 @@ class ServerThread extends Thread{
 					//mess[4] = The number of cards in the deck
 					//mess[5] = The number of active cards per each player | Players are delimited by ',' | cards are delimited by ' '
 					//mess[6] = Unique pairs held by each player | Players are delimited by ','  | cards are delimited by ' '
-					out.writeUTF(move+";"+focusPlayer.getTeamName()+";"+p.getCardListForUTF()+";"+cardGame.getAmtCardInDrawDeck()+";"+cardGame.getAmtCardsPerAHand()+";"+cardGame.getPairsPerHand());
+					//mess[7] = The client player's ID
+					out.writeUTF(move+";"+focusPlayer.getTeamName()+";"+p.getCardListForUTF()+";"+cardGame.getAmtCardInDrawDeck()+";"+cardGame.getAmtCardsPerAHand()+";"+cardGame.getPairsPerHand()+";"+focusPlayer.getID());
 					
 					//Have the server wait 500 milliseconds and let the clients update
 					try {
@@ -558,7 +565,7 @@ class ServerThread extends Thread{
 			
 			
 			//###Modify move string###
-			move = focusPlayer.getTeamName() + " asked " + move.substring(0,move.lastIndexOf(' ')) + 
+			move = focusPlayer.getTeamName() + " asked " + game.gui.IDtoName(move.substring(0,move.lastIndexOf(' '))) + 
 					" for " + game.gui.symbolToWord(move.substring(move.lastIndexOf(' ')+1)) + "'s. ";
 			if(doesGoAgain)
 			{
@@ -575,21 +582,21 @@ class ServerThread extends Thread{
 		}
 		
 		//5th Stage@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-		System.out.println("A winner is "+winner);
-		//Re-send out everything one more time
-		for(Player p: cardGame.getPlayerList()) {
-			try {
-				DataOutputStream out = new DataOutputStream(p.getSock().getOutputStream());
-				out.writeUTF("Winner;"+winner+";"+p.getCardListForUTF()+";"+cardGame.getAmtCardInDrawDeck()+";"+cardGame.getAmtCardsPerAHand()+";"+cardGame.getPairsPerHand());
-			}
-			catch (IOException e) {}
-		}
-		
-		
-		//Send message to clients to go to win screen and display who won
-		System.out.println("A winner is "+winner);
-		
-		while(game.gui.state.equals("winner"));
+    System.out.println("A winner is "+winner);
+    //Re-send out everything one more time
+    for(Player p: cardGame.getPlayerList()) {
+        try {
+           DataOutputStream out = new DataOutputStream(p.getSock().getOutputStream());
+           out.writeUTF("Winner;"+winner+";"+p.getCardListForUTF()+";"+cardGame.getAmtCardInDrawDeck()+";"+cardGame.getAmtCardsPerAHand()+";"+cardGame.getPairsPerHand());
+        }
+        catch (IOException e) {}
+    }
+       
+       
+    //Send message to clients to go to win screen and display who won
+    System.out.println("A winner is "+winner);
+       
+    while(game.gui.state.equals("winner"));
 		
 		
 	}

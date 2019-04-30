@@ -52,7 +52,7 @@ public class CardGame
 	{
 		for(int i = 0; i < players.length; i++)
 		{
-			players[i] = new Player(playerNames.get(i),"Solo", clientSocks.get(i));
+			players[i] = new Player(playerNames.get(i),i,"Solo", clientSocks.get(i));
 		}
 	}
 	
