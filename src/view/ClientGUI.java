@@ -21,6 +21,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.Card;
@@ -220,6 +223,8 @@ public class ClientGUI extends Application{
 	void mainScreen() {
 		menuLabel.setFill(Color.WHITE);
 		infoLabel.setFill(Color.WHITE);
+		menuLabel.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
+		infoLabel.setFont(Font.font("times", FontWeight.LIGHT, FontPosture.REGULAR, 12));
 
 		root.getChildren().clear();
 
