@@ -325,7 +325,7 @@ public class ClientGUI extends Application{
 	}
 	void rulesScreen() {
 		root.getChildren().clear();
-
+		root.getChildren().add(background);
 		root.getChildren().addAll(menuLabel, infoLabel, backButton);
 		menuLabel.setText("RULES OF GO FISH");
 		
