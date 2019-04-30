@@ -22,7 +22,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import model.Card;
 import model.Hand;
@@ -336,7 +335,6 @@ public class ClientGUI extends Application{
 			while(in.hasNextLine()) rules.append(in.nextLine() + "\n");
 			
 			infoLabel.setText(rules.toString());
-			infoLabel.setTextAlignment(TextAlignment.CENTER);
 			in.close();
 		} catch (FileNotFoundException e) {
 			infoLabel.setText("Error retrieving rules.txt.");
