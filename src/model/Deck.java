@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 /**
@@ -55,8 +56,8 @@ public class Deck {
 	 */
 	void shuffle()
 	{
-		Collections.shuffle(cards);
-		/*
+		//Collections.shuffle(cards);
+		
 		//Making a Random object to run Fisher-Yates shuffle
 		Random rand = new Random();
 		
@@ -69,7 +70,7 @@ public class Deck {
 			cards.set(i, cards.get(j));
 			cards.set(j, temp);
 		}
-		*/
+		
 	}
 
 	List<Card> getCards(){
