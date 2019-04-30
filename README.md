@@ -21,29 +21,12 @@ Matthew
 ### To compile and run the project: 
 ```
 javac src\view\ClientLauncher.java
-java src.view.ClientLauncher
+java -cp src view.ClientLauncher
 ```
  
-### To compile and run model.DeckTest:
+### To compile and run Tests:
 ```
-javac src\tests\model.DeckTest.java
-java src.tests.model.DeckTest
-```
- 
-### To compile and run model.PlayerQueueTest:
-```
-javac src\tests\model.PlayerQueueTest.java
-java src.tests.model.PlayerQueueTest
+javac -cp tests model\<name-of-test>Test.java
+java -cp tests;src model.<name-of-test>Test
 ```
  
-### To compile and run model.CardGameTest:
-```
-javac src\tests\model.CardGameTest.java
-java src.tests.model.CardGameTest
-```
- 
-### To compile and run model.PlayerHandTest:
-```
-javac src\tests\model.PlayerHandTest.java
-java src.tests.model.PlayerHandTest
-```

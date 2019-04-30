@@ -12,15 +12,15 @@ public class CardGameTest {
 		ArrayList<Socket> socks = new ArrayList<Socket>();
 		for(int i = 0; i < 3; i++)
 		{
-			playerNames.add("model.Player "+i);
+			playerNames.add("Player "+i);
 			socks.add(new Socket());
 			System.out.println("Added "+playerNames.get(i));
 		}
-		CardGame game = new CardGame(playerNames.size(),playerNames,socks,new File("cardlist.txt"));
+		CardGame game = new CardGame(playerNames.size(),playerNames,socks,new File("resources\\cardlist.txt"));
 		//createPlayers is tested within the constructor
 		
 		//Assign player 2 as dealer
-		game.assignDealer("model.Player 2");
+		game.assignDealer("Player 2");
 		//Shuffle the cards
 		game.shuffleCards();
 		//Deal the cards
