@@ -21,13 +21,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import model.Card;
 import model.Hand;
+import view.ClientController;
+import view.ClientLauncher;
 
 public class ClientGUI extends Application{
 	
@@ -59,7 +59,7 @@ public class ClientGUI extends Application{
 	//GUI stuff
 	VBox root = new VBox();
 	Group gamePane;
-	Group background;
+  Group background;
 	Button hostButton;
 	Button joinButton;
 	Button rulesButton;
@@ -197,7 +197,10 @@ public class ClientGUI extends Application{
 		startButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				state = "game";
+				if(game.clientLabels.size() >= 2 && game.clientLabels.size() <= 6)
+					state = "game";
+				else
+					menuLabel.setText("Please connect between 2 and 6 players.");
 			}
 		});
 		
@@ -221,32 +224,30 @@ public class ClientGUI extends Application{
 		state = "main";
 	}
 	void mainScreen() {
-		menuLabel.setFill(Color.WHITE);
-		infoLabel.setFill(Color.WHITE);
-		menuLabel.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
-		infoLabel.setFont(Font.font("times", FontWeight.LIGHT, FontPosture.REGULAR, 12));
-
+    menuLabel.setFill(Color.WHITE);
+    infoLabel.setFill(Color.WHITE);
+    
 		root.getChildren().clear();
 
 		VBox rootGrid = new VBox();
-		background = new Group();
-		background.setManaged(false);
-		Image image;
-		try {
-			image = new Image(new FileInputStream("resources\\background.png"));
-			ImageView imgV = new ImageView(image);
-			
-			background.getChildren().add(imgV);
-			
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+    background = new Group();
+    background.setManaged(false);
+    Image image;
+    try {
+        image = new Image(new FileInputStream("resources\\background.png"));
+        ImageView imgV = new ImageView(image);
+           
+        background.getChildren().add(imgV);
+           
+    } catch (FileNotFoundException e) {
+        e.printStackTrace();
+    }
 		rootGrid.getChildren().addAll(menuLabel, hostButton, joinButton, rulesButton, exitButton);
 		rootGrid.setAlignment(Pos.BASELINE_CENTER);
-		rootGrid.setTranslateY(280);
+		rootGrid.setTranslateY(250);
 		
-		background.getChildren();
-		root.getChildren().add(background);
+    background.getChildren();
+    root.getChildren().add(background);
 		root.getChildren().add(rootGrid);
 		menuLabel.setText("Main Menu");
 	}
@@ -257,7 +258,7 @@ public class ClientGUI extends Application{
 	}
 	void preHostScreen() {
 		root.getChildren().clear();
-		root.getChildren().add(background);
+    root.getChildren().add(background);
 		root.getChildren().addAll(menuLabel, infoLabel, nameInput, serverButton, backButton);
 		menuLabel.setText("Host a Game");
 		infoLabel.setText("Enter your name and click \"Create Server\"");
@@ -302,10 +303,10 @@ public class ClientGUI extends Application{
 	}
 	void hostingScreen() {
 		root.getChildren().clear();
-		root.getChildren().add(background);
+    root.getChildren().add(background);
 		root.getChildren().addAll(menuLabel, addressLabel, infoLabel, startButton, backButton);
 		addressLabel.setFill(Color.WHITE);
-		menuLabel.setText("Host a Game");
+    menuLabel.setText("Host a Game");
 		infoLabel.setText(yourName);
 	}
 	
@@ -315,7 +316,7 @@ public class ClientGUI extends Application{
 	}
 	void joinScreen() {
 		root.getChildren().clear();
-		root.getChildren().add(background);
+    root.getChildren().add(background);
 		root.getChildren().addAll(menuLabel, infoLabel, addressInput, nameInput, connectButton, backButton);
 		menuLabel.setText("Join a Game");
 		infoLabel.setText("Enter details below");
@@ -329,7 +330,7 @@ public class ClientGUI extends Application{
 	}
 	void rulesScreen() {
 		root.getChildren().clear();
-		root.getChildren().add(background);
+    root.getChildren().add(background);
 		root.getChildren().addAll(menuLabel, infoLabel, backButton);
 		menuLabel.setText("RULES OF GO FISH");
 		
@@ -340,6 +341,7 @@ public class ClientGUI extends Application{
 			while(in.hasNextLine()) rules.append(in.nextLine() + "\n");
 			
 			infoLabel.setText(rules.toString());
+			infoLabel.setTextAlignment(TextAlignment.CENTER);
 			in.close();
 		} catch (FileNotFoundException e) {
 			infoLabel.setText("Error retrieving rules.txt.");
@@ -388,7 +390,7 @@ public class ClientGUI extends Application{
 	}
 	void lobbyScreen(){
 		root.getChildren().clear();
-		root.getChildren().add(background);
+    root.getChildren().add(background);
 		root.getChildren().addAll(menuLabel, infoLabel, backButton);
 		menuLabel.setText("Lobby");
 		infoLabel.setText(yourName);
@@ -458,7 +460,7 @@ public class ClientGUI extends Application{
 	//Makes sure the user made a selection
 	boolean validateUserSelect()
 	{
-		if(userSelect[0] == "<player>")
+		if(userSelect[0] == "-1")
 		{
 			infoLabel.setText("Please select a player!");
 			return false;
@@ -474,7 +476,7 @@ public class ClientGUI extends Application{
 	void updateUserSelect(boolean canUpdate)
 	{
 		if(canUpdate)
-			userSelectLabel.setText("Ask player "+userSelect[0]+" for any "+symbolToWord(userSelect[1])+"'s");
+			userSelectLabel.setText("Ask player "+IDtoName(userSelect[0])+" for any "+symbolToWord(userSelect[1])+"'s");
 	}
 	
 	/**
@@ -561,6 +563,13 @@ public class ClientGUI extends Application{
 		return word;
 	}
 	
+	String IDtoName(String ID) {
+		int temp = Integer.parseInt(ID);
+		if(temp == -1)
+			return "<player>";
+		return game.clientLabels.get(Integer.parseInt(ID));
+	}
+	
 	//###Initialize buttons & Update GameScreen###
 	
 	/**
@@ -574,16 +583,16 @@ public class ClientGUI extends Application{
 		//Initialize
 		initializeCardButtons();
 		initializePlayerButtons(cardCounts.length);
-		userSelect[0] = "<player>";
+		userSelect[0] = "-1";
 		userSelect[1] = "<card>";
 		
 		Image image = new Image(new FileInputStream("resources\\background.png"));
 		ImageView imgV = new ImageView(image);
 		
 		gamePane.getChildren().add(imgV);
-		infoLabel.setFill(Color.BLACK);
-		menuLabel.setFill(Color.BLACK);
-		addressLabel.setFill(Color.BLACK);
+    infoLabel.setFill(Color.BLACK);
+    menuLabel.setFill(Color.BLACK);
+    addressLabel.setFill(Color.BLACK);
 		
 		//Initialize the list that holds references to all cards in play
 		cardsInPlay = new ArrayList<>();
@@ -602,7 +611,7 @@ public class ClientGUI extends Application{
 	{
 		//Get rid of any card that is not involved with a button
 		clearCardsInPlay();
-		userSelect[0] = "<player>";
+		userSelect[0] = "-1";
 		userSelect[1] = "<card>";
 		updateUserSelect(canSelect);
 		
@@ -753,7 +762,7 @@ public class ClientGUI extends Application{
 			playerButtons[i].setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
-					userSelect[0] = game.clientLabels.get(temp);
+					userSelect[0] = temp+"";
 					updateUserSelect(canSelect);
 				}
 			});
@@ -951,6 +960,3 @@ public class ClientGUI extends Application{
 	
 	
 }//end of GUI
-
-
-
