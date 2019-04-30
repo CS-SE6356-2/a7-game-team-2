@@ -1,8 +1,5 @@
 package model;
 
-import model.Player;
-import model.PlayerQueue;
-
 public class PlayerQueueTest {
 
 	public static void main(String[] args) 
@@ -13,7 +10,7 @@ public class PlayerQueueTest {
 		for(int i = 0; i < 5; i++)
 		{
 			players.enqueue(new Player("Player "+i,"S",null));
-			System.out.println("Added "+players.getPlayer().getTeamName());
+			System.out.println("Added "+players.getPlayer().getName());
 		}
 		
 		//Test foreach loop
@@ -45,13 +42,13 @@ public class PlayerQueueTest {
 	{
 		for(Player p: players)
 		{
-			System.out.println(p.getTeamName());
+			System.out.println(p.getName());
 		}
 	}
 	
 	public static void playRound(PlayerQueue players)
 	{
 		for(int i = 0; i < players.size(); i++)
-			System.out.println(players.nextPlayer().getTeamName()+"'s turn");
+			System.out.println(players.poll().getName()+"'s turn");
 	}
 }

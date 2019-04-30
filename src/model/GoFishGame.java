@@ -6,12 +6,8 @@ import java.util.*;
 
 public class GoFishGame extends CardGame {
 
-	private GoFishQueue playerQueue;
-
-	public GoFishGame(int numOfPlayers, List<String> playerNames, List<Socket> clientSocks, File cardList) {
-		super(numOfPlayers, playerNames, clientSocks, cardList);
-
-		playerQueue = sortPlayersInPlayOrder();
+	public GoFishGame(List<String> playerNames, List<Socket> clientSocks, File cardList) {
+		super(playerNames, clientSocks, cardList);
 	}
 
 	public boolean isLegalMove(Player focusPlayer, String move) {
@@ -23,50 +19,43 @@ public class GoFishGame extends CardGame {
 	 * Checks if target has card; if true, transfer all of that type of card from
 	 * target to source, otherwise source draws one card
 	 * 
-	 * @param value
-	 *            - Value of card source is testing target with
-	 * @param target
-	 *            - Player asking for cards
-	 * @param source
-	 *            - Player being asked
-	 * @return true if target has card type, false if not
+	 * @param value Value of card source is testing target with
+	 * @param source Player asking for cards
+	 * @param target Player being asked
+	 * @return true if source has card type, false if not
 	 */
-	public boolean queryPlayer(Card.Value value, Player target, Player source) 
+	public boolean queryPlayer(Card.Value value, Player source, Player target)
 	{
-		//Check to see if the source has cards with the same value
-		List<Card> query = source.getCardsOfValue(value);
+		//Check to see if the target has cards with the same value
+		List<Card> query = target.getCardsOfValue(value);
 		boolean doesGoAgain;
 		
-		//If the source has those cards
+		//If the target has those cards
 		if (!query.isEmpty()) {
-			transferCardsFromOther(query, target, source);	//Move the cards from the source to the target
-			lostCards(source);								//Check if the source needs to gain a new hand or remove them from play
+			transferCardsFromOther(query, source, target);	//Move the cards from the target to the source
+			lostCards(target);								//Check if the target needs to gain a new hand or remove them from play
 			doesGoAgain = true;
 		}
-		//If the source does not have those cards
+		//If the target does not have those cards
 		else {
 			if(!cardDeck.getCards().isEmpty())			//Check if the deck is not empty
-				target.addCard(cardDeck.takeCard()); 	// target draws one card if source does not contain any cards of
+				source.addCard(cardDeck.takeCard()); 	// source draws one card if target does not contain any cards of
 			doesGoAgain = false;
 		}
-		
-		target.checkBooks();							//Checks if the target has a 4 of a kind pair. Sends those cards to the inactiveCards
-		lostCards(target);
+		source.checkBooks();							//Checks if the source has a 4 of a kind pair. Sends those cards to the inactiveCards
+		lostCards(source);
 		return doesGoAgain;
 	}
 
 	/**
-	 * Move all cards with value [value] from source to target
+	 * Move all cards in given list from target to source
 	 * 
-	 * @param cards
-	 *            - List of cards to transfer
-	 * @param target
-	 *            - Player asking for cards
-	 * @param source
-	 *            - Player being asked
+	 * @param cards List of cards to transfer
+	 * @param source Player asking for cards
+	 * @param target Player being asked
 	 */
-	public void transferCardsFromOther(List<Card> cards, Player target, Player source) {
-		target.addCards(source.removeCards(cards));
+	private void transferCardsFromOther(List<Card> cards, Player source, Player target) {
+		source.addCards(target.removeCards(cards));
 	}
 
 	/**
@@ -76,7 +65,7 @@ public class GoFishGame extends CardGame {
 	 * Note: May perform Recursion
 	 * @param player
 	 */
-	public void lostCards(Player player) 
+	void lostCards(Player player)
 	{
 		//Check if the player lost all their cards, if not then nothing else to do. But if so
 		if(player.getNumOfCards() == 0)
@@ -86,7 +75,7 @@ public class GoFishGame extends CardGame {
 			{
 				//Refill the player's hand with up to the amount they started with at the beginning of the game
 				player.addCards(cardDeck.refillHand(getStartingHandSize()));
-				//Since they are recieving cards we must check if they got a 4 of a kind
+				//Since they are receiving cards we must check if they got a 4 of a kind
 				player.checkBooks();
 				//And if they have moved cards from the active cards to the inactive cards we must check if they got rid of their whole hand
 				lostCards(player);
@@ -95,7 +84,7 @@ public class GoFishGame extends CardGame {
 			else
 			{
 				//Remove that player
-				playerQueue.dequeue(player);
+				queue.remove(player);
 			}
 		}
 		
@@ -104,63 +93,37 @@ public class GoFishGame extends CardGame {
 	/**
 	 * Checks to see if the game is over, which is if no player has any active cards 
 	 * left in their hands.
-	 * This is done by checking the size of the GoFishQueue
+	 * This is done by checking the size of the PlayerQueue
 	 * Returns the name of the player who won.
 	 * Or
 	 * Returns null if the queue isn't empty
 	 * @author Chris
-	 * @return The Player.getTeamName() if a winner is found or null if no player wins
+	 * @return The Player.getName() if a winner is found or null if no player wins
 	 */
-	public String determineWinner() 
-	{
-		if(playerQueue.getSize() > 0)
+	public Player determineWinner() {
+		if(queue.getSize() > 0)
 			return null;
-		else
-		{
+		else {
 			//int[] totals = new int[players.length];	//Create an int counter for each player that played the game
 			int currentPairs;
 			int mostPairs = -1;
 			int mostIndex = -1;
 			String temp;
 			//Get each player's total number of pairs and determine which player has the most
-			for(int i = 0; i < players.length; ++i)
-			{
-				temp = players[i].getPairs(players[i].getInactiveCards());//Check to make sure if this player got any pairs
+			for(int i = 0; i < players.size(); ++i) {
+				temp = players.get(i).getPairs(players.get(i).getInactiveCards());//Check to make sure if this player got any pairs
 				if(temp.length() == 1) //If the player has no pairs, the string is " "
 					currentPairs = 0;
 				else
 					currentPairs = temp.split(" ").length;
 				
-				if(currentPairs > mostPairs)
-				{
+				if(currentPairs > mostPairs) {
 					mostPairs = currentPairs;
 					mostIndex = i;
 				}
 			}
-			
-			return players[mostIndex].getTeamName();
+			return players.get(mostIndex);
 		}
-	}
-
-	public GoFishQueue sortPlayersInPlayOrder() {
-		// CLIENTSOCKS AND CLIENTLABELS are automatically sorted within the playerQueue
-		// as they are part of the model.Player object
-
-		int dealerNum; // Track the index of the dealer
-		// Index through array until dealer is found, if not then stop at end of list
-		for (dealerNum = 0; dealerNum < players.length && !players[dealerNum].getRole().equals("Dealer"); dealerNum++)
-			;
-
-		// Move number to next in list as dealer doesn't usually go first
-		dealerNum = (dealerNum) % players.length;
-		// Create the playerQueue
-		GoFishQueue playOrder = new GoFishQueue();
-
-		for (int i = 0; i < players.length; i++) // For each player
-			playOrder.enqueue(players[(dealerNum + i) % players.length]); // Starting at the dealer, add them to the
-																			// queue
-
-		return playOrder; // Return the queue
 	}
 
 	/**
@@ -171,11 +134,10 @@ public class GoFishGame extends CardGame {
 	 * IE
 	 * @return	numOfCardsForPlayer1,numOfCardsForPlayer2,numOfCardsForPlayer3,...
 	 */
-	public String getAmtCardsPerAHand() 
-	{
+	public String getAmtCardsPerAHand() {
 		StringBuilder cardsPerHand = new StringBuilder();
 		for(Player p: players)
-			cardsPerHand.append(p.getNumOfCards()+",");
+			cardsPerHand.append(p.getNumOfCards()).append(",");
 		cardsPerHand.deleteCharAt(cardsPerHand.lastIndexOf(","));
 		return cardsPerHand.toString();
 	}
@@ -191,11 +153,10 @@ public class GoFishGame extends CardGame {
 	 * @return	DA S2 A3 D8 DT DK,A4 D5," ",...
 	 * " " = a single space
 	 */
-	public String getPairsPerHand() 
-	{
+	public String getPairsPerHand() {
 		StringBuilder pairsPerHand = new StringBuilder();
 		for(Player p: players)
-			pairsPerHand.append(p.getPairs(p.getInactiveCards())+",");
+			pairsPerHand.append(p.getPairs(p.getInactiveCards())).append(",");
 		pairsPerHand.deleteCharAt(pairsPerHand.lastIndexOf(","));
 		return pairsPerHand.toString();
 	}
@@ -205,8 +166,7 @@ public class GoFishGame extends CardGame {
 	 * Returns the number of cards left in the deck
 	 * @return
 	 */
-	public int getAmtCardInDrawDeck() 
-	{
+	public int getAmtCardInDrawDeck() {
 		return cardDeck.getNumOfCards();
 	}
 
@@ -214,17 +174,15 @@ public class GoFishGame extends CardGame {
 	 * Returns the queue of players in the game who still have cards to play. 
 	 * @return The queue of players
 	 */
-	public GoFishQueue getPlayerQueue()
-	{
-		return playerQueue;
+	PlayerQueue getPlayerQueue() {
+		return queue;
 	}
 	
 	/**
 	 * Returns the full list of players regardless of the number of cards they have left
 	 * @return The array of Players
 	 */
-	public Player[] getPlayerList()
-	{
+	public List<Player> getPlayerList() {
 		return players;
 	}
 }

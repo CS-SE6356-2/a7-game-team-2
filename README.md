@@ -21,7 +21,7 @@ Matthew
 ### To compile and run the project: 
 ```
 javac src\view\ClientLauncher.java
-java src.view.ClientLauncher
+java src.controller.ClientLauncher
 ```
  
 ### To compile and run model.DeckTest:

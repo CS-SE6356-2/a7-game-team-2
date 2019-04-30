@@ -1,4 +1,6 @@
-package view;
+package main;
+
+import view.ClientGUI;
 
 public class ClientLauncher {
 

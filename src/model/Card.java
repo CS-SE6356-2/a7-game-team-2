@@ -44,6 +44,14 @@ public class Card implements Comparator<Card>{
                     return toString().substring(3);
             }
         }
+
+        public static Value parseValue(String s){
+	        for(Value v : Value.values()){
+	            if(s.equals(v.toChar()))
+	                return v;
+            }
+            throw new IllegalArgumentException();
+        }
     }
 
     /**

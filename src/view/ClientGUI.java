@@ -1,5 +1,8 @@
 package view;
 
+import main.ClientController;
+import main.ClientLauncher;
+import main.ServerController;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -14,12 +17,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.Card;
-import model.Hand;
+import model.Player;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
-import java.util.List;
 
 public class ClientGUI extends Application{
 	
@@ -28,15 +30,6 @@ public class ClientGUI extends Application{
 
 	private static final double STD_CARD_WIDTH = 150.0;
 	private static final double STD_CARD_HEIGHT = 210.0;
-
-	String state;
-	private String yourName;
-	//server to client variables
-	int yourID;
-	Hand yourCards;
-	int deckCount;
-	int cardCounts[];
-	List[] playerPairs;
 
 	//GUI stuff
 	private Scene main;
@@ -50,9 +43,6 @@ public class ClientGUI extends Application{
 	@Override
 	public void start(Stage stage) {
         ClientLauncher.setGui(this);
-		state = "";
-		yourName = "Player";
-		yourCards = new Hand();
 
 		root = new Pane();
 		main = new Scene(root, 1280, 720);
@@ -134,7 +124,7 @@ public class ClientGUI extends Application{
 		lobby.getChildren().addAll(menuLabel, addressLabel, nameList, startButton, leaveButton);
 		sceneMap.put("Lobby", lobby);
 	}
-	void updateLobbyScene(){
+	public void updateLobbyScene(){
         Text addressLabel = (Text) sceneMap.get("Lobby").lookup("#AddressLabel");
 	    addressLabel.setText(client.getServerAddress());
         Pane nameList = (VBox) sceneMap.get("Lobby").lookup("#NameList");
@@ -153,7 +143,9 @@ public class ClientGUI extends Application{
 		    otherPlayers.getChildren().add(selectPlayer);
         }
 		Pane board = new HBox();
+		board.setId("Board");
 		Pane cards = new HBox();
+		cards.setId("Cards");
 		gameScene.getChildren().addAll(otherPlayers, board, cards);
 		sceneMap.put("Game", gameScene);
 	}
@@ -166,7 +158,7 @@ public class ClientGUI extends Application{
 		}
 	}
 
-	void showAlert(String message){
+	public void showAlert(String message){
         new Alert(Alert.AlertType.ERROR, message).show();
     }
 
@@ -206,10 +198,25 @@ public class ClientGUI extends Application{
 	private void game() {
 		setupGameScene();
 		loadScene("Game");
+		server.startGame();
 	}
 
-	void updateGame(){
-        System.out.println("Update Game Scene");
+	public void updateGame(Player player){
+        Pane cards = (HBox) sceneMap.get("Game").lookup("#Cards");
+        double minX = 100;
+        double maxX = cards.getMaxWidth() - 100;
+        int pos = 0;
+        for(Card card : player.getActiveCards()){
+            try {
+                cards.getChildren().add(drawCard(card, pos++ * (maxX - minX) / player.getActiveCards().size(), 0));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+	public void displayTurn() {
+        System.out.println("Display Turn");
     }
 	
 	private boolean validateName(String name)
@@ -243,18 +250,18 @@ public class ClientGUI extends Application{
 		return "resources\\" + card.toString() + ".png";
 	}
 
-	private void drawCard(Card card, double posx, double posy, double width, double height) throws FileNotFoundException {
+	private ImageView drawCard(Card card, double posx, double posy, double width, double height) throws FileNotFoundException {
 		Image image = new Image(new FileInputStream(getCardImage(card)));
 		ImageView view = new ImageView(image);
 		view.setX(posx);
 		view.setY(posy);
 		view.setFitWidth(width);
 		view.setFitHeight(height);
-		root.getChildren().add(view);
+		return view;
 	}
 
-	void drawCard(Card card, double posx, double posy) throws FileNotFoundException {
-		drawCard(card, posx, posy, STD_CARD_WIDTH, STD_CARD_HEIGHT);
+	private ImageView drawCard(Card card, double posx, double posy) throws FileNotFoundException {
+		return drawCard(card, posx, posy, STD_CARD_WIDTH, STD_CARD_HEIGHT);
 	}
 
 }

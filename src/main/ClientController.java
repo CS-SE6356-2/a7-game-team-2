@@ -1,6 +1,9 @@
-package view;
+package main;
 
+import javafx.application.Platform;
 import model.Card;
+import model.Player;
+import view.ClientGUI;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -10,10 +13,11 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
-class ClientController {
+public class ClientController {
 
 	private static final int SERVER_PORT = 0;
 	ClientGUI gui;
@@ -27,6 +31,7 @@ class ClientController {
     private DataOutputStream outputStream;
 	private DataInputStream inputStream;
 	private List<String> players;
+	Player thisPlayer;
 
 	ClientController(ClientGUI gui) {
 	    this.gui = gui;
@@ -34,7 +39,7 @@ class ClientController {
 	    players = new ArrayList<>();
 	}
 
-	boolean connectToHost(String addressStr, String name) {
+	public boolean connectToHost(String addressStr, String name) {
 		try {
 			serverSock = new Socket();
 			String[] addressSplit = addressStr.split(":");
@@ -44,6 +49,7 @@ class ClientController {
 			outputStream = new DataOutputStream(serverSock.getOutputStream());
             inputStream = new DataInputStream(serverSock.getInputStream());
 			writeToServer(name);
+			thisPlayer = new Player(name, "", serverSock);
             ClientThread clientThread = new ClientThread(this);
             clientThread.start();
 			return true;
@@ -65,6 +71,54 @@ class ClientController {
 			return false;
 		}
 	}
+
+	void startGame() {
+	    try{
+	        System.out.println("Start Game");
+            state = ClientState.GAME;
+            List<String> hand = new ArrayList<>(Arrays.asList(readFromServer().split(":")));
+            if(!hand.remove(0).equals(ServerMessage.DEAL_HAND.toString())) throw new IllegalStateException();
+            thisPlayer.addCards(recreateCardList(hand));
+            Platform.runLater(() -> gui.updateGame(thisPlayer));
+            gameLoop();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void gameLoop(){
+	    try{
+	        String[] message;
+            for(message = readFromServer().split(":"); !message[0].equals(ServerMessage.ANNOUNCE_WINNER.toString()); message = readFromServer().split(":")){
+                if(message[0].equals(ServerMessage.START_TURN.toString())){
+                    Platform.runLater(() -> gui.displayTurn());
+                }
+                else if(message[0].equals(ServerMessage.QUERY_RESPONSE.toString())){
+                    System.out.println(message[0]);
+                }
+                else if(message[0].equals(ServerMessage.QUERY.toString())){
+                    thisPlayer.removeCards(thisPlayer.getCardsOfValue(Card.Value.parseValue(message[1])));
+                }
+                Platform.runLater(() -> gui.updateGame(thisPlayer));
+            }
+            System.out.println("Winner is " + message[1]);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void sendQuery(Card c, Player target){
+        try {
+            String query = ServerMessage.QUERY.toUTF() +
+                    c.getVal().toChar() + ":" +
+                    thisPlayer.getName() + ":" +
+                    target;
+            writeToServer(query);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 	
 	void closeSocks(String state) {
         try{
@@ -78,12 +132,12 @@ class ClientController {
         return state;
     }
 
-    String getServerAddress(){
+    public String getServerAddress(){
         if(serverSock == null) return null;
         return serverSock.getInetAddress().getHostAddress() + ":" + serverSock.getLocalPort();
     }
 
-    List<String> getPlayers() {
+    public List<String> getPlayers() {
         return players;
     }
 
@@ -95,12 +149,15 @@ class ClientController {
 	    players.add(name);
     }
 	
-	void writeToServer(String mes) throws IOException {
+	private void writeToServer(String mes) throws IOException {
+	    System.out.println("Client Sending Message: " + mes);
 		outputStream.writeUTF(mes);
 	}
 
 	String readFromServer() throws IOException {
-	    return inputStream.readUTF();
+	    String ret = inputStream.readUTF();
+	    System.out.println("Client Received Message: " + ret);
+	    return ret;
     }
 	
 	
@@ -113,7 +170,7 @@ class ClientController {
 	 * @param activeList - A list of Cards or " "
 	 * @param inactiveList - A list of Cards or " "
 	 */
-	void fillHand(String activeList, String inactiveList)
+	/*void fillHand(String activeList, String inactiveList)
 	{
 		if(!activeList.equals(" "))
 			gui.yourCards.setActiveCards(recreateCardList(activeList));
@@ -142,21 +199,15 @@ class ClientController {
 			}
 			++i;
 		}
-	}
+	}*/
 
 	/**
 	 * Creates a List object out of String in the format of a list of cards separated by spaces
 	 * @param cards card1 card2 card3 ...
 	 * @return A List object of those cards
 	 */
-	List<Card> recreateCardList(String cards)
-	{
-		List<Card> cardList = new LinkedList<>();
-
-		for(String card: cards.split(" "))
-			cardList.add(new Card(card));
-
-		return cardList;
+    private List<Card> recreateCardList(List<String> cards) {
+	    return cards.stream().map(Card::new).collect(Collectors.toList());
 	}
 }
 

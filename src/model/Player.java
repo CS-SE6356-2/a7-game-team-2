@@ -10,8 +10,7 @@ import model.Card.Value;
 /* Represents one of the people playing the game */
 public class Player
 {
-	/* Name of the team that the player belongs to */
-	private String teamName;
+	private String name;
 
 	/* Identifier marking the role the player has in the game */
 	private String role;
@@ -24,16 +23,16 @@ public class Player
 
 	/**
 	 * Creates a Player assigned to the given Team, with the given role, and connected with the given Socket.
-	 * @param cTeamName The Team name that this Player belongs to
+	 * @param name This Player's name
 	 * @param cRole String describing this Player's role
-	 * @param cSock Socket with which the Player is connected to the Game
+	 * @param sock Socket with which the Player is connected to the Game
 	 */
-	public Player(String cTeamName, String cRole, Socket cSock)
+	public Player(String name, String cRole, Socket sock)
 	{
-		teamName = cTeamName;
+		this.name = name;
 		role = cRole;
 		hand = new Hand();
-		playerSock = cSock;
+		playerSock = sock;
 	}
 
 	/**
@@ -85,7 +84,7 @@ public class Player
 	 * Each card value is separated by spaces
 	 * Returns a null if the player has no pairs
 	 * IE
-	 * @param A list of cards to check
+	 * @param cards list of cards to check
 	 * @return		DA S2 A3 D8 DT DK or " "
 	 * @author Chris
 	 */
@@ -117,8 +116,8 @@ public class Player
 	/**
 	 * @return Returns the Player's assigned Team name
 	 */
-	public String getTeamName(){
-		return teamName;
+	public String getName(){
+		return name;
 	}
 
 	/**
@@ -197,14 +196,15 @@ public class Player
 		if(getActiveCards().size()>0)
 		{
 			for(Card card: getActiveCards())
-				cardList.append(card.toString()).append(" ");
-			cardList.setCharAt(cardList.lastIndexOf(" "), ';');
+				cardList.append(card.toString()).append(":");
+			//cardList.setCharAt(cardList.lastIndexOf(":"), ';');
 		}
-		else
-			cardList.append(" ;");
+		else {
+			//cardList.append(";");
+		}
 		
 		//Get the unique inactive cards
-		cardList.append(getPairs(getInactiveCards()));
+		//cardList.append(getPairs(getInactiveCards()));
 		
 		return cardList.toString();
 	}

@@ -8,12 +8,10 @@ import java.util.Iterator;
  */
 public class PlayerQueue implements Iterable<Player>
 {
-	////Member Variables////
-	Node head;			//Tracks the player to go next
-	int size;			//Tracks the amount of players that are playing
-	boolean reversed;	//Tracks when we go to the next player or previous player
-	
-	////Constructor////
+	private Node head;			//Tracks the player to go next
+	private Node tail;
+	protected int size;			//Tracks the amount of players in the queue
+	private boolean reversed;	//Tracks when we go to the next player or previous player
 	
 	/**
 	 * Sets variables to null or 0
@@ -22,55 +20,52 @@ public class PlayerQueue implements Iterable<Player>
 	PlayerQueue()
 	{
 		head = null;
+		tail = null;
 		size = 0;
 		reversed = false;
 	}
-
-	////Functions////
 	
 	/**
 	 * Adds a new player to the queue
 	 * @param person model.Player to be added
-	 * @return The model.Player that was added
 	 */
-	public Player enqueue(Player person)
+	void enqueue(Player person)
 	{
 		enqueue(new Node(person));
 		++size;
-		return person;
 	}
 	
 	/**
 	 * Adds a new Node as either the head or the new tail
 	 * @author Chris
-	 * @param newNode
+	 * @param newNode Node to add to Queue
 	 */
-	private void enqueue(Node newNode)
-	{
-		if(size == 0)				//Put the player at the head if there are no other players
-		{
+	private void enqueue(Node newNode) {
+		if(size == 0) {
 			head = newNode;
-			getHead().next = getHead();
-			getHead().prev = getHead();
+			tail = newNode;
+			head.next = head;
+			head.prev = head;
 		}
-		else if (size == 1)			//Put the player as the tail. This separates the head from being the tail
-		{
-			getHead().next = newNode;
-			getHead().prev = newNode;
-			newNode.next = getHead();
-			newNode.prev = getHead();
-		}
-		else			//Adds the player in the queue
-		{
-			//Set a pointer to the old tail
-			Node tail = getHead().prev;
-			//Insert the new node into the list
+		else {
 			tail.next = newNode;
-			getHead().prev = newNode;
-			//Have the new node point to its respective next and prev
-			newNode.next = getHead();
 			newNode.prev = tail;
+			tail = newNode;
+			tail.next = head;
+			head.prev = tail;
 		}
+	}
+	/**
+	 * Moves head to the next player in the queue and returns the old head as
+	 * the player that is to take their turn
+	 * @author Chris
+	 * @return The next model.Player to take their turn
+	 */
+	Player poll() {
+		Player nextPlayer = head.data;
+		head = reversed ? head.prev : head.next;
+		tail = reversed ? tail.prev : tail.next;
+		return nextPlayer;
 	}
 	
 	
@@ -80,39 +75,59 @@ public class PlayerQueue implements Iterable<Player>
 	 * @author Chris
 	 * @return A player
 	 */
-	public Player getPlayer() {return getHead().data;}
+	public Player getPlayer() {
+		return head.data;
+	}
+	/**
+	 * Removes the listed player from the queue
+	 * @param person Player to remove from the Queue
+	 * @return Returns true if person was found and removed, false otherwise
+	 */
+	boolean remove(Player person) {
+		if(size == 0)
+			return false;
+		Node focus = head;
+		int i;
+		for(i = 0; i < size; ++i)
+		{
+			if(focus.data == person)
+				break;
+			focus = focus.prev;
+		}
+
+		if(i == size)
+			return false;
+		focus.prev.next = focus.next;
+		focus.next.prev = focus.prev;
+		if(focus == head) head = focus.next;
+		if(focus ==tail) tail = focus.prev;
+		--size;
+		return true;
+	}
 	/**
 	 * Returns the amount of players in the queue
 	 * @return The number of players in the queue
 	 */
-	public int size() {return size;}
-	/**
-	 * Moves head to the next player in the queue and returns the old head as 
-	 * the player that is to take their turn
-	 * @author Chris
-	 * @return The next model.Player to take their turn
-	 */
-	public Player nextPlayer()
-	{
-		head = reversed? getHead().prev: getHead().next;
-		return reversed? getHead().next.data: getHead().prev.data;
+	public int size() {
+		return size;
 	}
 	/**
 	 * Moves head to the next player without getting back a player, essentially 
 	 * skipping the skipped player's turn
 	 * @author Chris
 	 */
-	public void skipPlayer()
-	{
-		head = (reversed)? getHead().prev: getHead().next;
+	void skipPlayer() {
+		head = reversed ? head.prev : head.next;
+		tail = reversed ? tail.prev : tail.next;
 	}
 	/**
 	 * Sets the reverse flag to its opposite. Calls skipPlayer() twice to set the order to the proper model.Player
 	 * @author Chris
 	 */
-	public void reverseOrder() 
+	void reverseOrder()
 	{
 		reversed = !reversed;
+		tail = reversed ? head.next : head.prev;
 		skipPlayer();
 		skipPlayer();
 	}
@@ -120,7 +135,10 @@ public class PlayerQueue implements Iterable<Player>
 	 * Clears the queue
 	 * @author Chris
 	 */
-	public void clear() {head = null; size = 0;}
+	public void clear() {
+		head = null;
+		size = 0;
+	}
 	
 	/**
 	 * A node to hold a model.Player and is able to look backwards and forwards
@@ -141,22 +159,23 @@ public class PlayerQueue implements Iterable<Player>
 	}
 
 	@Override
-	public Iterator<Player> iterator() 
-	{	
+	public Iterator<Player> iterator() {
 		return new PlayerQueueIterator(this);
 	}
 	
-	public Node getHead() 
-	{
+	Node getHead() {
 		return head;
 	}
+
+	Node getTail() {
+		return tail;
+	}
 	
-	public void setHead(Node newHead) 
-	{
+	void setHead(Node newHead) {
 		head = newHead;
 	}
 
-	public int getSize() 
+	int getSize()
 	{
 		return size;
 	}
@@ -166,21 +185,19 @@ public class PlayerQueue implements Iterable<Player>
 		Node focus;
 		int counter;
 
-		public PlayerQueueIterator(PlayerQueue playerQueue) 
+		PlayerQueueIterator(PlayerQueue playerQueue)
 		{
 			focus = playerQueue.getHead();
 			counter = 0;
 		}
 
 		@Override
-		public boolean hasNext() 
-		{
+		public boolean hasNext() {
 			return counter<getSize();
 		}
 
 		@Override
-		public Player next() 
-		{
+		public Player next() {
 			++counter;
 			Player temp = focus.data;
 			focus = focus.next;

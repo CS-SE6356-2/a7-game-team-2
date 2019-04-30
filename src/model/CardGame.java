@@ -3,29 +3,35 @@ package model;
 import java.io.File;
 import java.net.Socket;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class CardGame
 {
-	Player[] players;			//Holds the data for each player
-	Deck cardDeck;				//Holds the information for each card
+	List<Player> players;
+	Deck cardDeck;
+	PlayerQueue queue;
 
-	public CardGame(int numOfPlayers, List<String> playerNames, List<Socket> clientSocks)
+	public CardGame(List<String> playerNames, List<Socket> clientSocks)
 	{
-		players = new Player[numOfPlayers];		//Create a list of Players
-		cardDeck = new Deck();			//Create the deck of cards
-		
-		//Create Players
-		createPlayers(playerNames, clientSocks);
+		players = IntStream.range(0, playerNames.size()).mapToObj(i -> new Player(playerNames.get(i), "Solo", clientSocks.get(i))).collect(Collectors.toList());
+		cardDeck = new Deck();
+		queue = new PlayerQueue();
 	}
 
-	public CardGame(int numOfPlayers, List<String> playerNames, List<Socket> clientSocks,
-                    File cardList)
+	public CardGame(List<String> playerNames, List<Socket> clientSocks, File cardList)
 	{
-		players = new Player[numOfPlayers];		//Create a list of Players
-		cardDeck = new Deck(cardList);			//Create the deck of cards
+		players = IntStream.range(0, playerNames.size()).mapToObj(i -> new Player(playerNames.get(i), "Solo", clientSocks.get(i))).collect(Collectors.toList());
+		cardDeck = new Deck(cardList);
+		queue = new PlayerQueue();
+	}
 
-		//Create Players
-		createPlayers(playerNames, clientSocks);
+	public Player getPlayer(String playerName){
+		return players.stream().filter(player -> player.getName().equals(playerName)).findFirst().orElse(null);
+	}
+
+	public void shuffleCards(){
+		cardDeck.shuffle();
 	}
 	
 	/**
@@ -41,42 +47,30 @@ public class CardGame
 	}
 
 	int getStartingHandSize() {
-		if(players.length < 4) return 7;
+		if(players.size() < 4) return 7;
 		else return 5;
 	}
-	public void shuffleCards(){
-		cardDeck.shuffle();
-	}
-	private void createPlayers(List<String> playerNames, List<Socket> clientSocks)
-	{
-		for(int i = 0; i < players.length; i++)
-		{
-			players[i] = new Player(playerNames.get(i),"Solo", clientSocks.get(i));
-		}
-	}
-	
+
 	/**
 	 * Sorts the list of players initially in a game by finding the dealer, adding them and the other players into a circular linked list called playerQueue
 	 * @author Chris
 	 * @return playerQueue
 	 */
-	public PlayerQueue sortPlayersInPlayOrder()
-	{
+	public PlayerQueue sortPlayersInPlayOrder() {
+		for(Player player : players)
+			queue.enqueue(player);
+		queue.poll();
 		//CLIENTSOCKS AND CLIENTLABELS are automatically sorted within the playerQueue as they are part of the model.Player object
 		
 		int dealerNum;	//Track the index of the dealer
 		 //Index through array until dealer is found, if not then stop at end of list
-		for(dealerNum = 0;dealerNum < players.length && !players[dealerNum].getRole().equals("Dealer"); dealerNum++);
+		//for(dealerNum = 0;dealerNum < players.size() && !players.get(dealerNum).getRole().equals("Dealer"); dealerNum++);
 		
-		//Move number to next in list as dealer doesn't usually go first
-		dealerNum = (dealerNum)%players.length;
-		//Create the playerQueue
-		PlayerQueue playOrder = new PlayerQueue();
-		
-		for(int i = 0; i < players.length; i++)							//For each player
-			playOrder.enqueue(players[(dealerNum+i)%players.length]);	//Starting at the dealer, add them to the queue
-		
-		return playOrder;	//Return  the queue
+		return queue;
+	}
+
+	public Player getNextPlayer() {
+		return queue.poll();
 	}
 	/**
 	 * Assigns the given player as the new dealer.
@@ -87,7 +81,7 @@ public class CardGame
 	public boolean assignDealer(String newDealer)
 	{
 		for(Player p: players)
-			if(p.getTeamName().equals(newDealer))
+			if(p.getName().equals(newDealer))
 			{
 				p.assignRole("Dealer");
 				return true;
@@ -116,17 +110,13 @@ public class CardGame
 	public boolean checkWinCondition(Player focusPlayer, String move)
 	{
 		//TODO extend into a specific game type (set of rules)
-		if(focusPlayer.getNumOfCards() == 0)
-			return true;
-		return false;
+		return focusPlayer.getNumOfCards() == 0;
 	}
 	
 	/**
 	 * 
 	 */
 	public boolean queryPlayer(String sourceName, String cardValue, String targetName) {
-		
-		
 		return false;
 	}
 

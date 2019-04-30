@@ -5,8 +5,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Random;
 
-import model.GoFishQueue.GoFishQueueIterator;
-
 public class GoFishGameTest {
 
 	public static void main(String[] args) {
@@ -19,18 +17,18 @@ public class GoFishGameTest {
 		socks.add(new Socket());
 		socks.add(new Socket());
 
-		GoFishGame testGame = new GoFishGame(2, names, socks, new File("resources\\cardlist.txt"));
+		GoFishGame testGame = new GoFishGame(names, socks, new File("resources\\cardlist.txt"));
 		
 		testGame.shuffleCards();
 		testGame.dealCards();
 		
 		System.out.println(testGame.cardDeck.getNumOfCards());
-		System.out.println(testGame.players[0].getCardListForUTF());
-		System.out.println(testGame.players[1].getCardListForUTF());
+		System.out.println(testGame.getPlayerList().get(0).getCardListForUTF());
+		System.out.println(testGame.getPlayerList().get(0).getCardListForUTF());
 		
-		GoFishQueueIterator iter = testGame.getPlayerQueue().new GoFishQueueIterator(testGame.getPlayerQueue());
+		PlayerQueue.PlayerQueueIterator iter = testGame.getPlayerQueue().new PlayerQueueIterator(testGame.getPlayerQueue());
 		while(iter.hasNext()) {
-			System.out.println("Player " + iter.next().getTeamName());
+			System.out.println("Player " + iter.next().getName());
 		}
 		
 		int playerTurn = 0;
@@ -38,35 +36,35 @@ public class GoFishGameTest {
 		// test 20 turns with each player choosing a random value from the cards in their deck
 		for(int i = 0; i < 100; i++) {
 			System.out.println("\n\nTurn " + i + ":");
-			if(testGame.players[playerTurn].getActiveCards().isEmpty()) {
+			if(testGame.getPlayerList().get(playerTurn).getActiveCards().isEmpty()) {
 				if(testGame.cardDeck.isEmpty()) {
-					testGame.players[1 - playerTurn].checkBooks();
-					testGame.lostCards(testGame.players[playerTurn]);
+					testGame.getPlayerList().get(1 - playerTurn).checkBooks();
+					testGame.lostCards(testGame.getPlayerList().get(playerTurn));
 					break;
 				}
 				else {
-					testGame.players[playerTurn].addCard(testGame.cardDeck.takeCard());
+					testGame.getPlayerList().get(playerTurn).addCard(testGame.cardDeck.takeCard());
 					playerTurn = 1 - playerTurn;
 					continue;
 				}
 				
 			}
-			int randomCard = new Random().nextInt(testGame.players[playerTurn].getActiveCards().size());
-			Card.Value randomValue = testGame.players[playerTurn].getActiveCards().get(randomCard).getVal();
+			int randomCard = new Random().nextInt(testGame.getPlayerList().get(playerTurn).getActiveCards().size());
+			Card.Value randomValue = testGame.getPlayerList().get(playerTurn).getActiveCards().get(randomCard).getVal();
 			
-			boolean containsValue = testGame.queryPlayer(randomValue, testGame.players[playerTurn], testGame.players[1 - playerTurn]);
+			boolean containsValue = testGame.queryPlayer(randomValue, testGame.getPlayerList().get(playerTurn), testGame.getPlayerList().get(1 - playerTurn));
 			System.out.println("player " + (playerTurn + 1) + " testing " + randomValue);
 			System.out.println("player " + (playerTurn + 1) + " goes again: " + containsValue);
 
-			System.out.println(testGame.players[0].getCardListForUTF());
-			System.out.println(testGame.players[1].getCardListForUTF());
+			System.out.println(testGame.getPlayerList().get(0).getCardListForUTF());
+			System.out.println(testGame.getPlayerList().get(1).getCardListForUTF());
 			
 			if(!containsValue) playerTurn = 1 - playerTurn;
 		}
 		
-		iter = testGame.getPlayerQueue().new GoFishQueueIterator(testGame.getPlayerQueue());
+		iter = testGame.getPlayerQueue().new PlayerQueueIterator(testGame.getPlayerQueue());
 		while(iter.hasNext()) {
-			System.out.println("Player " + iter.next().getTeamName());
+			System.out.println("Player " + iter.next().getName());
 		}
 		System.out.println(testGame.cardDeck.getNumOfCards());
 
