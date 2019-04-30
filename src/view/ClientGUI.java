@@ -25,8 +25,6 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import model.Card;
 import model.Hand;
-import view.ClientController;
-import view.ClientLauncher;
 
 public class ClientGUI extends Application{
 	
@@ -211,7 +209,7 @@ public class ClientGUI extends Application{
 	
 	//methods called by buttons
 	void main() {
-		if(state.equals("hosting") || state.equals("lobby"))
+		if(state.equals("hosting") || state.equals("lobby") || state.equals("winner"))
 			game.closeSocks(state);
 		
 		mainScreen();
