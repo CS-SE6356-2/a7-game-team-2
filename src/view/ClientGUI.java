@@ -2,22 +2,28 @@ package view;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.Card;
@@ -53,8 +59,10 @@ public class ClientGUI extends Application{
 	//GUI stuff
 	VBox root = new VBox();
 	Group gamePane;
+	Group background;
 	Button hostButton;
 	Button joinButton;
+	Button rulesButton;
 	Button connectButton;
 	Button serverButton;
 	Button backButton;
@@ -102,6 +110,7 @@ public class ClientGUI extends Application{
 		gamePane.setManaged(false);
 		hostButton = new Button("Host Game");//part of main menu screen
 		joinButton = new Button("Join Game");//part of main menu screen
+		rulesButton = new Button("Rules");
 		connectButton = new Button("Connect");//part of join screen
 		serverButton = new Button("Create Server");//part of host screen
 		backButton = new Button("Back");//part of host and join screens
@@ -146,6 +155,13 @@ public class ClientGUI extends Application{
 			}
 		});
 		
+		rulesButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				rules();
+			}
+		});
+
 		connectButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -197,7 +213,7 @@ public class ClientGUI extends Application{
 	
 	//methods called by buttons
 	void main() {
-		if(state.equals("hosting") || state.equals("lobby"))
+		if(state.equals("hosting") || state.equals("lobby") || state.equals("winner"))
 			game.closeSocks(state);
 		
 		mainScreen();
@@ -205,8 +221,33 @@ public class ClientGUI extends Application{
 		state = "main";
 	}
 	void mainScreen() {
+		menuLabel.setFill(Color.WHITE);
+		infoLabel.setFill(Color.WHITE);
+		menuLabel.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
+		infoLabel.setFont(Font.font("times", FontWeight.LIGHT, FontPosture.REGULAR, 12));
+
 		root.getChildren().clear();
-		root.getChildren().addAll(/*realLabel,*/ menuLabel, hostButton, joinButton, exitButton);
+
+		VBox rootGrid = new VBox();
+		background = new Group();
+		background.setManaged(false);
+		Image image;
+		try {
+			image = new Image(new FileInputStream("resources\\background.png"));
+			ImageView imgV = new ImageView(image);
+			
+			background.getChildren().add(imgV);
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		rootGrid.getChildren().addAll(menuLabel, hostButton, joinButton, rulesButton, exitButton);
+		rootGrid.setAlignment(Pos.BASELINE_CENTER);
+		rootGrid.setTranslateY(280);
+		
+		background.getChildren();
+		root.getChildren().add(background);
+		root.getChildren().add(rootGrid);
 		menuLabel.setText("Main Menu");
 	}
 	
@@ -216,6 +257,7 @@ public class ClientGUI extends Application{
 	}
 	void preHostScreen() {
 		root.getChildren().clear();
+		root.getChildren().add(background);
 		root.getChildren().addAll(menuLabel, infoLabel, nameInput, serverButton, backButton);
 		menuLabel.setText("Host a Game");
 		infoLabel.setText("Enter your name and click \"Create Server\"");
@@ -260,7 +302,9 @@ public class ClientGUI extends Application{
 	}
 	void hostingScreen() {
 		root.getChildren().clear();
+		root.getChildren().add(background);
 		root.getChildren().addAll(menuLabel, addressLabel, infoLabel, startButton, backButton);
+		addressLabel.setFill(Color.WHITE);
 		menuLabel.setText("Host a Game");
 		infoLabel.setText(yourName);
 	}
@@ -271,12 +315,39 @@ public class ClientGUI extends Application{
 	}
 	void joinScreen() {
 		root.getChildren().clear();
+		root.getChildren().add(background);
 		root.getChildren().addAll(menuLabel, infoLabel, addressInput, nameInput, connectButton, backButton);
 		menuLabel.setText("Join a Game");
 		infoLabel.setText("Enter details below");
 		addressInput.setPromptText("Enter Host Address");
 		nameInput.setPromptText("Enter Your Name");
 	}
+	
+	void rules() {
+		rulesScreen();
+		state = "rules";
+	}
+	void rulesScreen() {
+		root.getChildren().clear();
+		root.getChildren().add(background);
+		root.getChildren().addAll(menuLabel, infoLabel, backButton);
+		menuLabel.setText("RULES OF GO FISH");
+		
+		try {
+			Scanner in = new Scanner(new FileReader("resources\\rules.txt"));
+
+			StringBuilder rules = new StringBuilder();
+			while(in.hasNextLine()) rules.append(in.nextLine() + "\n");
+			
+			infoLabel.setText(rules.toString());
+			in.close();
+		} catch (FileNotFoundException e) {
+			infoLabel.setText("Error retrieving rules.txt.");
+			System.out.println("Error in rulesScreen()");
+			e.printStackTrace();
+		}
+	}
+	
 	
 	void connect() {
 		if(addressInput.getText().isEmpty()) {
@@ -317,6 +388,7 @@ public class ClientGUI extends Application{
 	}
 	void lobbyScreen(){
 		root.getChildren().clear();
+		root.getChildren().add(background);
 		root.getChildren().addAll(menuLabel, infoLabel, backButton);
 		menuLabel.setText("Lobby");
 		infoLabel.setText(yourName);
@@ -504,6 +576,14 @@ public class ClientGUI extends Application{
 		initializePlayerButtons(cardCounts.length);
 		userSelect[0] = "<player>";
 		userSelect[1] = "<card>";
+		
+		Image image = new Image(new FileInputStream("resources\\background.png"));
+		ImageView imgV = new ImageView(image);
+		
+		gamePane.getChildren().add(imgV);
+		infoLabel.setFill(Color.BLACK);
+		menuLabel.setFill(Color.BLACK);
+		addressLabel.setFill(Color.BLACK);
 		
 		//Initialize the list that holds references to all cards in play
 		cardsInPlay = new ArrayList<>();
